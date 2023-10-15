@@ -1,0 +1,11 @@
+{
+  "name": "aion-core",
+  "version": "0.0.1",
+  "type": "module",
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
