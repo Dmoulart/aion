@@ -1,7 +1,7 @@
 import type {System} from "../systems/system.js";
 import type {Resource} from "../resources/resource.js";
 
-export type GameConfig<R extends Resource[], S extends System<R>[]> = {
+export type Config<R extends Resource[], S extends System<R>[]> = {
   /**
    * The systems are the game logic modules wich modify the game state at each update.
    */
@@ -12,12 +12,12 @@ export type GameConfig<R extends Resource[], S extends System<R>[]> = {
   resources: R;
 };
 
-export class Game<R extends Resource[], S extends System<R>[]> {
+export class Engine<R extends Resource[], S extends System<R>[]> {
   resources: Resources<R> = {} as Resources<R>;
 
   #systems!: S;
 
-  constructor({resources, systems}: GameConfig<R, S>) {
+  constructor({resources, systems}: Config<R, S>) {
     this.#systems = systems;
 
     // build game resources map

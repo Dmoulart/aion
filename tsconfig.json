@@ -16,6 +16,6 @@
     "lib": ["es2022", "dom", "dom.iterable"],
     "declaration": true,
     "composite": true,
-    "declarationMap": true
+    "declarationMap": true,
   }
 }

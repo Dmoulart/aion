@@ -1,1 +1,2 @@
-export {Game} from "./engine/game.js";
+export {Engine} from "./engine/engine.js";
+export type {System} from "./systems/system.js";
