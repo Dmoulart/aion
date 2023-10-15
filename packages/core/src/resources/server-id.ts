@@ -1,1 +1,1 @@
-export type ServerID = {type: "server-id"; id: number};
+// export type ServerID = {type: "server-id"; id: number};

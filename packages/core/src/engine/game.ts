@@ -1,5 +1,5 @@
-import type {System} from "./systems/system.js";
-import type {Resource} from "./resources/resource.js";
+import type {System} from "../systems/system.js";
+import type {Resource} from "../resources/resource.js";
 
 export type GameConfig<R extends Resource[], S extends System<R>[]> = {
   /**
