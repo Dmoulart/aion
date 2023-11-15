@@ -1,12 +1,15 @@
 // import type {System} from "#core";
 import type {System} from "aion-core";
+import type {Resources} from "aion-core";
 
-export class RenderSystem implements System {
+export type RendererOptions = {type: "renderer"; canvas: HTMLCanvasElement};
+
+export class Renderer implements System<[RendererOptions]> {
   #canvas!: HTMLCanvasElement;
   #ctx!: CanvasRenderingContext2D;
 
-  public boot(): void {
-    this.#canvas = document.querySelector("#game-canvas")!;
+  public boot({renderer}: Resources<[RendererOptions]>): void {
+    this.#canvas = renderer.canvas;
     this.#canvas.width = 1000;
     this.#canvas.height = 600;
     this.#ctx = this.#canvas.getContext("2d")!;

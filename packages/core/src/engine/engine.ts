@@ -1,7 +1,7 @@
 import type {System} from "../systems/system.js";
 import type {Resource} from "../resources/resource.js";
 
-export type Config<R extends Resource[], S extends System<R>[]> = {
+export type Config<R extends Resource[], S extends System[]> = {
   /**
    * The systems are the game logic modules wich modify the game state at each update.
    */
@@ -67,3 +67,29 @@ export type Resources<T extends Array<Resource>> = {
       : never
     : never;
 };
+
+/**
+ * The game resources type describes a map of game resources
+ * with resource type as key and resource object as value.
+ * It accomplish a sort of reduce operation from an array of resource.
+ * @example from [{type: 'server-id', id: 1}, {type: 'client-id', id: 1}]
+ * to {'server-id': {type: 'server-id', id: 1},'server-id': {type: 'client-id', id: 1}}
+ */
+// export type SystemsResources<T extends Array<System>> = {
+//   [key in T[number] extends System<infer Type>
+//     ? Type
+//     : never]: T[number] extends infer Type
+//     ? Type extends {type: key}
+//       ? Type
+//       : never
+//     : never;
+// };
+
+class TS implements System<[{type: "hello"; data: "test"}]> {
+  boot?:
+    | ((resources: Resources<[{type: "hello"; data: "test"}]>) => void)
+    | undefined;
+  update(resources: Resources<[{type: "hello"; data: "test"}]>): void {
+    throw new Error("Method not implemented.");
+  }
+}
