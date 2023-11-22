@@ -1,6 +1,5 @@
 import "./style.css";
-import {aion, f32} from "../../dist";
-import {defineComponent, i32, u16, u8} from "../../dist";
+import {aion, f32, defineComponent, i32, u16, u8} from "../../packages/ecs";
 
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d")!;
