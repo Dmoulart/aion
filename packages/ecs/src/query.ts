@@ -163,8 +163,6 @@ export const createQuery = (): Query => {
       return this;
     },
     from(world: World) {
-      const archetypes: Archetype[] = [];
-
       archloop: for (const archetype of world.archetypes) {
         for (const match of matchers) {
           if (!match(archetype)) continue archloop;

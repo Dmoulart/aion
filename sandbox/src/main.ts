@@ -52,7 +52,6 @@ const movables = query(all(Position, Velocity));
 canvas.onmousemove = (e) => {
   Position.x[player] = e.clientX;
   Position.y[player] = e.clientY;
-
   const shape = createActor({
     Graphics: {
       color: Math.random() * Number.MAX_SAFE_INTEGER,

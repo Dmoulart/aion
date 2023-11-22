@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build": "tsc --build",
-    "test": "jest --coverage ./test"
+    "watch": "tsc -w"
   },
   "dependencies": {
     "aion-core": "workspace:*"
