@@ -1,3 +1,4 @@
+import {expect, it, describe} from "vitest";
 import {BitSet} from "../src/index.js";
 
 describe("BitSet", () => {

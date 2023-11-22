@@ -1,3 +1,4 @@
+import {expect, it, describe} from "vitest";
 import {SparseSet} from "../src/index.js";
 
 describe("SparseSet", () => {

@@ -1,3 +1,4 @@
+import {expect, it, describe} from "vitest";
 import {createArchetype, deriveArchetype} from "../src/archetype.js";
 import {defineComponent, createWorld, makeMask, i8} from "../src/index.js";
 
