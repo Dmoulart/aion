@@ -1,4 +1,3 @@
-import "jest";
 import {
   createQuery,
   addQuery,

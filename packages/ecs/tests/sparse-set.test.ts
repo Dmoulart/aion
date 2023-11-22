@@ -1,4 +1,3 @@
-import "jest";
 import {SparseSet} from "../src/index.js";
 
 describe("SparseSet", () => {

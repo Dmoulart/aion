@@ -1,4 +1,3 @@
-import "jest";
 import {BitSet} from "../src/index.js";
 
 describe("BitSet", () => {

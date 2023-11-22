@@ -1,4 +1,3 @@
-import "jest";
 import {createArchetype, deriveArchetype} from "../src/archetype.js";
 import {defineComponent, createWorld, makeMask, i8} from "../src/index.js";
 
