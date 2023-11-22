@@ -68,7 +68,7 @@ export class BitSet implements BitsetInterface {
       return false;
     }
 
-    return Boolean(this.mask[index] & (1 << (val & 31)));
+    return Boolean(this.mask[index]! & (1 << (val & 31)));
   }
 
   or(val: number) {
@@ -90,8 +90,8 @@ export class BitSet implements BitsetInterface {
   contains(other: BitsetInterface) {
     const len = Math.min(this.mask.length, other.mask.length);
     for (let i = 0; i < len; i++) {
-      const a = this.mask[i];
-      const b = other.mask[i];
+      const a = this.mask[i]!;
+      const b = other.mask[i]!;
       if ((a & b) !== b) {
         return false;
       }
@@ -102,8 +102,8 @@ export class BitSet implements BitsetInterface {
   intersects(other: BitsetInterface) {
     const len = Math.min(this.mask.length, other.mask.length);
     for (let i = 0; i < len; i++) {
-      const a = this.mask[i];
-      const b = other.mask[i];
+      const a = this.mask[i]!;
+      const b = other.mask[i]!;
       if ((a & b) > 0) {
         return true;
       }

@@ -37,7 +37,7 @@ export class SparseSet implements SparseSetInterface {
   }
 
   has(num: number) {
-    return this.dense[this.sparse[num]] === num;
+    return this.dense[this.sparse[num]!] === num;
   }
 
   remove(num: number) {
@@ -47,7 +47,7 @@ export class SparseSet implements SparseSetInterface {
 
     if (last === num) return;
 
-    const i = this.sparse[num];
+    const i = this.sparse[num]!;
     this.dense[i] = last;
     this.sparse[last] = i;
   }
