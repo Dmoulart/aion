@@ -270,9 +270,13 @@ describe("Query", () => {
     addQuery(world, query);
     console.log(query.archetypes);
 
+    expect(query.archetypes[0]!.entities.count() === 1);
+
     expect(removed).toStrictEqual(0);
 
     detach(world, TestComponent2, eid);
+
+    expect(query.archetypes[0]!.entities.count() === 0);
     expect(removed).toStrictEqual(1);
   });
   it("can cannot be registered to multiple worlds", () => {

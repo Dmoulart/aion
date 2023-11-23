@@ -107,8 +107,9 @@ export function defineQuery(...terms: QueryTerm[]): Query {
     },
   };
 }
+
 /**
- * Query a list of archetypes.
+ * Define a query, register it to the world and returns it.
  * @returns query object
  */
 export const query = (world: World, ...terms: QueryTerm[]): Query => {
