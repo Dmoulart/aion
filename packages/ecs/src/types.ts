@@ -42,11 +42,13 @@ export type PrimitiveType = Types[keyof Types];
 // The nested arrays fields will be defined like in bitECS : a typed array constructor and the length of the array
 export type ArrayType<T extends PrimitiveType = PrimitiveType> = [T, number];
 
+export type CustomType<T = any> = ArrayLike<T>;
+
 export type InferArrayType<T extends ArrayType> = T extends ArrayType<infer El>
   ? El
   : never;
 
-export type Type = PrimitiveType | ArrayType;
+export type Type = PrimitiveType | ArrayType | CustomType;
 
 // const {create, attach, remove, has, exists, prefab, query} = aion();
 
