@@ -143,9 +143,8 @@ export function attach(
   const handlers = world.handlers.enter[newArchetype.id];
   //@todo handlers for exiting old arch ?
   if (handlers) {
-    const entity = [eid];
     for (const fn of handlers) {
-      fn(entity);
+      fn(eid);
     }
   }
 
@@ -191,10 +190,8 @@ export function detach(
   //@todo handlers for entering new arch ?
   const handlers = world.handlers.exit[archetype.id];
   if (handlers) {
-    const entity = [eid];
-    console.log(entity);
     for (const fn of handlers) {
-      fn(entity);
+      fn(eid);
     }
   }
 

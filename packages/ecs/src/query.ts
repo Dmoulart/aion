@@ -9,7 +9,7 @@ import {BitSet} from "./collections/index.js";
  */
 export type Matcher = (archetype: Archetype) => boolean;
 
-export type QueryHandler = (entities: Array<Entity>) => void;
+export type QueryHandler = (entities: Entity) => void;
 
 export type QueryTerm = {comps: Component[]; matcher: Matcher};
 
@@ -312,7 +312,6 @@ export const onEnterQuery = (query: Query) => {
  */
 export const onExitQuery = (query: Query) => {
   return (fn: QueryHandler) => {
-    
     query.handlers.exit.push(fn);
     // If query is not tied to any world, the registration of the handlers will take
     // place during the registration of the query

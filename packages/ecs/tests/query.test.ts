@@ -172,8 +172,8 @@ describe("Query", () => {
     let added = 0;
 
     const onEnter = onEnterQuery(query);
-    onEnter((entities: Array<Entity>) => {
-      added += entities.length;
+    onEnter((entity) => {
+      added++;
     });
 
     const eid = createEntity(world);
@@ -205,8 +205,8 @@ describe("Query", () => {
     let removed = 0;
 
     const onExit = onExitQuery(query);
-    onExit((entities: Array<Entity>) => {
-      removed += entities.length;
+    onExit(() => {
+      removed++;
     });
 
     expect(removed).toStrictEqual(0);
@@ -229,8 +229,8 @@ describe("Query", () => {
     let added = 0;
 
     const onEnter = onEnterQuery(query);
-    onEnter((entities: Array<Entity>) => {
-      added += entities.length;
+    onEnter(() => {
+      added++;
     });
 
     const eid = createEntity(world);
@@ -263,13 +263,12 @@ describe("Query", () => {
 
     const onExit = onExitQuery(query);
 
-    onExit((entities: Array<Entity>) => {
-      console.log("removed! ");
-      removed += entities.length;
+    onExit(() => {
+      removed++;
     });
 
     addQuery(world, query);
-    console.log(query.archetypes)
+    console.log(query.archetypes);
 
     expect(removed).toStrictEqual(0);
 
