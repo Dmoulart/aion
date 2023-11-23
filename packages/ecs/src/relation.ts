@@ -1,5 +1,5 @@
 import {type Component, defineComponent} from "./component.js";
-import type {Entity} from "./entity.js";
+import {lo, type Entity, pair} from "./entity.js";
 import {nextID} from "./id.js";
 
 const isWildcard = (str: unknown): str is "*" => str === "*";
@@ -21,7 +21,7 @@ export function defineRelation(size: number) {
 
     const entity = entityOrWildcard as Entity;
     // @todo number limit ?
-    const id = baseID | (entity << 16);
+    const id = pair(entity, baseID);
 
     if (relations.has(id)) {
       //@ts-expect-error
