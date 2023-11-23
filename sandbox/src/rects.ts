@@ -30,12 +30,12 @@ const Graphics = defineComponent({
   h: u16,
 });
 
-const { prefab, query, remove, all } = aion();
+const {prefab, query, remove} = aion();
 
 const rect = 0;
 const circle = 1;
 
-const createActor = prefab({ Position, Velocity, Graphics });
+const createActor = prefab({Position, Velocity, Graphics});
 
 const player = createActor({
   Graphics: {
@@ -52,9 +52,9 @@ const player = createActor({
   },
 });
 
-const drawables = query(all(Position, Graphics));
+const drawables = query(Position, Graphics);
 
-const movables = query(all(Position, Velocity));
+const movables = query(Position, Velocity);
 
 canvas.onmousemove = (e) => {
   Position.x[player] = e.clientX;
@@ -82,12 +82,12 @@ canvas.onmousemove = (e) => {
 (function loop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  movables.query((e) => {
+  movables.each((e) => {
     Position.x[e] += Velocity.x[e];
     Position.y[e] += Velocity.y[e];
   });
 
-  drawables.query((e) => {
+  drawables.each((e) => {
     const shape = Graphics.type[e];
     const color = Graphics.color[e];
     const w = Graphics.w[e];

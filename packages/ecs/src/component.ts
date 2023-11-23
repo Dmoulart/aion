@@ -106,6 +106,9 @@ export const defineComponent = <S extends Schema>(
   return storage;
 };
 
+// @todo more precise type guard
+export const isComponent = (obj: object): obj is Component => "id" in obj;
+
 /**
  * Add a component to the given entity.
  * @param world

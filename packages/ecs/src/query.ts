@@ -1,4 +1,4 @@
-import type {Component} from "./component.js";
+import {isComponent, type Component} from "./component.js";
 import type {World} from "./world.js";
 import type {Archetype} from "./archetype.js";
 import type {Entity} from "./entity.js";
@@ -44,6 +44,8 @@ export const not = (...comps: Component[]): QueryTerm => {
     matcher: (arch: Archetype) => !arch.mask.intersects(mask),
   };
 };
+
+export const isQueryTerm = (obj: object): obj is QueryTerm => "matcher" in obj;
 
 export type Query = {
   /**
@@ -97,8 +99,8 @@ export function defineQuery(...terms: QueryTerm[]): Query {
     world: undefined,
     handlers: {enter: [], exit: []},
     each(fn: (eid: Entity, index: number) => void) {
-      for (let i = 0; i < archetypes.length; i++) {
-        const ents = archetypes[i]!.entities.dense;
+      for (let i = 0; i < this.archetypes.length; i++) {
+        const ents = this.archetypes[i]!.entities.dense;
         const len = ents.length;
         for (let j = 0; j < len; j++) {
           fn(ents[j]!, j);
@@ -110,10 +112,19 @@ export function defineQuery(...terms: QueryTerm[]): Query {
 
 /**
  * Define a query, register it to the world and returns it.
+ * Query terms or components can be used to define this query.
+ * All the plain components passed as parameters will automatically be grouped in an 'all' query term.
+ * @param world the world in which the query will execute
+ * @param termsOrComponents the query terms or components the query will target.
  * @returns query object
  */
-export const query = (world: World, ...terms: QueryTerm[]): Query => {
-  const q = defineQuery(...terms);
+export const query = (
+  world: World,
+  ...termsOrComponents: (QueryTerm | Component)[]
+): Query => {
+  const terms = termsOrComponents.filter(isQueryTerm);
+  const components = termsOrComponents.filter(isComponent);
+  const q = defineQuery(...terms, all(...components));
 
   addQuery(world, q);
 
