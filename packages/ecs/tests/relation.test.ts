@@ -1,4 +1,4 @@
-import { expect, it, describe } from "vitest";
+import {expect, it, describe} from "vitest";
 import {
   any,
   attach,
@@ -10,19 +10,23 @@ import {
   hasComponent,
   runQuery,
 } from "../src/index.js";
+import {i32, u8} from "../dist/types.js";
 
 describe("Relation", () => {
   it("can be created", () => {
-    expect(() => defineRelation(10_00)).not.toThrowError();
+    expect(() => defineRelation()).not.toThrowError();
   });
   it("can be used in queries", () => {
     const world = createWorld(10_000);
-    const Likes = defineRelation(10_000);
+    const Likes = defineRelation();
+
     const dave = createEntity(world);
     const computer = createEntity(world);
 
     attach(world, Likes(computer), dave);
+
     const query = defineQuery(any(Likes(computer)));
+
     expect(runQuery(world, query).length === 1);
     expect(hasComponent(world, Likes(computer), dave));
 
@@ -31,7 +35,7 @@ describe("Relation", () => {
   });
   it("Same relations are same components", () => {
     const world = createWorld(10_000);
-    const Likes = defineRelation(10_000);
+    const Likes = defineRelation();
 
     const computer = createEntity(world);
 
@@ -39,7 +43,7 @@ describe("Relation", () => {
   });
   it("Can use wildcard", () => {
     const world = createWorld(10_000);
-    const Likes = defineRelation(10_000);
+    const Likes = defineRelation();
 
     const computer = createEntity(world);
     const icecreams = createEntity(world);
@@ -53,6 +57,19 @@ describe("Relation", () => {
     const query = defineQuery(any(...Likes("*")));
 
     expect(runQuery(world, query).length === 2);
+  });
+  it("Can define relations with schema", () => {
+    const world = createWorld(10_000);
+
+    const Vehicle = defineRelation({
+      speed: i32,
+    });
+
+    const Boat = createEntity(world);
+    const Car = createEntity(world);
+
+    expect("speed" in Vehicle(Boat));
+    expect("speed" in Vehicle(Car));
   });
   // it("Can be inserted into prefabs", () => {
   //   const world = createWorld(10_000);

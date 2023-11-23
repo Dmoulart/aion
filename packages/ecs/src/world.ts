@@ -3,6 +3,7 @@ import {
   createEntity,
   entityExists,
   removeEntity,
+  lo,
 } from "./entity.js";
 import {type Archetype, createArchetype} from "./archetype.js";
 import {
@@ -23,9 +24,9 @@ import {
   prefab,
 } from "./prefab.js";
 
-export const DEFAULT_WORLD_MAX_SIZE = 100_000;
+export const DEFAULT_WORLD_CAPACITY = 100_000;
 
-export const WORLD_MAX_SIZE = Number.MAX_VALUE; // @tod
+export const WORLD_MAX_SIZE = lo(Number.MAX_SAFE_INTEGER); // ???
 
 export type World = {
   /**
@@ -64,7 +65,7 @@ export type World = {
  * @throws {AboveWorldMaxSize}
  * @returns new world
  */
-export const createWorld = (size = DEFAULT_WORLD_MAX_SIZE): World => {
+export const createWorld = (size = DEFAULT_WORLD_CAPACITY): World => {
   if (size > WORLD_MAX_SIZE) {
     throw new AboveWorldMaxSize(
       `World's' capacity cannot exceed ${WORLD_MAX_SIZE}`
