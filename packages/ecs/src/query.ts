@@ -11,86 +11,60 @@ export type Matcher = (archetype: Archetype) => boolean;
 
 export type QueryHandler = (entities: Array<Entity>) => void;
 
-// export class Query<T extends QueryTerm[]> {
-//   /**
-//    * The archetypes matching the query.
-//    */
-//   archetypes: Archetype[] = [];
-//   /**
-//    * The query matchers.
-//    */
-//   matchers: Matcher[] = [];
-//   /**
-//    * The world this query is attached to.
-//    */
-//   world?: World;
-//   /**
-//    * The callback to execute when entities enter the query or exit the query.
-//    */
-//   handlers: {enter: QueryHandler[]; exit: QueryHandler[]} = {
-//     enter: [],
-//     exit: [],
-//   };
+export type QueryTerm = {comps: Component[]; matcher: Matcher};
 
-//   static create(...terms: ) {
+export const all = (...comps: Component[]): QueryTerm => {
+  const mask = makeComponentsMask(comps);
+  return {
+    comps,
+    matcher: (arch: Archetype) => arch.mask.contains(mask),
+  };
+};
 
-//   }
-// }
+export const any = (...comps: Component[]): QueryTerm => {
+  const mask = makeComponentsMask(comps);
+  return {
+    comps,
+    matcher: (arch: Archetype) => arch.mask.intersects(mask),
+  };
+};
+
+export const none = (...comps: Component[]): QueryTerm => {
+  const mask = makeComponentsMask(comps);
+  return {
+    comps,
+    matcher: (arch: Archetype) => !arch.mask.contains(mask),
+  };
+};
+
+export const not = (...comps: Component[]): QueryTerm => {
+  const mask = makeComponentsMask(comps);
+  return {
+    comps,
+    matcher: (arch: Archetype) => !arch.mask.intersects(mask),
+  };
+};
 
 export type Query = {
   /**
    * The archetypes matching the query.
    */
   archetypes: Archetype[];
+
   /**
    * The query matchers.
    */
   matchers: Array<Matcher>;
+
   /**
    * The world this query is attached to.
    */
-  world: World | null;
+  world?: World;
+
   /**
    * The callback to execute when entities enter the query or exit the query.
    */
   handlers: {enter: Array<QueryHandler>; exit: Array<QueryHandler>};
-  /**
-   * Get all archetypes that have the given set of components.
-   * @param components
-   * @returns query
-   */
-  all: (...comps: Component[]) => Query;
-  /**
-   * Get all archetypes that contains at leaast one of the given components.
-   * @param components
-   * @returns query
-   */
-  any: (...comps: Component[]) => Query;
-  /**
-   * Get all archetypes that doesn't contain at least one of the given components.
-   * @param components
-   * @returns query
-   */
-  not: (...comps: Component[]) => Query;
-  /**
-   * Get all archetypes that doesn't contain the given set of components.
-   * @param components
-   * @returns query
-   */
-  none: (...comps: Component[]) => Query;
-  /**
-   * Get all archetypes that match the given condition.
-   * @param matcher
-   * @returns query
-   */
-  match: (matcher: Matcher) => Query;
-
-  /**
-   * Execute the given query with the given world.
-   * Returns matching archetypes.
-   * @returns
-   */
-  from: (world: World) => Archetype[];
 
   /**
    * Execute the given function for each entities.
@@ -106,72 +80,22 @@ export type Query = {
  * @param components
  * @returns mask
  */
-export const makeComponentsMask = (...components: Component<any>[]) =>
+export const makeComponentsMask = (components: Component<any>[]) =>
   components.reduce((mask, comp) => {
     mask.or(comp.id);
     return mask;
   }, new BitSet());
 
 /**
- * Create a mask from a list of components.
- * @param components
- * @returns mask
+ * Create a query without executing it or registering it to the world
  */
-export const makeMask = (...ids: number[]) =>
-  ids.reduce((mask, id) => {
-    mask.or(id);
-    return mask;
-  }, new BitSet());
-
-/**
- * Query a list of archetypes.
- * @returns query object
- */
-export const createQuery = (): Query => {
+export function defineQuery(...terms: QueryTerm[]): Query {
   const archetypes: Archetype[] = [];
-  const matchers: Array<Matcher> = [];
-  const handlers = {enter: [], exit: []};
-  let world: World | null = null;
-
   return {
-    matchers,
+    matchers: terms.map((term) => term.matcher),
     archetypes,
-    world,
-    handlers,
-    all(...comps: Component[]) {
-      const mask = makeMask(...comps.map(({id}) => id));
-      matchers.push((arch) => arch.mask.contains(mask));
-      return this;
-    },
-    any(...comps: Component[]) {
-      const mask = makeMask(...comps.map(({id}) => id));
-      matchers.push((arch) => arch.mask.intersects(mask));
-      return this;
-    },
-    not(...comps: Component[]) {
-      const mask = makeMask(...comps.map(({id}) => id));
-      matchers.push((arch) => !arch.mask.intersects(mask));
-      return this;
-    },
-    none(...comps: Component[]) {
-      const mask = makeMask(...comps.map(({id}) => id));
-      matchers.push((arch) => !arch.mask.contains(mask));
-      return this;
-    },
-    match(matcher: Matcher) {
-      matchers.push(matcher);
-      return this;
-    },
-    from(world: World) {
-      archloop: for (const archetype of world.archetypes) {
-        for (const match of matchers) {
-          if (!match(archetype)) continue archloop;
-        }
-        archetypes.push(archetype);
-      }
-
-      return archetypes;
-    },
+    world: undefined,
+    handlers: {enter: [], exit: []},
     each(fn: (eid: Entity, index: number) => void) {
       for (let i = 0; i < archetypes.length; i++) {
         const ents = archetypes[i]!.entities.dense;
@@ -182,26 +106,59 @@ export const createQuery = (): Query => {
       }
     },
   };
+}
+/**
+ * Query a list of archetypes.
+ * @returns query object
+ */
+export const query = (world: World, ...terms: QueryTerm[]): Query => {
+  const q = defineQuery(...terms);
+
+  addQuery(world, q);
+
+  return q;
 };
+
+/**
+ * Execute the query against the a world's archetypes.
+ * The resulting archetypes are not cached.
+ * This function has no side effects.
+ * @param query
+ * @returns matched archetypes
+ */
+export function runQuery(world: World, query: Query): Archetype[] {
+  const archetypes = [];
+
+  archloop: for (const archetype of world.archetypes) {
+    for (const match of query.matchers) {
+      if (!match(archetype)) continue archloop;
+    }
+    archetypes.push(archetype);
+  }
+
+  return archetypes;
+}
 
 /**
  * Register a query in the given world.
  * The query results will be automatically updated when new archetypes are created.
  * @param query the query to register
  * @param world
+ * @returns the registered query
  */
 export const addQuery = (world: World, query: Query): Query => {
-  // Throw an error if query is already registered
+  // // Throw an error if query is already registered
   if (query.world) {
     throw new AlreadyRegisteredQueryError(
-      "Trying to register an already registered query."
+      "Cannot register an already registered query."
     );
   }
   query.world = world;
 
-  // Execute the query, register the results in the query.
-  query.archetypes = query.from(world);
   world.queries.push(query);
+
+  // Execute the query, register the results in the query.
+  query.archetypes = runQuery(world, query);
 
   // Register the handlers
   if (query.handlers.enter.length > 0) {
@@ -228,10 +185,9 @@ export const addQuery = (world: World, query: Query): Query => {
 export const removeQuery = (world: World, query: Query) => {
   if (query.world !== world) {
     throw new RemoveQueryError(
-      "Trying to remove a query from a world it not belongs to."
+      "Cannot remove a query from a world it does not belongs to."
     );
   }
-  query.world = null;
 
   const index = world.queries.indexOf(query);
   if (index === -1) return;
@@ -259,6 +215,7 @@ export const removeQuery = (world: World, query: Query) => {
     }
   }
 
+  query.world = undefined;
   query.archetypes = [];
 };
 
@@ -355,6 +312,7 @@ export const onEnterQuery = (query: Query) => {
  */
 export const onExitQuery = (query: Query) => {
   return (fn: QueryHandler) => {
+    
     query.handlers.exit.push(fn);
     // If query is not tied to any world, the registration of the handlers will take
     // place during the registration of the query
@@ -363,16 +321,6 @@ export const onExitQuery = (query: Query) => {
     }
   };
 };
-
-export const all = (...comps: Component[]) => createQuery().all(...comps);
-
-export const any = (...comps: Component[]) => createQuery().any(...comps);
-
-export const not = (...comps: Component[]) => createQuery().not(...comps);
-
-export const none = (...comps: Component[]) => createQuery().none(...comps);
-
-export const match = (matcher: Matcher) => createQuery().match(matcher);
 
 export class AlreadyRegisteredQueryError extends Error {}
 export class RemoveQueryError extends Error {}

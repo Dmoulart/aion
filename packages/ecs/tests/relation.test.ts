@@ -1,12 +1,14 @@
-import {expect, it, describe} from "vitest";
+import { expect, it, describe } from "vitest";
 import {
   any,
   attach,
   createEntity,
   createWorld,
+  defineQuery,
   defineRelation,
   detach,
   hasComponent,
+  runQuery,
 } from "../src/index.js";
 
 describe("Relation", () => {
@@ -20,8 +22,8 @@ describe("Relation", () => {
     const computer = createEntity(world);
 
     attach(world, Likes(computer), dave);
-
-    expect(any(Likes(computer)).from(world).length === 1);
+    const query = defineQuery(any(Likes(computer)));
+    expect(runQuery(world, query).length === 1);
     expect(hasComponent(world, Likes(computer), dave));
 
     detach(world, Likes(computer), dave);
@@ -48,7 +50,9 @@ describe("Relation", () => {
     attach(world, Likes(computer), dave);
     attach(world, Likes(icecreams), kevin);
 
-    expect(any(...Likes("*")).from(world).length === 2);
+    const query = defineQuery(any(...Likes("*")));
+
+    expect(runQuery(world, query).length === 2);
   });
   // it("Can be inserted into prefabs", () => {
   //   const world = createWorld(10_000);

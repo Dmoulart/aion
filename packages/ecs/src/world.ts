@@ -4,7 +4,7 @@ import {
   entityExists,
   removeEntity,
 } from "./entity.js";
-import {type Archetype, createArchetype} from "./archetype.js";
+import { type Archetype, createArchetype } from "./archetype.js";
 import {
   type QueryHandler,
   addQuery,
@@ -14,8 +14,8 @@ import {
   not,
   all,
 } from "./query.js";
-import {attach, detach, hasComponent} from "./component.js";
-import type {__SCHEMAS} from "./schemas.js";
+import { attach, detach, hasComponent } from "./component.js";
+import type { __SCHEMAS } from "./schemas.js";
 import {
   type PrefabDefinition,
   type PrefabInstanceOptions,
@@ -54,7 +54,7 @@ export type World = {
   /**
    * The callback to execute when entities enter the query or exit the query
    */
-  handlers: {enter: Array<QueryHandler[]>; exit: Array<QueryHandler[]>};
+  handlers: { enter: Array<QueryHandler[]>; exit: Array<QueryHandler[]> };
 };
 
 /**
@@ -66,7 +66,7 @@ export type World = {
 export const createWorld = (size = DEFAULT_WORLD_MAX_SIZE): World => {
   if (size > WORLD_MAX_SIZE) {
     throw new AboveWorldMaxSize(
-      `World's' capacity cannot exceed ${WORLD_MAX_SIZE}`
+      `World's' capacity cannot exceed ${WORLD_MAX_SIZE}`,
     );
   }
 
@@ -95,7 +95,7 @@ export const aion = (world: World = createWorld()) => {
     has: hasComponent.bind(null, world),
     prefab: prefab.bind(null, world) as <Definition extends PrefabDefinition>(
       definition: Definition,
-      options?: PrefabInstanceOptions<Definition>
+      options?: PrefabInstanceOptions<Definition>,
     ) => ReturnType<typeof prefab<Definition>>, // hoolyyy mollyy
     attach: attach.bind(null, world),
     detach: detach.bind(null, world),

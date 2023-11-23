@@ -2,11 +2,13 @@ import {expect, it, describe} from "vitest";
 import {
   defineComponent,
   f32,
-  createQuery,
   addQuery,
   createWorld,
   prefab,
   u8,
+  defineQuery,
+  all,
+  runQuery,
 } from "../src/index.js";
 
 describe("Prefab", () => {
@@ -67,7 +69,8 @@ describe("Prefab", () => {
       },
     });
 
-    const archetypes = createQuery().all(Position, Velocity).from(world);
+    const query = defineQuery(all(Position, Velocity));
+    const archetypes = runQuery(world, query);
 
     expect(archetypes.length === 1).toBeTruthy();
     expect(archetypes[0]!.entities.count() === 1).toBeTruthy();
@@ -83,11 +86,14 @@ describe("Prefab", () => {
     });
 
     const world = createWorld();
-    const query = createQuery().all(Position, Stats);
+    const query = defineQuery(all(Position, Stats));
     addQuery(world, query);
 
     const actor = prefab(world, {Position, Stats});
-    actor({Position: {x: 10, y: 10}, Stats: {strength: 10, intelligence: 10}});
+    actor({
+      Position: {x: 10, y: 10},
+      Stats: {strength: 10, intelligence: 10},
+    });
 
     expect(query.archetypes.length === 1).toBeTruthy();
     expect(query.archetypes[0]!.entities.count() === 1).toBeTruthy();
@@ -103,7 +109,7 @@ describe("Prefab", () => {
     });
 
     const world = createWorld();
-    const query = createQuery().all(Position, Stats);
+    const query = defineQuery(all(Position, Stats));
     addQuery(world, query);
 
     const actor = prefab(

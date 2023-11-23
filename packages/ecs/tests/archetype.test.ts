@@ -1,6 +1,11 @@
 import {expect, it, describe} from "vitest";
 import {createArchetype, deriveArchetype} from "../src/archetype.js";
-import {defineComponent, createWorld, makeMask, i8} from "../src/index.js";
+import {
+  defineComponent,
+  createWorld,
+  i8,
+  makeComponentsMask,
+} from "../src/index.js";
 
 describe("Archetype", () => {
   it("can be created without component", () => {
@@ -11,7 +16,7 @@ describe("Archetype", () => {
       test: i8,
     });
 
-    const archetype = createArchetype(makeMask(TestComponent.id));
+    const archetype = createArchetype(makeComponentsMask([TestComponent]));
 
     expect(archetype.mask.has(TestComponent.id)).toBeTruthy();
   });
@@ -25,7 +30,7 @@ describe("Archetype", () => {
       test: i8,
     });
 
-    const archetype = createArchetype(makeMask(TestComponent1.id));
+    const archetype = createArchetype(makeComponentsMask([TestComponent1]));
 
     const augmentedArchetype = deriveArchetype(
       archetype,
@@ -47,7 +52,7 @@ describe("Archetype", () => {
     });
 
     const archetype = createArchetype(
-      makeMask(TestComponent1.id, TestComponent2.id)
+      makeComponentsMask([TestComponent1, TestComponent2])
     );
     const diminishedArchetype = deriveArchetype(
       archetype,
@@ -68,7 +73,7 @@ describe("Archetype", () => {
       test: i8,
     });
 
-    const archetype = createArchetype(makeMask(TestComponent1.id));
+    const archetype = createArchetype(makeComponentsMask([TestComponent1]));
 
     const augmented = deriveArchetype(archetype, TestComponent2.id, world);
 
@@ -92,7 +97,7 @@ describe("Archetype", () => {
     });
 
     const archetype = createArchetype(
-      makeMask(TestComponent1.id, TestComponent2.id)
+      makeComponentsMask([TestComponent1, TestComponent2])
     );
     const diminished = deriveArchetype(archetype, TestComponent2.id, world);
 

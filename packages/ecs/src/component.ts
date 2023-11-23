@@ -186,10 +186,13 @@ export function detach(
   archetype.entities.remove(eid);
   newArchetype.entities.insert(eid);
 
+  console.log("handler", world.handlers.exit[archetype.id]);
+
   //@todo handlers for entering new arch ?
   const handlers = world.handlers.exit[archetype.id];
   if (handlers) {
     const entity = [eid];
+    console.log(entity);
     for (const fn of handlers) {
       fn(entity);
     }
