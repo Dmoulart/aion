@@ -42,7 +42,7 @@ export type PrimitiveType = Types[keyof Types];
 // The nested arrays fields will be defined like in bitECS : a typed array constructor and the length of the array
 export type ArrayType<T extends PrimitiveType = PrimitiveType> = [T, number];
 
-export type CustomType<T = any> = ArrayLike<T>;
+export type CustomType<T = any> = (size: number) => Array<T>;
 
 export type InferArrayType<T extends ArrayType> = T extends ArrayType<infer El>
   ? El

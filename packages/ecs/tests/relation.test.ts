@@ -10,7 +10,7 @@ import {
   hasComponent,
   runQuery,
 } from "../src/index.js";
-import {i32, u8} from "../dist/types.js";
+import {i32} from "../dist/types.js";
 
 describe("Relation", () => {
   it("can be created", () => {
@@ -70,6 +70,24 @@ describe("Relation", () => {
 
     expect("speed" in Vehicle(Boat));
     expect("speed" in Vehicle(Car));
+  });
+  it("must cache relations components", () => {
+    const world = createWorld(10_000);
+
+    const Vehicle = defineRelation({
+      speed: i32,
+    });
+
+    const Car = createEntity(world);
+
+    const e = createEntity(world);
+
+    attach(world, Vehicle(Car), e);
+
+    const carsA = Vehicle(Car);
+    const carsB = Vehicle(Car);
+
+    expect(carsA === carsB && "speed" in carsA);
   });
   // it("Can be inserted into prefabs", () => {
   //   const world = createWorld(10_000);

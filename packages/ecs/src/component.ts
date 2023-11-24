@@ -1,4 +1,10 @@
-import type {ArrayType, InferArrayType, PrimitiveType, Type} from "./types.js";
+import type {
+  ArrayType,
+  CustomType,
+  InferArrayType,
+  PrimitiveType,
+  Type,
+} from "./types.js";
 import type {World} from "./world.js";
 import {type ID, NonExistantEntity} from "./entity.js";
 import {deriveArchetype} from "./archetype.js";
@@ -31,6 +37,8 @@ export type Column<T extends Type> = T extends PrimitiveType
   ? InstanceType<T>
   : T extends ArrayType
   ? Array<InstanceType<InferArrayType<T>>>
+  : T extends CustomType
+  ? ReturnType<T>
   : never;
 
 export type Value<T extends Type> = T extends PrimitiveType
@@ -66,6 +74,10 @@ const createComponentColumns = <S extends Schema>(
     else if (isPrimitiveType(type)) {
       const buffer = new ArrayBuffer(size * type.BYTES_PER_ELEMENT);
       comp[field] = new type(buffer) as Column<S[keyof S]>;
+    }
+    // custom type
+    else if (typeof type === "function") {
+      (comp[field] as any) = type(size);
     } else {
       throw new Error("Custom type not implemented");
     }

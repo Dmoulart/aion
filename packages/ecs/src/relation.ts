@@ -6,7 +6,7 @@ import {DEFAULT_WORLD_CAPACITY} from "./world.js";
 
 const isWildcard = (str: unknown): str is "*" => str === "*";
 
-const relations = new Set();
+const relations = new Map<ID, Component | ID>();
 
 export function defineRelation<S extends Schema>(
   schema?: S,
@@ -29,19 +29,22 @@ export function defineRelation<S extends Schema>(
     const id = pair(entity, baseID);
 
     if (relations.has(id)) {
+      //@todo: return coponent
+      const componentOrID = relations.get(id);
+      console.log("hello");
       //@ts-expect-error
-      return id;
+      return componentOrID;
     }
     let ret: Component | ID;
 
     if (schema) {
-      ret = defineComponent({}, size, id);
+      ret = defineComponent(schema, size, id);
     } else {
       ret = id;
     }
 
     instances.push(id);
-    relations.add(id);
+    relations.set(id, ret);
     //@ts-expect-error
     return ret;
   };
