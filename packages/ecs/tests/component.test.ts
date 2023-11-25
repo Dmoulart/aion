@@ -136,4 +136,22 @@ describe("Component", () => {
 
     expect(() => detach(world, TestComponent, eid)).not.toThrowError();
   });
+  it("can have custom types", () => {
+    const TestComponent = defineComponent({
+      field: (size) =>
+        new Array<{obj: {x: number; y: number}}>(size)
+          .fill(undefined as any)
+          .map(() => ({x: 0, y: 0})),
+    });
+
+    const world = createWorld();
+
+    const eid = createEntity(world);
+
+    attach(world, TestComponent, eid);
+
+    expect(
+      TestComponent.field[eid]!.x === 0 && TestComponent.field[eid]!.y === 0
+    );
+  });
 });

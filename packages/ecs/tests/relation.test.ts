@@ -89,21 +89,4 @@ describe("Relation", () => {
 
     expect(carsA === carsB && "speed" in carsA);
   });
-  // it("Can be inserted into prefabs", () => {
-  //   const world = createWorld(10_000);
-  //   const Likes = defineRelation(10_000);
-
-  //   const liker = prefab(world, {likes : Likes});
-
-  //   const computer = createEntity(world);
-  //   const icecreams = createEntity(world);
-
-  //   const dave = createEntity(world);
-  //   const kevin = createEntity(world);
-
-  //   attach(Likes(computer), dave, world);
-  //   attach(Likes(icecreams), kevin, world);
-
-  //   expect(any(...Likes("*")).from(world).length === 2);
-  // });
 });

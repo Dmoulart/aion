@@ -1,9 +1,10 @@
-import type {
-  ArrayType,
-  CustomType,
-  InferArrayType,
-  PrimitiveType,
-  Type,
+import {
+  isTypedArray,
+  type ArrayType,
+  type CustomType,
+  type InferArrayType,
+  type PrimitiveType,
+  type Type,
 } from "./types.js";
 import type {World} from "./world.js";
 import {type ID, NonExistantEntity} from "./entity.js";
@@ -91,7 +92,7 @@ const isArrayType = (field: unknown): field is ArrayType => {
 };
 
 const isPrimitiveType = (field: unknown): field is PrimitiveType => {
-  return typeof field === "function" && field !== Array;
+  return isTypedArray(field);
 };
 
 /**
