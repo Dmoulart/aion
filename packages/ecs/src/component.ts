@@ -11,7 +11,12 @@ import {type ID, NonExistantEntity} from "./entity.js";
 import {deriveArchetype} from "./archetype.js";
 import {type Entity} from "./entity.js";
 import {nextID} from "./id.js";
-import {type Schema, __SCHEMAS} from "./schemas.js";
+import {
+  type Schema,
+  __SCHEMAS,
+  type MultipleTypesSchema,
+  type SingleTypeSchema,
+} from "./schemas.js";
 
 export type ComponentId<S extends Schema = Schema> = ID & {__brand: S};
 
@@ -29,9 +34,13 @@ export type ComponentFromID<ID extends ComponentId> = Component<
   InferSchemaFromID<ID>
 >;
 
-export type Columns<S extends Schema> = {
-  [column in keyof S]: Column<S[column]>;
-};
+export type Columns<S extends Schema> = S extends MultipleTypesSchema
+  ? {
+      [column in keyof S]: Column<S[column]>;
+    }
+  : S extends SingleTypeSchema
+  ? Column<S>
+  : never;
 
 // A component field is a typed array or an array of typed array.
 export type Column<T extends Type> = T extends PrimitiveType
@@ -60,32 +69,44 @@ const createComponentColumns = <S extends Schema>(
   schema: S,
   size: number
 ): Columns<S> => {
+  if (isSingleTypeSchema(schema)) {
+    return createColumn(schema, size) as any;
+  }
   const comp = {} as Columns<S>;
 
   for (const field of Object.keys(schema) as Array<keyof S>) {
-    const type = schema[field]!;
-
-    if (isArrayType(type)) {
-      const [TypedArray, arraySize] = type;
-
-      comp[field] = new Array(size).fill(undefined).map(() => {
-        //@todo shared array buffer
-        return new TypedArray(arraySize);
-      }) as Column<S[keyof S]>;
-    }
-    // If key is an array constructor let's initialize it with the world size
-    else if (isPrimitiveType(type)) {
-      const buffer = new ArrayBuffer(size * type.BYTES_PER_ELEMENT);
-      comp[field] = new type(buffer) as Column<S[keyof S]>;
-    } else if (isCustomType(type)) {
-      comp[field] = type(size) as any;
-    } else {
-      throw new Error("Custom type not implemented");
-    }
+    const type = schema[field]! as Type;
+    (comp as any)[field] = createColumn(type, size);
   }
 
   return comp;
 };
+
+function createColumn(
+  type: SingleTypeSchema | MultipleTypesSchema[keyof MultipleTypesSchema],
+  size: number
+) {
+  if (isArrayType(type)) {
+    const [TypedArray, arraySize] = type;
+
+    return new Array(size).fill(undefined).map(() => {
+      //@todo shared array buffer
+      return new TypedArray(arraySize);
+    });
+  }
+  // If key is an array constructor let's initialize it with the world size
+  else if (isPrimitiveType(type)) {
+    const buffer = new ArrayBuffer(size * type.BYTES_PER_ELEMENT);
+    return new type(buffer);
+  } else if (isCustomType(type)) {
+    return type(size);
+  } else {
+    throw new Error("Custom type not implemented");
+  }
+}
+
+const isSingleTypeSchema = (schema: Schema): schema is SingleTypeSchema =>
+  isArrayType(schema) || isCustomType(schema) || isPrimitiveType(schema);
 
 const isArrayType = (field: object): field is ArrayType => {
   return Array.isArray(field);

@@ -35,7 +35,6 @@ export function defineRelation<S extends Schema>(
     if (relations.has(id)) {
       //@todo: return coponent
       const componentOrID = relations.get(id);
-      //@ts-expect-error
       return componentOrID;
     }
     let ret: Component | ID;
@@ -48,7 +47,6 @@ export function defineRelation<S extends Schema>(
 
     instances.push(id);
     relations.set(id, ret);
-    //@ts-expect-error
     return ret;
   };
 }

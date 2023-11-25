@@ -154,4 +154,21 @@ describe("Component", () => {
       TestComponent.field[eid]!.x === 0 && TestComponent.field[eid]!.y === 0
     );
   });
+  it("can create single types schema", () => {
+    const world = createWorld();
+
+    const eid = createEntity(world);
+
+    const TestComponent = defineComponent((size) => {
+      return new Array<{obj: {x: number; y: number}}>(size)
+        .fill(undefined as any)
+        .map(() => ({x: 0, y: 0}));
+    });
+
+    attach(world, TestComponent, eid);
+    expect(TestComponent[eid]!.x === 0 && TestComponent[eid]!.y === 0);
+
+    const TestComponent2 = defineComponent(i32);
+    expect(TestComponent2[eid] === 0 && TestComponent2[eid] === 0);
+  });
 });
