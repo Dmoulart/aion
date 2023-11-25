@@ -52,10 +52,6 @@ const player = createActor({
   },
 });
 
-const drawables = query(Position, Graphics);
-
-const movables = query(Position, Velocity);
-
 canvas.onmousemove = (e) => {
   Position.x[player] = e.clientX;
   Position.y[player] = e.clientY;
@@ -82,12 +78,12 @@ canvas.onmousemove = (e) => {
 (function loop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  movables.each((e) => {
+  query(Position, Velocity).each((e) => {
     Position.x[e] += Velocity.x[e];
     Position.y[e] += Velocity.y[e];
   });
 
-  drawables.each((e) => {
+  query(Position, Graphics).each((e) => {
     const shape = Graphics.type[e];
     const color = Graphics.color[e];
     const w = Graphics.w[e];
