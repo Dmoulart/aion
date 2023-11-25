@@ -58,7 +58,7 @@ export type Value<T extends Type> = T extends PrimitiveType
   : T extends ArrayType
   ? Array<number>
   : T extends CustomType
-  ? ReturnType<T>[0]
+  ? ReturnType<T>[number]
   : never;
 
 /**
