@@ -100,15 +100,14 @@ const hashQueryTerms = (terms: QueryTerm[]) => {
   let hash = 5381;
 
   for (let i = 0; i < terms.length; i++) {
+    const term = terms[i]!;
     // Convert the number to a string before hashing
-    const type = terms[i]!.type;
-    const ids = terms[i]!.comps.map((comp) => comp.id);
+    const type = term.type;
 
     hash = (hash << 5) + hash + type;
 
-    for (let j = 0; j < ids.length; j++) {
-      const id = ids[j]!;
-      // Update the hash using the same formula as before: hash * 33 + c
+    for (let j = 0; j < term.comps.length; j++) {
+      const id = term.comps[j].id!;
       hash = (hash << 5) + hash + id;
     }
   }
