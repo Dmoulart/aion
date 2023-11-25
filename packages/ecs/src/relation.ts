@@ -35,7 +35,6 @@ export function defineRelation<S extends Schema>(
     if (relations.has(id)) {
       //@todo: return coponent
       const componentOrID = relations.get(id);
-      console.log("hello");
       //@ts-expect-error
       return componentOrID;
     }

@@ -151,6 +151,31 @@ describe("Query", () => {
     detach(world, TestComponent, eid2);
     expect(query.archetypes[1]!.entities.count()).toStrictEqual(0);
   });
+  it("can be cached", () => {
+    const world = createWorld();
+
+    const TestComponent = defineComponent({
+      test: i8,
+    });
+    const TestComponent2 = defineComponent({
+      test: i32,
+    });
+
+    const eid = createEntity(world);
+    attach(world, TestComponent, eid);
+    attach(world, TestComponent2, eid);
+
+    const eid2 = createEntity(world);
+    attach(world, TestComponent, eid2);
+    attach(world, TestComponent2, eid);
+
+    const queryDefA = defineQuery(all(TestComponent, TestComponent2));
+    const queryDefB = defineQuery(all(TestComponent, TestComponent2));
+    const qA = queryDefA(world);
+    const qB = queryDefB(world);
+
+    expect(qA === qB);
+  });
   it("can track whenever entities enter the query", () => {
     const world = createWorld();
 
@@ -263,7 +288,6 @@ describe("Query", () => {
     });
 
     addQuery(world, query);
-    console.log(query.archetypes);
 
     expect(query.archetypes[0]!.entities.count() === 1);
 
