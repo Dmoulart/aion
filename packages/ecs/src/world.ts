@@ -15,8 +15,9 @@ import {
   not,
   all,
   query,
+  type QueryTerm,
 } from "./query.js";
-import {attach, detach, hasComponent} from "./component.js";
+import {attach, detach, hasComponent, type Component} from "./component.js";
 import type {__SCHEMAS} from "./schemas.js";
 import {
   type PrefabDefinition,
@@ -101,7 +102,10 @@ export const aion = (world: World = createWorld()) => {
     ) => ReturnType<typeof prefab<Definition>>, // hoolyyy mollyy
     attach: attach.bind(null, world),
     detach: detach.bind(null, world),
-    query: query.bind(null, world),
+    query: query.bind(null, world) as <T extends (QueryTerm | Component)[]>(
+      world: World,
+      ...termsOrComponents: T
+    ) => Query,
     all,
     any,
     none,

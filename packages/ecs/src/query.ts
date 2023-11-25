@@ -161,9 +161,9 @@ export function createQuery(...terms: QueryTerm[]): Query {
  * @param termsOrComponents the query terms or components the query will target.
  * @returns query object
  */
-export const query = (
+export const query = <T extends (QueryTerm | Component)[]>(
   world: World,
-  ...termsOrComponents: (QueryTerm | Component)[]
+  ...termsOrComponents: T
 ): Query => {
   const terms = termsOrComponents.filter(isQueryTerm);
   const components = termsOrComponents.filter(isComponent);
