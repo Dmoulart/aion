@@ -1,4 +1,8 @@
-import {type Component, defineComponent, type ComponentId} from "./component.js";
+import {
+  type Component,
+  defineComponent,
+  type ComponentId,
+} from "./component.js";
 import {lo, type Entity, pair, type ID} from "./entity.js";
 import {nextID} from "./id.js";
 import type {Schema} from "./schemas.js";

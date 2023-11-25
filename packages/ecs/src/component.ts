@@ -63,7 +63,7 @@ const createComponentColumns = <S extends Schema>(
   const comp = {} as Columns<S>;
 
   for (const field of Object.keys(schema) as Array<keyof S>) {
-    const type = schema[field];
+    const type = schema[field]!;
 
     if (isArrayType(type)) {
       const [TypedArray, arraySize] = type;
@@ -77,10 +77,8 @@ const createComponentColumns = <S extends Schema>(
     else if (isPrimitiveType(type)) {
       const buffer = new ArrayBuffer(size * type.BYTES_PER_ELEMENT);
       comp[field] = new type(buffer) as Column<S[keyof S]>;
-    }
-    // custom type
-    else if (typeof type === "function") {
-      (comp[field] as any) = type(size);
+    } else if (isCustomType(type)) {
+      comp[field] = type(size) as any;
     } else {
       throw new Error("Custom type not implemented");
     }
@@ -89,12 +87,16 @@ const createComponentColumns = <S extends Schema>(
   return comp;
 };
 
-const isArrayType = (field: unknown): field is ArrayType => {
+const isArrayType = (field: object): field is ArrayType => {
   return Array.isArray(field);
 };
 
-const isPrimitiveType = (field: unknown): field is PrimitiveType => {
+const isPrimitiveType = (field: object): field is PrimitiveType => {
   return isTypedArray(field);
+};
+
+const isCustomType = (field: object): field is CustomType => {
+  return typeof field === "function";
 };
 
 /**
