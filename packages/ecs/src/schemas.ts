@@ -1,6 +1,11 @@
 import type {Component, Value} from "./component.js";
 import type {ID} from "./entity.js";
-import {type ArrayType, type PrimitiveType, type Type} from "./types.js";
+import {
+  type ArrayType,
+  type CustomType,
+  type PrimitiveType,
+  type Type,
+} from "./types.js";
 
 /**
  * All the schemas mapped to their ID
@@ -24,6 +29,8 @@ export type Instance<S extends Schema> = {
       ? Value<T>
       : T extends ArrayType
       ? Value<T>[0]
+      : T extends CustomType
+      ? Partial<Value<T>>
       : never
     : never;
 };

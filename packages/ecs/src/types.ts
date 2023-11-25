@@ -44,8 +44,8 @@ export type PrimitiveType = Types[keyof Types];
  */
 const TypedArray = Object.getPrototypeOf(Uint8Array);
 
-export const isTypedArray = (obj: unknown): obj is typeof TypedArray =>
-  obj instanceof TypedArray;
+export const isTypedArray = (obj: object): obj is typeof TypedArray =>
+  Boolean("BYTES_PER_ELEMENT" in obj);
 
 // The nested arrays fields will be defined like in bitECS : a typed array constructor and the length of the array
 export type ArrayType<T extends PrimitiveType = PrimitiveType> = [T, number];
