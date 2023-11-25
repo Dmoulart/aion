@@ -97,7 +97,7 @@ export const deriveArchetype = (
   archetype.edge[id] = base;
 
   world.archetypes.push(archetype);
-
+  // @todo is queries.values fast ?
   for (const query of world.queries.values()) {
     if (matchQuery(query, archetype)) {
       query.archetypes.push(archetype);

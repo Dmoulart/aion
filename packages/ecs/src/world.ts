@@ -23,7 +23,7 @@ import {
   type PrefabInstanceOptions,
   prefab,
 } from "./prefab.js";
-
+//@todo: remove capacity ?
 export const DEFAULT_WORLD_CAPACITY = 100_000;
 
 export const WORLD_MAX_SIZE = lo(Number.MAX_SAFE_INTEGER); // ???

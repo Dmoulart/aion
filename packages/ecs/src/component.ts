@@ -105,13 +105,16 @@ function createColumn(
   }
 }
 
-const isSingleTypeSchema = (schema: Schema): schema is SingleTypeSchema =>
-  isArrayType(schema) || isCustomType(schema) || isPrimitiveType(schema);
+export const isSingleTypeSchema = (
+  schema: Schema
+): schema is SingleTypeSchema => isField(schema);
+
+const isField = (field: object): field is Type =>
+  isArrayType(field) || isCustomType(field) || isPrimitiveType(field);
 
 const isArrayType = (field: object): field is ArrayType => {
   return Array.isArray(field);
 };
-
 const isPrimitiveType = (field: object): field is PrimitiveType => {
   return isTypedArray(field);
 };

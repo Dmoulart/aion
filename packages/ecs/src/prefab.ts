@@ -1,7 +1,7 @@
 import type {World} from "./world.js";
 import {buildArchetype} from "./archetype.js";
 import {createEntity} from "./entity.js";
-import type {Component} from "./component.js";
+import {isSingleTypeSchema, type Component} from "./component.js";
 import type {InferSchema, Instance} from "./schemas.js";
 // @todo: This produces a nested array but we're only interested in the second level. Get rid of this level
 export type PrefabOptions<Components extends Component[]> = Map<
@@ -125,14 +125,22 @@ const compilePrefab = (definition: Record<string, Component<any>>) => {
 
   const unrolledInstanceComponentAssignations = Object.keys(definition)
     .map((componentName) => {
-      const componentAssignations = Object.entries(definition[componentName]!)
-        .map(([prop, val]) => {
-          if (prop === "data" || prop === "id") return "";
-          return `
+      let componentAssignations;
+
+      if (!isSingleTypeSchema(definition[componentName])) {
+        componentAssignations = Object.entries(definition[componentName]!)
+          .map(([prop, val]) => {
+            if (prop === "data" || prop === "id") return "";
+            return `
              options_${componentName}.${prop} && (${componentName}.${prop}[eid] = options_${componentName}.${prop});
           `;
-        })
-        .join("");
+          })
+          .join("");
+      } else {
+        componentAssignations = `
+             ${componentName}[eid] = options_${componentName};
+          `;
+      }
 
       return `
         if(options.${componentName}){
@@ -147,6 +155,7 @@ const compilePrefab = (definition: Record<string, Component<any>>) => {
     ${allComponentIdentifiers}
     ${unrolledInstanceComponentAssignations}
   `;
+
   return new Function(
     "eid",
     "definition",
