@@ -3,6 +3,7 @@ import {
   any,
   attach,
   createEntity,
+  createQuery,
   createWorld,
   defineQuery,
   defineRelation,
@@ -25,7 +26,7 @@ describe("Relation", () => {
 
     attach(world, Likes(computer), dave);
 
-    const query = defineQuery(any(Likes(computer)));
+    const query = createQuery(any(Likes(computer)));
 
     expect(runQuery(world, query).length === 1);
     expect(hasComponent(world, Likes(computer), dave));
@@ -54,7 +55,7 @@ describe("Relation", () => {
     attach(world, Likes(computer), dave);
     attach(world, Likes(icecreams), kevin);
 
-    const query = defineQuery(any(...Likes("*")));
+    const query = createQuery(any(...Likes("*")));
 
     expect(runQuery(world, query).length === 2);
   });

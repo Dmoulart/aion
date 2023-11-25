@@ -9,6 +9,7 @@ import {
   defineQuery,
   all,
   runQuery,
+  createQuery,
 } from "../src/index.js";
 
 describe("Prefab", () => {
@@ -69,7 +70,7 @@ describe("Prefab", () => {
       },
     });
 
-    const query = defineQuery(all(Position, Velocity));
+    const query = createQuery(all(Position, Velocity));
     const archetypes = runQuery(world, query);
 
     expect(archetypes.length === 1).toBeTruthy();
@@ -86,7 +87,7 @@ describe("Prefab", () => {
     });
 
     const world = createWorld();
-    const query = defineQuery(all(Position, Stats));
+    const query = createQuery(all(Position, Stats));
     addQuery(world, query);
 
     const actor = prefab(world, {Position, Stats});
@@ -109,7 +110,7 @@ describe("Prefab", () => {
     });
 
     const world = createWorld();
-    const query = defineQuery(all(Position, Stats));
+    const query = createQuery(all(Position, Stats));
     addQuery(world, query);
 
     const actor = prefab(

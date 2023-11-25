@@ -11,11 +11,12 @@ export type Matcher = (archetype: Archetype) => boolean;
 
 export type QueryHandler = (entities: Entity) => void;
 
-export type QueryTerm = {comps: Component[]; matcher: Matcher};
+export type QueryTerm = {type: number; comps: Component[]; matcher: Matcher};
 
 export const all = (...comps: Component[]): QueryTerm => {
   const mask = makeComponentsMask(comps);
   return {
+    type: 0,
     comps,
     matcher: (arch: Archetype) => arch.mask.contains(mask),
   };
@@ -24,6 +25,7 @@ export const all = (...comps: Component[]): QueryTerm => {
 export const any = (...comps: Component[]): QueryTerm => {
   const mask = makeComponentsMask(comps);
   return {
+    type: 1,
     comps,
     matcher: (arch: Archetype) => arch.mask.intersects(mask),
   };
@@ -32,6 +34,7 @@ export const any = (...comps: Component[]): QueryTerm => {
 export const none = (...comps: Component[]): QueryTerm => {
   const mask = makeComponentsMask(comps);
   return {
+    type: 2,
     comps,
     matcher: (arch: Archetype) => !arch.mask.contains(mask),
   };
@@ -40,6 +43,7 @@ export const none = (...comps: Component[]): QueryTerm => {
 export const not = (...comps: Component[]): QueryTerm => {
   const mask = makeComponentsMask(comps);
   return {
+    type: 3,
     comps,
     matcher: (arch: Archetype) => !arch.mask.intersects(mask),
   };
@@ -48,6 +52,10 @@ export const not = (...comps: Component[]): QueryTerm => {
 export const isQueryTerm = (obj: object): obj is QueryTerm => "matcher" in obj;
 
 export type Query = {
+  /**
+   * The terms defining the query
+   */
+  hash: number;
   /**
    * The archetypes matching the query.
    */
@@ -88,12 +96,48 @@ export const makeComponentsMask = (components: Component<any>[]) =>
     return mask;
   }, new BitSet());
 
+const hashQueryTerms = (terms: QueryTerm[]) => {
+  let hash = 5381;
+
+  for (let i = 0; i < terms.length; i++) {
+    // Convert the number to a string before hashing
+    const type = terms[i]!.type;
+    const ids = terms[i]!.comps.map((comp) => comp.id);
+
+    hash = (hash << 5) + hash + type;
+
+    for (let j = 0; j < ids.length; j++) {
+      const id = ids[j]!;
+      // Update the hash using the same formula as before: hash * 33 + c
+      hash = (hash << 5) + hash + id;
+    }
+  }
+
+  return hash;
+};
 /**
  * Create a query without executing it or registering it to the world
  */
-export function defineQuery(...terms: QueryTerm[]): Query {
+export function defineQuery(...terms: QueryTerm[]): (world: World) => Query {
+  // also done in create query
+  const hash = hashQueryTerms(terms);
+
+  return (world: World) => {
+    let query = world.queries.get(hash);
+
+    if (!query) {
+      query = createQuery(...terms);
+      addQuery(world, query);
+    }
+
+    return query;
+  };
+}
+
+export function createQuery(...terms: QueryTerm[]): Query {
   const archetypes: Archetype[] = [];
   return {
+    hash: hashQueryTerms(terms),
     matchers: terms.map((term) => term.matcher),
     archetypes,
     world: undefined,
@@ -126,9 +170,7 @@ export const query = (
   const components = termsOrComponents.filter(isComponent);
   const q = defineQuery(...terms, all(...components));
 
-  addQuery(world, q);
-
-  return q;
+  return q(world);
 };
 
 /**
@@ -166,8 +208,7 @@ export const addQuery = (world: World, query: Query): Query => {
     );
   }
   query.world = world;
-
-  world.queries.push(query);
+  world.queries.set(query.hash, query);
 
   // Execute the query, register the results in the query.
   query.archetypes = runQuery(world, query);
@@ -201,9 +242,7 @@ export const removeQuery = (world: World, query: Query) => {
     );
   }
 
-  const index = world.queries.indexOf(query);
-  if (index === -1) return;
-  world.queries.splice(index);
+  world.queries.delete(query.hash);
 
   // Delete the enter handlers
   if (query.handlers.enter.length > 0) {

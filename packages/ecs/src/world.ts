@@ -52,7 +52,7 @@ export type World = {
   /**
    * The registerd queries
    */
-  queries: Query[];
+  queries: Map<number, Query>;
   /**
    * The callback to execute when entities enter the query or exit the query
    */
@@ -79,7 +79,7 @@ export const createWorld = (size = DEFAULT_WORLD_CAPACITY): World => {
     archetypes: [root],
     deletedEntities: [] as Entity[],
     entitiesArchetypes: [] as Archetype[],
-    queries: [] as Query[],
+    queries: new Map(),
     handlers: {
       enter: [] as Array<QueryHandler[]>,
       exit: [] as Array<QueryHandler[]>,

@@ -20,6 +20,7 @@ import {
   defineQuery,
   not,
   none,
+  createQuery,
 } from "../src/index.js";
 
 describe("Query", () => {
@@ -44,12 +45,10 @@ describe("Query", () => {
     attach(world, TestComponent, eid2);
 
     const queryA = defineQuery(all(TestComponent, TestComponent2));
-    const archetypesA = runQuery(world, queryA);
-    expect(archetypesA.length).toStrictEqual(1);
+    expect(queryA(world).archetypes.length).toStrictEqual(1);
 
     const queryB = defineQuery(all(TestComponent));
-    const archetypesB = runQuery(world, queryB);
-    expect(archetypesB.length).toStrictEqual(2);
+    expect(queryB(world).archetypes.length).toStrictEqual(2);
   });
   it("can query some components", () => {
     const world = createWorld();
@@ -69,12 +68,10 @@ describe("Query", () => {
     attach(world, TestComponent, eid2);
 
     const queryA = defineQuery(any(TestComponent, TestComponent2));
-    const archetypesA = runQuery(world, queryA);
-    expect(archetypesA.length).toStrictEqual(2);
+    expect(queryA(world).archetypes.length).toStrictEqual(2);
 
     const queryB = defineQuery(any(TestComponent));
-    const archetypesB = runQuery(world, queryB);
-    expect(archetypesB.length).toStrictEqual(2);
+    expect(queryB(world).archetypes.length).toStrictEqual(2);
   });
   it("can exclude some components from query", () => {
     const world = createWorld();
@@ -94,9 +91,8 @@ describe("Query", () => {
     attach(world, TestComponent, eid2);
 
     const query = defineQuery(any(TestComponent), not(TestComponent2));
-    const archetypes = runQuery(world, query);
 
-    expect(archetypes.length).toStrictEqual(1);
+    expect(query(world).archetypes.length).toStrictEqual(1);
   });
   it("can exclude group of components from query", () => {
     const world = createWorld();
@@ -124,8 +120,7 @@ describe("Query", () => {
       any(TestComponent),
       none(TestComponent2, TestComponent3)
     );
-    const archetypes = runQuery(world, query);
-    expect(archetypes.length).toStrictEqual(2);
+    expect(query(world).archetypes.length).toStrictEqual(2);
   });
   it("can be added to world and update automatically", () => {
     const world = createWorld();
@@ -140,7 +135,7 @@ describe("Query", () => {
     const eid = createEntity(world);
     attach(world, TestComponent2, eid);
 
-    const query = defineQuery(any(TestComponent, TestComponent2));
+    const query = createQuery(any(TestComponent, TestComponent2));
 
     addQuery(world, query);
 
@@ -166,7 +161,7 @@ describe("Query", () => {
       test: i32,
     });
 
-    const query = defineQuery(all(TestComponent, TestComponent2));
+    const query = createQuery(all(TestComponent, TestComponent2));
     addQuery(world, query);
 
     let added = 0;
@@ -194,7 +189,7 @@ describe("Query", () => {
       test: i32,
     });
 
-    const query = defineQuery(all(TestComponent, TestComponent2));
+    const query = createQuery(all(TestComponent, TestComponent2));
     addQuery(world, query);
 
     const eid = createEntity(world);
@@ -224,7 +219,7 @@ describe("Query", () => {
       test: i32,
     });
 
-    const query = defineQuery(all(TestComponent, TestComponent2));
+    const query = createQuery(all(TestComponent, TestComponent2));
 
     let added = 0;
 
@@ -252,7 +247,7 @@ describe("Query", () => {
       test: i32,
     });
 
-    const query = defineQuery(all(TestComponent, TestComponent2));
+    const query = createQuery(all(TestComponent, TestComponent2));
 
     const eid = createEntity(world);
 
@@ -290,7 +285,7 @@ describe("Query", () => {
       test: i32,
     });
 
-    const query = defineQuery(all(TestComponent, TestComponent2));
+    const query = createQuery(all(TestComponent, TestComponent2));
     addQuery(worldA, query);
 
     expect(() => addQuery(worldB, query)).toThrowError(
@@ -304,7 +299,7 @@ describe("Query", () => {
       test: i8,
     });
 
-    const query = defineQuery(all(TestComponent));
+    const query = createQuery(all(TestComponent));
     addQuery(world, query);
     removeQuery(world, query);
 
@@ -318,7 +313,7 @@ describe("Query", () => {
       test: i8,
     });
 
-    const query = defineQuery(all(TestComponent));
+    const query = createQuery(all(TestComponent));
     addQuery(world, query);
 
     expect(() => removeQuery(worldB, query)).toThrowError(RemoveQueryError);
@@ -330,7 +325,7 @@ describe("Query", () => {
       test: i8,
     });
 
-    const query = defineQuery(all(TestComponent));
+    const query = createQuery(all(TestComponent));
     addQuery(world, query);
 
     const onEnter = onEnterQuery(query);
