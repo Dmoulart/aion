@@ -103,7 +103,7 @@ function createColumn(
   } else if (isCustomType(type)) {
     return type(size);
   } else {
-    throw new Error("Custom type not implemented");
+    throw new Error("Unknown field type");
   }
 }
 
