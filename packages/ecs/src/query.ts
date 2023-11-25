@@ -1,4 +1,4 @@
-import {isComponent, type Component} from "./component.js";
+import {isComponent, type Component, $cid} from "./component.js";
 import type {World} from "./world.js";
 import type {Archetype} from "./archetype.js";
 import type {Entity} from "./entity.js";
@@ -92,7 +92,7 @@ export type Query = {
  */
 export const makeComponentsMask = (components: Component<any>[]) =>
   components.reduce((mask, comp) => {
-    mask.or(comp.id);
+    mask.or(comp[$cid]);
     return mask;
   }, new BitSet());
 
@@ -107,7 +107,7 @@ const hashQueryTerms = (terms: QueryTerm[]) => {
     hash = (hash << 5) + hash + type;
 
     for (let j = 0; j < term.comps.length; j++) {
-      const id = term.comps[j].id!;
+      const id = term.comps[j][$cid]!;
       hash = (hash << 5) + hash + id;
     }
   }

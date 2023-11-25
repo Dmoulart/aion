@@ -20,6 +20,8 @@ import {
 
 export type ComponentId<S extends Schema = Schema> = ID & {__brand: S};
 
+export const $cid: unique symbol = Symbol("");
+
 export type InferSchemaFromID<ID extends ComponentId> = ID extends ComponentId<
   infer Schema
 >
@@ -27,7 +29,7 @@ export type InferSchemaFromID<ID extends ComponentId> = ID extends ComponentId<
   : never;
 
 export type Component<S extends Schema = any> = {
-  id: ComponentId<S>;
+  [$cid]: ComponentId<S>;
 } & Columns<S>;
 
 export type ComponentFromID<ID extends ComponentId> = Component<
@@ -142,7 +144,7 @@ export const defineComponent = <S extends Schema>(
     typeof schema
   >;
 
-  storage.id = componentID;
+  storage[$cid] = componentID;
 
   return storage;
 };
@@ -175,7 +177,7 @@ export function attach(
   }
 
   const id =
-    typeof idOrComponent === "object" ? idOrComponent.id : idOrComponent;
+    typeof idOrComponent === "object" ? idOrComponent[$cid] : idOrComponent;
 
   if (archetype.mask.has(id)) return;
 
@@ -220,7 +222,7 @@ export function detach(
   }
 
   const id =
-    typeof idOrComponent === "object" ? idOrComponent.id : idOrComponent;
+    typeof idOrComponent === "object" ? idOrComponent[$cid] : idOrComponent;
 
   if (!archetype.mask.has(id)) return;
 
@@ -273,102 +275,7 @@ export function hasComponent(
   }
 
   const id =
-    typeof idOrComponent === "object" ? idOrComponent.id : idOrComponent;
+    typeof idOrComponent === "object" ? idOrComponent[$cid] : idOrComponent;
 
   return archetype.mask.has(id);
 }
-
-// export function set<C extends ComponentId>(
-//   world: World,
-//   comp: C,
-//   eid: Entity,
-//   data: Instance<InferSchemaFromID<C>>
-// ) {
-//   const storage = storageOf(world, comp);
-//   for (const field in data) {
-//     storage[field][eid] = data[field];
-//   }
-// }
-
-// export function storageOf<C extends ComponentId>(
-//   world: World,
-//   compID: C
-// ): Component<InferSchemaFromID<C>> {
-//   const storage = world.storage[compID];
-
-//   if (!storage) {
-//     return initComponentStorage(compID, world);
-//   }
-
-//   return storage;
-// }
-
-// export function initComponentStorage<C extends ComponentId>(
-//   compID: C,
-//   world: World
-// ): Component<InferSchemaFromID<C>> {
-//   const schema = __SCHEMAS[compID];
-
-//   if (!schema) {
-//     throw new Error("");
-//   }
-
-//   const storage = createComponentColumns(schema, world.size) as Component<
-//     typeof schema
-//   >;
-
-//   storage.id = compID;
-//   world.storage[compID] = storage;
-
-//   return storage as any;
-// }
-
-// export function get<C extends ComponentId>(
-//   world: World,
-//   comp: C,
-//   eid: Entity,
-//   dest: any = {}
-// ): Instance<InferSchemaFromID<C>> {
-//   const storage = storageOf(world, comp);
-//   const obj = dest;
-//   for (const field in storage) {
-//     if (field === "id") continue; // @todo remove this
-//     obj[field] = storage[field][eid];
-//   }
-//   return obj;
-// }
-
-// const Position = defineComponent({
-//   x: f32,
-//   y: f32,
-// });
-
-// const Velocity = defineComponent({
-//   x: f32,
-//   y: f32,
-// });
-
-// const world = createWorld();
-
-// const actor = prefab(world, {Position, Velocity});
-
-// const ent = actor({
-//   Position: {
-//     x: 10,
-//     y: 10,
-//   },
-//   Velocity: {
-//     x: 20,
-//     y: 20,
-//   },
-// });
-
-// const positions = storageOf(Position, world);
-// const velocity = storageOf(Position, world);
-
-// console.log(
-//   positions.x[ent],
-//   positions.y[ent],
-//   velocity.x[ent],
-//   velocity.y[ent]
-// );
