@@ -27,6 +27,7 @@ canvas.width = 800;
 canvas.height = 600;
 
 canvas.style.imageRendering = "pixelated";
+ctx.imageSmoothingEnabled = false;
 canvas.style.width = `${800 * 1.5}px`;
 canvas.style.height = `${600 * 1.5}px`;
 
@@ -52,8 +53,8 @@ const SPRITES_IMAGES = await Promise.all(
 );
 
 const Position = defineComponent({
-  x: i32,
-  y: i32,
+  x: f32,
+  y: f32,
 });
 
 const Velocity = defineComponent({
@@ -102,7 +103,7 @@ const player = createPlayer({
   },
 });
 
-const MOVE_TURN = 4;
+const UPDATE_ANIM_TURN = 5;
 
 let step = 0;
 
@@ -113,10 +114,10 @@ const lastPlayerDirection = {x: 0, y: 0};
 
   const {direction} = useInput();
   const {x, y} = direction();
-  Velocity.x[player] = x;
-  Velocity.y[player] = y;
+  Velocity.x[player] = x * 0.1;
+  Velocity.y[player] = y * 0.1;
 
-  onTurn(MOVE_TURN, () => {
+  onTurn(UPDATE_ANIM_TURN, () => {
     query(Sprite, Animation, Velocity).each((e) => {
       if (isMoving(player)) {
         lastPlayerDirection.x = Velocity.x[e];
@@ -142,24 +143,19 @@ const lastPlayerDirection = {x: 0, y: 0};
     });
   });
 
-  onTurn(MOVE_TURN, () => {
-    query(Movable).each((e) => {
-      const newX = Position.x[e] + Velocity.x[e];
-      const newY = Position.y[e] + Velocity.y[e];
+  query(Movable).each((e) => {
+    const newX = Position.x[e] + Velocity.x[e];
+    const newY = Position.y[e] + Velocity.y[e];
 
-      if (
-        isWalkable(
-          newX + CHARACTER_SPRITE_WIDTH,
-          newY + CHARACTER_SPRITE_HEIGHT
-        )
-      ) {
-        Position.x[e] += Velocity.x[e];
-        Position.y[e] += Velocity.y[e];
-      } else {
-        Velocity.x[e] = 0;
-        Velocity.y[e] = 0;
-      }
-    });
+    if (
+      isWalkable(newX + CHARACTER_SPRITE_WIDTH, newY + CHARACTER_SPRITE_HEIGHT)
+    ) {
+      Position.x[e] += Velocity.x[e];
+      Position.y[e] += Velocity.y[e];
+    } else {
+      Velocity.x[e] = 0;
+      Velocity.y[e] = 0;
+    }
   });
 
   query(Drawable).each((e) => {
@@ -203,7 +199,7 @@ function createTile(x: number, y: number) {
 }
 
 function isWalkable(x: number, y: number) {
-  return walkable?.[x]?.[y] ?? false;
+  return walkable?.[Math.round(x)]?.[Math.round(y)] ?? false;
 }
 
 export async function loadImage(path: string): Promise<HTMLImageElement> {
@@ -231,12 +227,12 @@ function getAnimationSprite(direction: {x: number; y: number}, step: number) {
   let d = "b";
   let s = step;
   if (direction.x !== 0) {
-    switch (direction.x) {
-      case 1: {
+    switch (true) {
+      case direction.x > 0: {
         d = "r";
         break;
       }
-      case -1: {
+      case direction.x < 0: {
         d = "l";
         break;
       }
@@ -246,12 +242,12 @@ function getAnimationSprite(direction: {x: number; y: number}, step: number) {
     }
   }
   if (direction.y !== 0) {
-    switch (direction.y) {
-      case 1: {
+    switch (true) {
+      case direction.y > 0: {
         d = "b";
         break;
       }
-      case -1: {
+      case direction.y < 0: {
         d = "u";
         break;
       }
