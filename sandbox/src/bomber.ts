@@ -10,6 +10,8 @@ import {
 import block from "./bomber/assets/block.png";
 import tile from "./bomber/assets/tile.png";
 import bombermanB0 from "./bomber/assets/bomberman-b0.png";
+import bombermanBm1 from "./bomber/assets/bomberman-b-1.png";
+import bombermanB1 from "./bomber/assets/bomberman-b1.png";
 import {useInput} from "./bomber/input";
 
 const canvas = document.createElement("canvas");
@@ -21,7 +23,9 @@ canvas.height = innerHeight;
 const SPRITES = {
   [block]: 0,
   [tile]: 1,
-  [bombermanB0]: 2,
+  [bombermanBm1]: 2,
+  [bombermanB0]: 3,
+  [bombermanB1]: 4,
 };
 
 const SPRITES_IMAGES = await Promise.all(
@@ -52,14 +56,11 @@ const Tile = {...Drawable, TileDesc};
 
 const {prefab, query} = aion();
 
-const blocks: Array<boolean[]> = [];
-
 const createTileEntity = prefab(Tile);
-for (let x = 0; x < 40; x++) {
-  for (let y = 0; y < 40; y++) {
-    createTile(x, y);
-  }
-}
+
+const walkable: Array<boolean[]> = [];
+initMap();
+
 const CHARACTER_SPRITE_HEIGHT = 1;
 const CHARACTER_SPRITE_WIDTH = 0;
 
@@ -96,13 +97,14 @@ let step = 0;
     const newX = Position.x[e] + Velocity.x[e];
     const newY = Position.y[e] + Velocity.y[e];
 
-    //Collision
-    if (blocks[newX + CHARACTER_SPRITE_WIDTH][newY + CHARACTER_SPRITE_HEIGHT]) {
-      Velocity.x[e] = 0;
-      Velocity.y[e] = 0;
-    } else {
+    if (
+      isWalkable(newX + CHARACTER_SPRITE_WIDTH, newY + CHARACTER_SPRITE_HEIGHT)
+    ) {
       Position.x[e] += Velocity.x[e];
       Position.y[e] += Velocity.y[e];
+    } else {
+      Velocity.x[e] = 0;
+      Velocity.y[e] = 0;
     }
   });
 
@@ -120,19 +122,12 @@ let step = 0;
   requestAnimationFrame(loop);
 })();
 
-export async function loadImage(path: string): Promise<HTMLImageElement> {
-  return new Promise<HTMLImageElement>((resolve, reject) => {
-    const img = new Image();
-
-    img.src = path;
-
-    img.onerror = (e) => {
-      console.warn(`Cannot load image at path ${path}\n${e}`);
-      reject(e);
-    };
-
-    img.onload = () => resolve(img);
-  });
+function initMap() {
+  for (let x = 0; x < 40; x++) {
+    for (let y = 0; y < 40; y++) {
+      createTile(x, y);
+    }
+  }
 }
 
 function createTile(x: number, y: number) {
@@ -149,6 +144,25 @@ function createTile(x: number, y: number) {
   });
   const isBlocking = Boolean(TileDesc.blocking[t]);
 
-  blocks[x] ??= [];
-  blocks[x][y] = isBlocking;
+  walkable[x] ??= [];
+  walkable[x][y] = !isBlocking;
+}
+
+function isWalkable(x: number, y: number) {
+  return walkable?.[x]?.[y] ?? false;
+}
+
+export async function loadImage(path: string): Promise<HTMLImageElement> {
+  return new Promise<HTMLImageElement>((resolve, reject) => {
+    const img = new Image();
+
+    img.src = path;
+
+    img.onerror = (e) => {
+      console.warn(`Cannot load image at path ${path}\n${e}`);
+      reject(e);
+    };
+
+    img.onload = () => resolve(img);
+  });
 }
