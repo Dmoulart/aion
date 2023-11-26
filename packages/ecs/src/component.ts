@@ -36,6 +36,11 @@ export type ComponentFromID<ID extends ComponentId> = Component<
   InferSchemaFromID<ID>
 >;
 
+//@todo name
+export type ComponentsGroup = Readonly<{
+  [key: string]: Component;
+}>;
+
 export type Columns<S extends Schema> = S extends MultipleTypesSchema
   ? {
       [column in keyof S]: Column<S[column]>;
@@ -149,8 +154,7 @@ export const defineComponent = <S extends Schema>(
   return storage;
 };
 
-// @todo more precise type guard
-export const isComponent = (obj: object): obj is Component => "id" in obj;
+export const isComponent = (obj: object): obj is Component => $cid in obj;
 
 /**
  * Add a component to the given entity.

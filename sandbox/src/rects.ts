@@ -30,14 +30,16 @@ const Graphics = defineComponent({
   h: u16,
 });
 
+const MovingShape = {Position, Velocity, Graphics};
+
 const {prefab, query, remove} = aion();
 
 const rect = 0;
 const circle = 1;
 
-const createActor = prefab({Position, Velocity, Graphics});
+const createMovingShape = prefab(MovingShape);
 
-const player = createActor({
+const player = createMovingShape({
   Graphics: {
     color: 0xffff00,
     type: rect,
@@ -55,7 +57,7 @@ const player = createActor({
 canvas.onmousemove = (e) => {
   Position.x[player] = e.clientX;
   Position.y[player] = e.clientY;
-  const shape = createActor({
+  const shape = createMovingShape({
     Graphics: {
       color: Math.random() * Number.MAX_SAFE_INTEGER,
       type: Math.random() > 0.5 ? rect : circle,
@@ -83,7 +85,7 @@ canvas.onmousemove = (e) => {
     Position.y[e] += Velocity.y[e];
   });
 
-  query(Position, Graphics).each((e) => {
+  query(MovingShape).each((e) => {
     const shape = Graphics.type[e];
     const color = Graphics.color[e];
     const w = Graphics.w[e];

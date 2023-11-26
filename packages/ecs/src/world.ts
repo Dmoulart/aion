@@ -103,7 +103,6 @@ export const aion = (world: World = createWorld()) => {
     attach: attach.bind(null, world),
     detach: detach.bind(null, world),
     query: query.bind(null, world) as <T extends (QueryTerm | Component)[]>(
-      world: World,
       ...termsOrComponents: T
     ) => Query,
     all,

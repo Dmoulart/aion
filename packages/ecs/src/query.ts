@@ -1,4 +1,9 @@
-import {isComponent, type Component, $cid} from "./component.js";
+import {
+  isComponent,
+  type Component,
+  $cid,
+  type ComponentsGroup,
+} from "./component.js";
 import type {World} from "./world.js";
 import type {Archetype} from "./archetype.js";
 import type {Entity} from "./entity.js";
@@ -161,13 +166,31 @@ export function createQuery(...terms: QueryTerm[]): Query {
  * @param termsOrComponents the query terms or components the query will target.
  * @returns query object
  */
-export const query = <T extends (QueryTerm | Component)[]>(
+export const query = <T extends (QueryTerm | Component | ComponentsGroup)[]>(
   world: World,
   ...termsOrComponents: T
 ): Query => {
-  const terms = termsOrComponents.filter(isQueryTerm);
-  const components = termsOrComponents.filter(isComponent);
-  const q = defineQuery(...terms, all(...components));
+  // @todo way to cache the query before doing all this, simplify api ?
+  const queryTerms: QueryTerm[] = [];
+  const freeFloatingComponents: Component[] = [];
+
+  for (const termOrComponent of termsOrComponents) {
+    if (isComponent(termOrComponent)) {
+      freeFloatingComponents.push(termOrComponent);
+    } else if (isQueryTerm(termOrComponent)) {
+      queryTerms.push(termOrComponent);
+    }
+    //component group
+    else {
+      freeFloatingComponents.push(...Object.values(termOrComponent));
+    }
+  }
+
+  if (freeFloatingComponents.length > 0) {
+    queryTerms.push(all(...freeFloatingComponents));
+  }
+
+  const q = defineQuery(...queryTerms);
 
   return q(world);
 };
