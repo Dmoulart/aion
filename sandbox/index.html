@@ -10,12 +10,15 @@
         margin: 0;
         padding: 0;
         overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
       }
 
       #examples {
-        position: absolute;
-        top: 0;
-        left: 0;
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
         width: 100vw;
         /* background-color: black; */
         font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -34,11 +37,11 @@
     <title>Vite + TS</title>
   </head>
   <body>
-    <div id="playground"></div>
     <ul id="examples">
       <li id="rects">Rects</li>
       <li id="bomber">Bomber</li>
     </ul>
+    <div id="playground"></div>
     <script type="module" id="script"></script>
     <script>
       const examples = document.getElementById("examples");
