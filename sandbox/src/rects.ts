@@ -18,6 +18,7 @@ const Position = defineComponent({
   x: i32,
   y: i32,
 });
+
 const Velocity = defineComponent({
   x: f32,
   y: f32,
@@ -57,6 +58,7 @@ const player = createMovingShape({
 canvas.onmousemove = (e) => {
   Position.x[player] = e.clientX;
   Position.y[player] = e.clientY;
+
   const shape = createMovingShape({
     Graphics: {
       color: Math.random() * Number.MAX_SAFE_INTEGER,
@@ -92,7 +94,6 @@ canvas.onmousemove = (e) => {
     const h = Graphics.h[e];
 
     ctx.strokeStyle = "#" + color.toString(16);
-
     if (shape === rect) {
       ctx.strokeRect(Position.x[e], Position.y[e], w, h);
     } else if (shape === circle) {

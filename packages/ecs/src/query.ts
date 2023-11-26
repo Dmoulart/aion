@@ -119,14 +119,15 @@ const hashQueryTerms = (terms: QueryTerm[]) => {
 
   return hash;
 };
+
 /**
- * Create a query without executing it or registering it to the world
+ * Define a query that can be added to world
  */
 export function defineQuery(...terms: QueryTerm[]): (world: World) => Query {
-  // also done in create query
+  // @todo also done in create query
   const hash = hashQueryTerms(terms);
 
-  return (world: World) => {
+  return function query(world: World) {
     let query = world.queries.get(hash);
 
     if (!query) {
