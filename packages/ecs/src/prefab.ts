@@ -87,16 +87,22 @@ export const compilePrefabWithDefaults = <Definition extends PrefabDefinition>(
     .map((componentName) => {
       const componentAssignations = Object.entries(defaultProps[componentName]!)
         .map(([prop, val]) => {
-          // if val is a string then its quotes will be removed. So we need to add them back.
-          if (typeof val === "string") {
-            return `
-            ${componentName}.${prop}[eid] = '${val}';
+          let componentAssignations;
+
+          if (!isSingleTypeSchema(definition[componentName])) {
+            componentAssignations = Object.entries(definition[componentName]!)
+              .map(([prop, val]) => {
+                if (prop === "data" || prop === "id") return "";
+                return `
+             options_${componentName}.${prop} && (${componentName}.${prop}[eid] = options_${componentName}.${prop});
+          `;
+              })
+              .join("");
+          } else {
+            componentAssignations = `
+             ${componentName}[eid] = options_${componentName};
           `;
           }
-
-          return `
-            ${componentName}.${prop}[eid] = ${val};
-          `;
         })
         .join("");
 
