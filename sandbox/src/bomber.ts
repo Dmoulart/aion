@@ -52,27 +52,22 @@ const Tile = {...Drawable, TileDesc};
 
 const {prefab, query} = aion();
 
-const createWalkableTile = prefab(Tile);
+const blocks: Array<boolean[]> = [];
+
+const createTileEntity = prefab(Tile);
 for (let x = 0; x < 40; x++) {
   for (let y = 0; y < 40; y++) {
-    createWalkableTile({
-      Position: {
-        x,
-        y,
-      },
-      Sprite: SPRITES[Math.random() > 0.1 ? tile : block],
-      TileDesc: {
-        blocking: Number(false),
-      },
-    });
+    createTile(x, y);
   }
 }
+const CHARACTER_SPRITE_HEIGHT = 1;
+const CHARACTER_SPRITE_WIDTH = 0;
 
 const createPlayer = prefab(Character);
 const player = createPlayer({
   Position: {
-    x: 1,
-    y: 1,
+    x: 0,
+    y: 0,
   },
   Sprite: SPRITES[bombermanB0],
   Velocity: {
@@ -88,20 +83,27 @@ let step = 0;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   if (step % CALCULATE_VEL_EVERY_N_TURN === 0) {
-    {
-      const {direction} = useInput();
-      const {x, y} = direction();
-      Velocity.x[player] = x;
-      Velocity.y[player] = y;
-    }
+    const {direction} = useInput();
+    const {x, y} = direction();
+    Velocity.x[player] = x;
+    Velocity.y[player] = y;
   } else {
-    Velocity.x[player] = 0;
-    Velocity.y[player] = 0;
+    Velocity.x[player] &&= 0;
+    Velocity.y[player] &&= 0;
   }
 
   query(Movable).each((e) => {
-    Position.x[e] += Velocity.x[e];
-    Position.y[e] += Velocity.y[e];
+    const newX = Position.x[e] + Velocity.x[e];
+    const newY = Position.y[e] + Velocity.y[e];
+
+    //Collision
+    if (blocks[newX + CHARACTER_SPRITE_WIDTH][newY + CHARACTER_SPRITE_HEIGHT]) {
+      Velocity.x[e] = 0;
+      Velocity.y[e] = 0;
+    } else {
+      Position.x[e] += Velocity.x[e];
+      Position.y[e] += Velocity.y[e];
+    }
   });
 
   query(Drawable).each((e) => {
@@ -112,7 +114,9 @@ let step = 0;
 
     ctx.drawImage(SPRITES_IMAGES[asset], x * TILE_SIZE, y * TILE_SIZE);
   });
+
   step += 1;
+
   requestAnimationFrame(loop);
 })();
 
@@ -129,4 +133,22 @@ export async function loadImage(path: string): Promise<HTMLImageElement> {
 
     img.onload = () => resolve(img);
   });
+}
+
+function createTile(x: number, y: number) {
+  const isWalkable = Math.random() > 0.1;
+  const t = createTileEntity({
+    Position: {
+      x,
+      y,
+    },
+    Sprite: SPRITES[isWalkable ? tile : block],
+    TileDesc: {
+      blocking: isWalkable ? Number(false) : Number(true),
+    },
+  });
+  const isBlocking = Boolean(TileDesc.blocking[t]);
+
+  blocks[x] ??= [];
+  blocks[x][y] = isBlocking;
 }
