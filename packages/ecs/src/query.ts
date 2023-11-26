@@ -163,6 +163,7 @@ export function createQuery(...terms: QueryTerm[]): Query {
  * Define a query, register it to the world and returns it.
  * Query terms or components can be used to define this query.
  * All the plain components passed as parameters will automatically be grouped in an 'all' query term.
+ * @todo simplify, make this more performant, don't call define query each time
  * @param world the world in which the query will execute
  * @param termsOrComponents the query terms or components the query will target.
  * @returns query object
