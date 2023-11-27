@@ -20,7 +20,7 @@ import {
 
 export type ComponentId<S extends Schema = Schema> = ID & {__brand: S};
 
-export const $cid: unique symbol = Symbol("");
+const $cid: unique symbol = Symbol("");
 
 export type InferSchemaFromID<ID extends ComponentId> = ID extends ComponentId<
   infer Schema
@@ -155,6 +155,8 @@ export const defineComponent = <S extends Schema>(
 };
 
 export const isComponent = (obj: object): obj is Component => $cid in obj;
+
+export const getComponentID = (component: Component) => component[$cid];
 
 /**
  * Add a component to the given entity.

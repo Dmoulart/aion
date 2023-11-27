@@ -1,8 +1,10 @@
-import {Component, Entity, isSingleTypeSchema} from "../../../packages/ecs/dist";
+import {
+  Component,
+  Entity,
+  isSingleTypeSchema,
+} from "../../../packages/ecs/dist";
 
 export function defineEncoder(...components: Component) {
-
-    if(isSingleTypeSchema(Sch))
   function encode(e: Entity) {}
 
   function decode(e: Entity) {}

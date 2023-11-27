@@ -1,7 +1,19 @@
-// export function defineEncoder(...components: Component) {
-//   if (isSingleTypeSchema(Sch)) function encode(e: Entity) {}
+import {type Component, isSingleTypeSchema} from "./component.js";
+import type {Entity} from "./entity.js";
 
-//   function decode(e: Entity) {}
+export function defineEncoder(...components: Component) {
+  for (const component of components) {
+    if (isSingleTypeSchema(component)) {
+    } else {
+    }
+  }
+  function encode(ents: Entity[], dest: ArrayBuffer) {
+      const view = new DataView(dest);
+      
+      
+  }
 
-//   return [encode, decode];
-// }
+  function decode(dest: ArrayBuffer) {}
+
+  return [encode, decode] as const;
+}

@@ -4,8 +4,8 @@ import {createEntity} from "./entity.js";
 import {
   isSingleTypeSchema,
   type Component,
-  $cid,
   type ComponentsGroup,
+  getComponentID,
 } from "./component.js";
 import type {InferSchema, Instance} from "./schemas.js";
 // @todo: This produces a nested array but we're only interested in the second level. Get rid of this level
@@ -52,13 +52,10 @@ export const prefab = <Definition extends PrefabDefinition>(
   defaultProps?: PrefabInstanceOptions<Definition>
 ) => {
   const components = Object.values(definition);
-  const archetype = buildArchetype(
-    components.map((comp) => comp[$cid]),
-    world
-  );
+  const archetype = buildArchetype(components.map(getComponentID), world);
 
   const assign = defaultProps
-    ? compilePrefabWithDefaults(defaultProps)
+    ? compilePrefabWithDefaults(definition, defaultProps)
     : compilePrefab(definition);
 
   return (options?: PrefabInstanceOptions<Definition>) => {
@@ -73,6 +70,7 @@ export const prefab = <Definition extends PrefabDefinition>(
 };
 
 export const compilePrefabWithDefaults = <Definition extends PrefabDefinition>(
+  definition: Record<string, Component<any>>,
   defaultProps: PrefabInstanceOptions<Definition>
 ) => {
   const defaultComponentIdentifiers = Object.keys(defaultProps)
