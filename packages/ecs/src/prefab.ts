@@ -2,12 +2,11 @@ import type {World} from "./world.js";
 import {buildArchetype} from "./archetype.js";
 import {createEntity} from "./entity.js";
 import {
-  isSingleTypeSchema,
   type Component,
   type ComponentsGroup,
   getComponentID,
 } from "./component.js";
-import type {InferSchema, Instance} from "./schemas.js";
+import {isSingleTypeSchema, type InferSchema, type Instance} from "./schemas.js";
 // @todo: This produces a nested array but we're only interested in the second level. Get rid of this level
 export type PrefabOptions<Components extends Component[]> = Map<
   Components,

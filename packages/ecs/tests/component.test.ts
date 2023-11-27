@@ -19,7 +19,7 @@ describe("Component", () => {
       field: i8,
     });
 
-    const world = createWorld(1_000_000);
+    const world = createWorld(10);
 
     expect(TestComponent.field).toBeInstanceOf(Int8Array);
   });
@@ -28,25 +28,25 @@ describe("Component", () => {
       {
         field: i8,
       },
-      1_000_000
+      10
     );
 
-    const world = createWorld(1_000_000);
+    const world = createWorld(10);
 
-    expect(TestComponent.field).toHaveLength(1_000_000);
+    expect(TestComponent.field).toHaveLength(10);
   });
   it("can have arrays of arrays as data types", () => {
     const TestComponent = defineComponent(
       {
         nested: [i8, 5],
       },
-      1_000_000
+      10
     );
 
-    const world = createWorld(1_000_000);
+    const world = createWorld(10);
 
     expect(TestComponent.nested).toBeInstanceOf(Array);
-    expect(TestComponent.nested).toHaveLength(1_000_000);
+    expect(TestComponent.nested).toHaveLength(10);
     expect(TestComponent.nested[0]).toHaveLength(5);
   });
   it("can be added to entities without throwing error", () => {

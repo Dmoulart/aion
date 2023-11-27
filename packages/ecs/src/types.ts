@@ -7,7 +7,7 @@ export const i16 = Int16Array;
 export const u16 = Uint16Array;
 
 export const i32 = Int32Array;
-export const ui32 = Uint32Array;
+export const u32 = Uint32Array;
 
 export const f32 = Float32Array;
 export const f64 = Float64Array;
@@ -26,7 +26,7 @@ export const types = {
   i16,
   u16,
   i32,
-  ui32,
+  ui32: u32,
   f32,
   f64,
   i64,
@@ -57,24 +57,3 @@ export type InferArrayType<T extends ArrayType> = T extends ArrayType<infer El>
   : never;
 
 export type Type = PrimitiveType | ArrayType | CustomType;
-
-// const {create, attach, remove, has, exists, prefab, query} = aion();
-
-// const e = create();
-// attach(e, e);
-// console.log("exists", exists(e));
-// console.log("has", has(e, e));
-// console.log("remove");
-// remove(e);
-// console.log("exists", exists(e));
-
-// const pos = defineComponent({
-//   x: i32,
-//   y: i32,
-// });
-
-// const Actor = prefab({ pos });
-
-// query(any(pos)).each(e => {
-
-// })

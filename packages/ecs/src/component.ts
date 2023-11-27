@@ -16,11 +16,15 @@ import {
   type MultipleTypesSchema,
   type SingleTypeSchema,
   setSchema,
+  isArrayType,
+  isCustomType,
+  isPrimitiveType,
+  isSingleTypeSchema,
 } from "./schemas.js";
 
 export type ComponentId<S extends Schema = Schema> = ID & {__brand: S};
 
-const $cid: unique symbol = Symbol("");
+const $cid: unique symbol = Symbol();
 
 export type InferSchemaFromID<ID extends ComponentId> = ID extends ComponentId<
   infer Schema
@@ -111,24 +115,6 @@ function createColumn(
     throw new Error("Unknown field type");
   }
 }
-
-export const isSingleTypeSchema = (
-  schema: Schema
-): schema is SingleTypeSchema => isField(schema);
-
-const isField = (field: object): field is Type =>
-  isArrayType(field) || isCustomType(field) || isPrimitiveType(field);
-
-const isArrayType = (field: object): field is ArrayType => {
-  return Array.isArray(field);
-};
-const isPrimitiveType = (field: object): field is PrimitiveType => {
-  return isTypedArray(field);
-};
-
-const isCustomType = (field: object): field is CustomType => {
-  return typeof field === "function";
-};
 
 /**
  * Create a new component from a component definition.
