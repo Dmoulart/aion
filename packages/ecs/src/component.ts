@@ -24,7 +24,7 @@ import {
 
 export type ComponentId<S extends Schema = Schema> = ID & {__brand: S};
 
-const $cid: unique symbol = Symbol();
+export const $cid: unique symbol = Symbol("$cid");
 
 export type InferSchemaFromID<ID extends ComponentId> = ID extends ComponentId<
   infer Schema
@@ -115,7 +115,8 @@ function createColumn(
     throw new Error("Unknown field type");
   }
 }
-
+// @temp, work symbols out
+export const components: Component = [];
 /**
  * Create a new component from a component definition.
  * @param def component definition
@@ -136,13 +137,18 @@ export const defineComponent = <S extends Schema>(
   >;
 
   storage[$cid] = componentID;
+  //daffu
+  (storage as any).__id = componentID;
 
+  components[componentID] = storage;
+  // compsById.set(storage, componentID);
   return storage;
 };
 
 export const isComponent = (obj: object): obj is Component => $cid in obj;
 
 export const getComponentID = (component: Component) => component[$cid];
+export const getComponentByID = (id: ComponentId) => components[id];
 
 /**
  * Add a component to the given entity.

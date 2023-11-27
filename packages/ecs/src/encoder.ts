@@ -1,5 +1,10 @@
-import {type Component, getComponentID} from "./component.js";
-import type {Entity} from "./entity.js";
+import {
+  type Component,
+  attach,
+  getComponentByID,
+  type ComponentId,
+} from "./component.js";
+import {createEntity, type Entity} from "./entity.js";
 import {
   getSchema,
   isPrimitiveType,
@@ -19,6 +24,7 @@ import {
   type PrimitiveType,
   u32,
 } from "./types.js";
+import type {World} from "./world.js";
 
 export function defineEncoder(...components: Component) {
   for (const component of components) {
@@ -32,16 +38,15 @@ export function defineEncoder(...components: Component) {
     let offset = 0;
 
     for (const ent of ents) {
-      view.setInt32(offset, ent);
+      view.setInt32(offset, ent, true);
       offset += 4;
 
       for (const comp of components) {
-        const id = getComponentID(comp);
+        const id = comp.__id;
         const Schema = getSchema(id)! as MultipleTypesSchema;
 
-        view.setInt32(offset, id);
+        view.setInt32(offset, id, true);
         offset += 4;
-
         for (const field in Schema) {
           const type = Schema[field]!;
 
@@ -49,7 +54,7 @@ export function defineEncoder(...components: Component) {
             throw new Error("Cannot encode non primitive type");
           }
           //@ts-expect-error
-          view[setters[type.name]!](comp[field][ent], type.BYTES_PER_ELEMENT); // (type.BYTES_PER_ELEMENT)
+          view[setters[type.name]!](offset, comp[field][ent], true);
           offset += type.BYTES_PER_ELEMENT;
         }
       }
@@ -58,7 +63,38 @@ export function defineEncoder(...components: Component) {
     return view;
   }
 
-  function decode(dest: ArrayBuffer) {}
+  function decode(data: ArrayBuffer, world: World) {
+    const view = new DataView(data);
+    let offset = 0;
+    while (offset <= view.byteLength - 1) {
+      const ent = view.getInt32(offset, true);
+      offset += 4;
+
+      createEntity(world);
+
+      const compID = view.getInt32(offset, true);
+      offset += 4;
+
+      const Schema = getSchema(compID)! as MultipleTypesSchema;
+
+      for (const field in Schema) {
+        const type = Schema[field]!;
+
+        if (!isPrimitiveType(type)) {
+          throw new Error("Cannot encode non primitive type");
+        }
+
+        attach(world, compID, ent);
+
+        //@ts-expect-error
+        const val = view[getters[type.name]!](offset, true);
+        offset += type.BYTES_PER_ELEMENT;
+
+        const comp = getComponentByID(compID as ComponentId);
+        comp[field][ent] = val;
+      }
+    }
+  }
 
   return [encode, decode] as const;
 }
@@ -74,6 +110,19 @@ const setters = {
   [u64.name]: "setUint64",
   [i64.name]: "setInt64",
   [f64.name]: "setFloat64",
+};
+
+const getters = {
+  [u8.name]: "getUint8",
+  [i8.name]: "getInt8",
+  [i16.name]: "getInt16",
+  [u16.name]: "getUint16",
+  [f32.name]: "getFloat32",
+  [u32.name]: "getUint32",
+  [i32.name]: "getInt32",
+  [u64.name]: "getUint64",
+  [i64.name]: "getInt64",
+  [f64.name]: "getFloat64",
 };
 
 function getSetter(type: PrimitiveType) {}
