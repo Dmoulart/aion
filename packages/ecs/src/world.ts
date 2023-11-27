@@ -18,7 +18,6 @@ import {
   type QueryTerm,
 } from "./query.js";
 import {attach, detach, hasComponent, type Component} from "./component.js";
-import type {__SCHEMAS} from "./schemas.js";
 import {
   type PrefabDefinition,
   type PrefabInstanceOptions,

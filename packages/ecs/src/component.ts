@@ -13,9 +13,9 @@ import {type Entity} from "./entity.js";
 import {nextID} from "./id.js";
 import {
   type Schema,
-  __SCHEMAS,
   type MultipleTypesSchema,
   type SingleTypeSchema,
+  setSchema,
 } from "./schemas.js";
 
 export type ComponentId<S extends Schema = Schema> = ID & {__brand: S};
@@ -143,7 +143,7 @@ export const defineComponent = <S extends Schema>(
 ): Component<S> => {
   const componentID = (id ?? nextID()) as ComponentId<S>;
 
-  __SCHEMAS[componentID] = schema;
+  setSchema(componentID, schema);
 
   const storage = createComponentColumns(schema, size) as Component<
     typeof schema

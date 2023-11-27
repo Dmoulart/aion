@@ -10,7 +10,25 @@ import {
 /**
  * All the schemas mapped to their ID
  */
-export const __SCHEMAS: Record<ID, Schema> = {};
+const __SCHEMAS: Record<ID, Schema> = {};
+
+/**
+ * Register a specific schema.
+ * @param id
+ * @param schema
+ */
+export function setSchema(id: ID, schema: Schema) {
+  __SCHEMAS[id] = schema;
+}
+
+/**
+ * Get a specific schema
+ * @param id
+ * @returns schema
+ */
+export function getSchema(id: ID) {
+  return __SCHEMAS[id];
+}
 
 // The component schema.
 // It describes the object passed into the Component factory function.
