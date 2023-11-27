@@ -32,7 +32,10 @@ const SPRITES_IMAGES = await Promise.all(
 const {prefab, query} = bombi();
 
 try {
-  const socket = new WebSocket(`ws://${window.location.hostname}:8080`);
+  const socket = new WebSocket(`ws://${window.location.hostname}:4321`);
+  socket.onmessage = async (msg) => {
+    console.log(await msg.data.arrayBuffer());
+  };
 } catch (e) {
   console.error(e);
 }

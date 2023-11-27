@@ -1,3 +1,4 @@
+import {WebSocketServer} from "ws";
 import {
   Character,
   SPRITES,
@@ -6,15 +7,33 @@ import {
   bombi,
   createTileEntity,
   tileAsset,
+  Tile,
+  Position,
 } from "./shared.js";
+import {eid} from "../../../packages/ecs/dist/types.js";
 
 const {prefab, query} = bombi();
 
-const createPlayer = prefab(Character);
-
+const walkable: Array<boolean[]> = [];
 initMap();
 
-const ws = new WebSocket('')
+const wss = new WebSocketServer({port: 4321});
+
+wss.on("connection", (socket) => {
+  console.log("hello");
+  const data = new eid(100);
+
+  let i = 0;
+
+  console.log(data);
+  socket.send(data);
+});
+
+const createPlayer = prefab(Character);
+
+// (function loop() {
+//   setInterval(loop, 1000 / 60);
+// })();
 
 const player = createPlayer({
   Position: {
@@ -31,7 +50,6 @@ const player = createPlayer({
   },
 });
 
-const walkable: Array<boolean[]> = [];
 function initMap() {
   for (let x = 0; x < 50; x++) {
     for (let y = 0; y < 30; y++) {

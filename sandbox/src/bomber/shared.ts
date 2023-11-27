@@ -42,7 +42,7 @@ export const TileDesc = defineComponent({
   blocking: u8,
 });
 export const TILE_SIZE = 16;
-const Tile = {...Drawable, TileDesc};
+export const Tile = {...Drawable, TileDesc};
 
 export const createTileEntity = bombi().prefab(Tile);
 
