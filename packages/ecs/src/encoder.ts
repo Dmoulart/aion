@@ -4,7 +4,7 @@ import {
   getComponentByID,
   type ComponentId,
 } from "./component.js";
-import {createEntity, type Entity} from "./entity.js";
+import {createEntity, insertEntity, type Entity} from "./entity.js";
 import {
   getSchema,
   isPrimitiveType,
@@ -26,7 +26,22 @@ import {
 } from "./types.js";
 import type {World} from "./world.js";
 
-export function defineEncoder(components: Component[]) {
+export type EncoderConfig = {
+  decodeEntity: (world: World, eid: Entity) => Entity;
+};
+
+const DEFAULT_ENCODER_CONFIG: EncoderConfig = {
+  decodeEntity: replace,
+};
+
+function replace(world: World, eid: Entity) {
+  return insertEntity(world, eid);
+}
+
+export function defineEncoder(
+  components: Component[],
+  {decodeEntity} = DEFAULT_ENCODER_CONFIG
+) {
   for (const component of components) {
     if (isSingleTypeSchema(component)) {
       throw new Error("Single type schema encoding not supported");
@@ -78,16 +93,15 @@ export function defineEncoder(components: Component[]) {
     return view.buffer;
   }
 
-  function decode(world: World, data: ArrayBuffer): Entity[] {
+  function decode(world: World, data: ArrayBuffer) {
     const view = new DataView(data);
-    const entities: Entity[] = []; // @todo typed array but we must know the lenght
     let offset = 0;
 
     while (offset < view.byteLength) {
       const ent = view.getInt32(offset, true);
       offset += 4;
 
-      entities.push(createEntity(world));
+      decodeEntity(world, ent);
 
       for (let i = 0; i < components.length; i++) {
         const compID = view.getInt32(offset, true);
@@ -113,7 +127,6 @@ export function defineEncoder(components: Component[]) {
         }
       }
     }
-    return entities;
   }
 
   return [encode, decode] as const;
