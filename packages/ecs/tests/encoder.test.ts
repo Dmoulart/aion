@@ -74,8 +74,7 @@ describe("Encoder", () => {
     TestComponent2.test[e] = 125;
 
     const [encode, decode] = defineEncoder(TestComponent1, TestComponent2);
-    const buffer = new ArrayBuffer(1024);
-    encode([e], buffer);
+    const buffer = encode([e]);
 
     removeEntity(world, e);
 

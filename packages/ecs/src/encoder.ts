@@ -33,12 +33,22 @@ export function defineEncoder(...components: Component[]) {
     }
   }
 
-  const instanceSize = components.reduce(
+  const componentsInstanceSize = components.reduce(
     (prev, curr) => prev + getComponentByteSize(curr),
     0
   );
 
-  function encode(ents: Entity[], dest: ArrayBuffer) {
+  const entitySize = 4;
+
+  const componentsHeaderSize = 4 * components.length;
+
+  const instanceSize =
+    componentsInstanceSize + componentsHeaderSize + entitySize;
+
+  function encode(
+    ents: Entity[],
+    dest: ArrayBuffer = new ArrayBuffer(ents.length * instanceSize)
+  ) {
     const view = new DataView(dest);
     let offset = 0;
 
@@ -65,7 +75,7 @@ export function defineEncoder(...components: Component[]) {
       }
     }
 
-    return view.buffer.slice(0, offset);
+    return view.buffer;
   }
 
   function decode(data: ArrayBuffer, world: World): Entity[] {
@@ -73,7 +83,7 @@ export function defineEncoder(...components: Component[]) {
     const entities: Entity[] = []; // @todo typed array but we must know the lenght
     let offset = 0;
 
-    while (offset + instanceSize <= view.byteLength - 1) {
+    while (offset < view.byteLength) {
       const ent = view.getInt32(offset, true);
       offset += 4;
 
