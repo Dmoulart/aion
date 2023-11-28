@@ -36,6 +36,33 @@ export const createEntity = (
 };
 
 /**
+ * Insert a specific entity.
+ * Warning ! This will break the entity counter
+ * @todo find a way to make this work while creating new entity in the classic way also ?
+ * @param world
+ * @param eid entity ID
+ * @param archetype
+ * @throws {ExceededWorldCapacity}
+ */
+export const insertEntity = (
+  world: World,
+  eid: Entity,
+  archetype = world.rootArchetype
+): Entity => {
+  // We start creating entities id from 1
+  if (eid > world.size) {
+    // todo: resize world automatically ?
+    throw new ExceededWorldCapacity(
+      `World maximum capacity of ${world.size} exceeded`
+    );
+  }
+
+  archetype.entities.insert(eid);
+  world.entitiesArchetypes[eid] = archetype;
+  return eid;
+};
+
+/**
  * Remove an entity from the given world.
  * @param eid entity id
  * @param world

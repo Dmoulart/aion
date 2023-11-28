@@ -4,6 +4,7 @@ import {
   removeEntity,
   createWorld,
   entityExists,
+  insertEntity,
 } from "../src/index.js";
 import {cursor, nextID} from "../src/id.js";
 
@@ -52,5 +53,12 @@ describe("Entity", () => {
   it("throws an error when trying to remove a non existant entity", () => {
     const world = createWorld();
     expect(() => removeEntity(world, 1)).toThrow();
+  });
+  it("can insert an entity", () => {
+    const world = createWorld();
+
+    insertEntity(world, 1);
+
+    expect(entityExists(world, 1)).toStrictEqual(true);
   });
 });
