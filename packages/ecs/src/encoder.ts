@@ -38,6 +38,13 @@ function replace(world: World, eid: Entity) {
   return insertEntity(world, eid);
 }
 
+/**
+ * Define a encoding and decoding function for a group of components.
+ * @todo perf
+ * @param components
+ * @param param1
+ * @returns
+ */
 export function defineEncoder(
   components: Component[],
   {decodeEntity} = DEFAULT_ENCODER_CONFIG

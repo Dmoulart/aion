@@ -82,7 +82,7 @@ describe("Encoder", () => {
     TestComponent1.y[e] = 0;
     TestComponent2.test[e] = 0;
 
-    const decoded = decode(world, buffer);
+    decode(world, buffer);
 
     expect(TestComponent1.x[e]).toBe(5);
     expect(TestComponent1.y[e]).toBe(10);
