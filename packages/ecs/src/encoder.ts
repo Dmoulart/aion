@@ -26,12 +26,17 @@ import {
 } from "./types.js";
 import type {World} from "./world.js";
 
-export function defineEncoder(...components: Component) {
+export function defineEncoder(...components: Component[]) {
   for (const component of components) {
     if (isSingleTypeSchema(component)) {
       throw new Error("Single type schema encoding not supported");
     }
   }
+
+  const instanceSize = components.reduce(
+    (prev, curr) => prev + getComponentByteSize(curr),
+    0
+  );
 
   function encode(ents: Entity[], dest: ArrayBuffer) {
     const view = new DataView(dest);
@@ -60,43 +65,67 @@ export function defineEncoder(...components: Component) {
       }
     }
 
-    return view;
+    return view.buffer.slice(0, offset);
   }
 
-  function decode(data: ArrayBuffer, world: World) {
+  function decode(data: ArrayBuffer, world: World): Entity[] {
     const view = new DataView(data);
+    const entities: Entity[] = []; // @todo typed array but we must know the lenght
     let offset = 0;
-    while (offset <= view.byteLength - 1) {
+
+    while (offset + instanceSize <= view.byteLength - 1) {
       const ent = view.getInt32(offset, true);
       offset += 4;
 
-      createEntity(world);
+      entities.push(createEntity(world));
 
-      const compID = view.getInt32(offset, true);
-      offset += 4;
+      for (let i = 0; i < components.length; i++) {
+        const compID = view.getInt32(offset, true);
+        offset += 4;
 
-      const Schema = getSchema(compID)! as MultipleTypesSchema;
+        const Schema = getSchema(compID)! as MultipleTypesSchema;
 
-      for (const field in Schema) {
-        const type = Schema[field]!;
+        for (const field in Schema) {
+          const type = Schema[field]!;
 
-        if (!isPrimitiveType(type)) {
-          throw new Error("Cannot encode non primitive type");
+          if (!isPrimitiveType(type)) {
+            throw new Error("Cannot encode non primitive type");
+          }
+
+          attach(world, compID, ent);
+
+          //@ts-expect-error
+          const val = view[getters[type.name]!](offset, true);
+          offset += type.BYTES_PER_ELEMENT;
+
+          const comp = getComponentByID(compID as ComponentId);
+          comp[field][ent] = val;
         }
-
-        attach(world, compID, ent);
-
-        //@ts-expect-error
-        const val = view[getters[type.name]!](offset, true);
-        offset += type.BYTES_PER_ELEMENT;
-
-        const comp = getComponentByID(compID as ComponentId);
-        comp[field][ent] = val;
       }
     }
+    return entities;
   }
 
   return [encode, decode] as const;
+}
+
+function getComponentByteSize(comp: Component) {
+  let size = 0;
+  const schema = getSchema(comp.__id)!;
+
+  if (isSingleTypeSchema(schema)) {
+    throw new Error("Cannot encode single type schema");
+  }
+
+  for (const field in schema) {
+    const type = schema[field]!;
+    if (!isPrimitiveType(type)) {
+      throw new Error("Cannot encode non primitive type");
+    }
+    size += type.BYTES_PER_ELEMENT;
+  }
+
+  return size;
 }
 
 const setters = {
@@ -124,5 +153,3 @@ const getters = {
   [i64.name]: "getInt64",
   [f64.name]: "getFloat64",
 };
-
-function getSetter(type: PrimitiveType) {}
