@@ -26,7 +26,7 @@ import {
 } from "./types.js";
 import type {World} from "./world.js";
 
-export function defineEncoder(...components: Component[]) {
+export function defineEncoder(components: Component[]) {
   for (const component of components) {
     if (isSingleTypeSchema(component)) {
       throw new Error("Single type schema encoding not supported");
@@ -78,7 +78,7 @@ export function defineEncoder(...components: Component[]) {
     return view.buffer;
   }
 
-  function decode(data: ArrayBuffer, world: World): Entity[] {
+  function decode(world: World, data: ArrayBuffer): Entity[] {
     const view = new DataView(data);
     const entities: Entity[] = []; // @todo typed array but we must know the lenght
     let offset = 0;
