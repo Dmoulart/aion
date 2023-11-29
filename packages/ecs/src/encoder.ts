@@ -4,26 +4,14 @@ import {
   getComponentByID,
   type ComponentId,
 } from "./component.js";
-import {createEntity, insertEntity, type Entity} from "./entity.js";
+import {insertEntity, type Entity} from "./entity.js";
 import {
   getSchema,
   isPrimitiveType,
   isSingleTypeSchema,
   type MultipleTypesSchema,
 } from "./schemas.js";
-import {
-  f32,
-  f64,
-  i16,
-  i32,
-  i64,
-  i8,
-  u16,
-  u64,
-  u8,
-  type PrimitiveType,
-  u32,
-} from "./types.js";
+import {f32, f64, i16, i32, i64, i8, u16, u64, u8, u32} from "./types.js";
 import type {World} from "./world.js";
 
 export type EncoderConfig = {

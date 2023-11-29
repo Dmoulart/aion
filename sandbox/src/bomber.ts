@@ -12,6 +12,7 @@ import {
   SPRITES,
   isWalkable,
   TILE_SIZE,
+  decodeTile,
 } from "./bomber/shared";
 
 const canvas = document.createElement("canvas");
@@ -29,12 +30,16 @@ const SPRITES_IMAGES = await Promise.all(
   Object.keys(SPRITES).map((src) => loadImage(src))
 );
 
-const {prefab, query} = bombi();
+const {query, world} = bombi();
 
 try {
   const socket = new WebSocket(`ws://${window.location.hostname}:4321`);
   socket.onmessage = async (msg) => {
-    console.log(await msg.data.arrayBuffer());
+    console.time("decode");
+    const ab = await msg.data.arrayBuffer();
+    console.log("array buffer", ab);
+    decodeTile(world, await msg.data.arrayBuffer());
+    console.timeEnd("decode");
   };
 } catch (e) {
   console.error(e);
@@ -75,13 +80,13 @@ let player = 0;
       }
       // of animation has stopped set default sprite
       if (Animation.start[e] === 0) {
-        Sprite[e] = getAnimationSprite(lastPlayerDirection, 1);
+        Sprite.value[e] = getAnimationSprite(lastPlayerDirection, 1);
         return;
       }
 
       const elapsed = Date.now() - Animation.start[e];
 
-      Sprite[e] = getAnimationSprite(lastPlayerDirection, elapsed % 3);
+      Sprite.value[e] = getAnimationSprite(lastPlayerDirection, elapsed % 3);
     });
   });
 
@@ -101,7 +106,7 @@ let player = 0;
   });
 
   query(Drawable).each((e) => {
-    const asset = Sprite[e];
+    const asset = Sprite.value[e];
 
     const x = Position.x[e];
     const y = Position.y[e];

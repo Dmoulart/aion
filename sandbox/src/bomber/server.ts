@@ -8,46 +8,69 @@ import {
   createTileEntity,
   tileAsset,
   Tile,
-  Position,
+  encodeTile,
+  encodePlayer,
 } from "./shared.js";
-import {eid} from "../../../packages/ecs/dist/types.js";
+
+import {Entity} from "../../../packages/ecs/dist/entity.js";
 
 const {prefab, query} = bombi();
+
+const createPlayer = prefab(Character);
 
 const walkable: Array<boolean[]> = [];
 initMap();
 
 const wss = new WebSocketServer({port: 4321});
-
 wss.on("connection", (socket) => {
-  console.log("hello");
-  const data = new eid(100);
+  console.log("Player connected");
 
-  let i = 0;
+  {
+    const ents: Array<Entity> = [];
 
-  console.log(data);
-  socket.send(data);
-});
+    const archetypes = query(Tile).archetypes;
 
-const createPlayer = prefab(Character);
+    for (const arch of archetypes) {
+      for (const eid of arch.entities.dense) {
+        ents.push(eid);
+      }
+    }
+    console.time("encoded tiles in");
+    const buffer = encodeTile(ents);
+    console.timeEnd("encode");
 
-// (function loop() {
-//   setInterval(loop, 1000 / 60);
-// })();
+    socket.send(buffer);
+  }
 
-const player = createPlayer({
-  Position: {
-    x: 0,
-    y: 0,
-  },
-  Sprite: SPRITES["./src/bomber/assets/bomberman-b0.png"],
-  Velocity: {
-    x: 0,
-    y: 0,
-  },
-  Animation: {
-    start: 0,
-  },
+  {
+    const ents: Array<Entity> = [];
+    const player = createPlayer({
+      Animation: {
+        start: 0,
+      },
+      Position: {
+        x: 1,
+        y: 1,
+      },
+      Sprite: {
+        value: SPRITES["./src/bomber/assets/bomberman-b0.png"],
+      },
+      Velocity: {
+        x: 0,
+        y: 0,
+      },
+    });
+
+    const archetypes = query(Character).archetypes;
+
+    for (const arch of archetypes) {
+      for (const eid of arch.entities.dense) {
+        ents.push(eid);
+      }
+    }
+
+    socket.send(encodePlayer(ents));
+  }
 });
 
 function initMap() {
@@ -65,7 +88,7 @@ function createTile(x: number, y: number) {
       x,
       y,
     },
-    Sprite: SPRITES[isWalkable ? tileAsset : blockAsset],
+    Sprite: {value: SPRITES[isWalkable ? tileAsset : blockAsset]},
     TileDesc: {
       blocking: isWalkable ? Number(false) : Number(true),
     },

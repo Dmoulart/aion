@@ -7,9 +7,11 @@ import {
   u8,
   Entity,
   prefab,
+  defineEncoder,
 } from "../../../packages/ecs/dist/index.js";
 import block from "./assets/block.png";
 import tile from "./assets/tile.png";
+
 export const blockAsset = block;
 export const tileAsset = tile;
 export let bombi = () => {
@@ -32,7 +34,7 @@ export const Animation = defineComponent({
   start: i32,
 });
 
-export const Sprite = defineComponent(u16);
+export const Sprite = defineComponent({value: u16});
 
 export const Movable = {Position, Velocity};
 export const Drawable = {Position, Sprite};
@@ -80,7 +82,7 @@ function createTile(x: number, y: number) {
       x,
       y,
     },
-    Sprite: SPRITES[isWalkable ? tile : block],
+    Sprite: {value: SPRITES[isWalkable ? tile : block]},
     TileDesc: {
       blocking: isWalkable ? Number(false) : Number(true),
     },
@@ -94,3 +96,14 @@ function createTile(x: number, y: number) {
 export function isWalkable(x: number, y: number) {
   return walkable?.[Math.round(x)]?.[Math.round(y)] ?? false;
 }
+
+const [encodeTile, decodeTile] = defineEncoder([Position, TileDesc, Sprite]);
+export {encodeTile, decodeTile};
+
+const [encodePlayer, decodePlayer] = defineEncoder([
+  Position,
+  Animation,
+  Velocity,
+  Sprite,
+]);
+export {encodePlayer, decodePlayer};
