@@ -5,8 +5,6 @@ import {
   i32,
   u16,
   u8,
-  Entity,
-  prefab,
   defineEncoder,
 } from "../../../packages/ecs/dist/index.js";
 import block from "./assets/block.png";

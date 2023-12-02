@@ -15,11 +15,11 @@ import {f32, f64, i16, i32, i64, i8, u16, u64, u8, u32} from "./types.js";
 import type {World} from "./world.js";
 
 export type EncoderConfig = {
-  decodeEntity: (world: World, eid: Entity) => Entity;
+  decodingStrategy: (world: World, eid: Entity) => Entity;
 };
 
 const DEFAULT_ENCODER_CONFIG: EncoderConfig = {
-  decodeEntity: replace,
+  decodingStrategy: replace,
 };
 
 function replace(world: World, eid: Entity) {
@@ -35,7 +35,7 @@ function replace(world: World, eid: Entity) {
  */
 export function defineEncoder(
   components: Component[],
-  {decodeEntity} = DEFAULT_ENCODER_CONFIG
+  {decodingStrategy} = DEFAULT_ENCODER_CONFIG
 ) {
   for (const component of components) {
     if (isSingleTypeSchema(component)) {
@@ -67,11 +67,13 @@ export function defineEncoder(
       offset += 4;
 
       for (const comp of components) {
+        //@todo fix component id getting
         const id = comp.__id;
         const Schema = getSchema(id)! as MultipleTypesSchema;
 
         view.setInt32(offset, id, true);
         offset += 4;
+
         for (const field in Schema) {
           const type = Schema[field]!;
 
@@ -96,7 +98,7 @@ export function defineEncoder(
       const ent = view.getInt32(offset, true);
       offset += 4;
 
-      decodeEntity(world, ent);
+      decodingStrategy(world, ent);
 
       for (let i = 0; i < components.length; i++) {
         const compID = view.getInt32(offset, true);

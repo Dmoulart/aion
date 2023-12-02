@@ -69,7 +69,7 @@ wss.on("connection", (socket) => {
       }
     }
 
-    socket.send(encodePlayer(ents));
+    // socket.send(encodePlayer(ents));
   }
 });
 
