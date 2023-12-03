@@ -10,6 +10,18 @@ export class Chunk {
     this.#array = new Uint8Array(buffer);
   }
 
+  get offset() {
+    return this.#offset;
+  }
+
+  get buffer() {
+    return this.#buffer;
+  }
+
+  get view() {
+    return this.#view;
+  }
+
   writeUint8(value: number) {
     this.#view.setUint8(this.#offset, value);
     this.#offset += 1;
@@ -30,13 +42,18 @@ export class Chunk {
     this.#offset += 2;
   }
 
-  pushInt32(value: number) {
+  writeInt32(value: number) {
     this.#view.setInt32(this.#offset, value, true);
     this.#offset += 4;
   }
 
   writeUint32(value: number) {
     this.#view.setUint32(this.#offset, value, true);
+    this.#offset += 4;
+  }
+
+  writeFloat32(value: number) {
+    this.#view.setFloat32(this.#offset, value, true);
     this.#offset += 4;
   }
 
@@ -48,11 +65,6 @@ export class Chunk {
   writeInt64(value: bigint) {
     this.#view.setBigInt64(this.#offset, value, true);
     this.#offset += 8;
-  }
-
-  writeFloat32(value: number) {
-    this.#view.setFloat32(this.#offset, value, true);
-    this.#offset += 4;
   }
 
   readUint8(): number {
@@ -91,6 +103,12 @@ export class Chunk {
     return value;
   }
 
+  readInt32(): number {
+    const value = this.#view.getUint32(this.#offset, true);
+    this.#offset += 4;
+    return value;
+  }
+
   readFloat64(): number {
     const value = this.#view.getFloat64(this.#offset, true);
     this.#offset += 8;
@@ -115,21 +133,9 @@ export class Chunk {
     }
   }
 
-  grow(newSize: number): void {
-    if (newSize > this.buffer.byteLength) {
-      this.#ensureCapacity(newSize);
+  grow(length: number): void {
+    if (length > this.buffer.byteLength) {
+      this.#ensureCapacity(length);
     }
-  }
-
-  get offset() {
-    return this.#offset;
-  }
-
-  get buffer() {
-    return this.#buffer;
-  }
-
-  get view() {
-    return this.#view;
   }
 }

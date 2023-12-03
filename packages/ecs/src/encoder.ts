@@ -1,3 +1,4 @@
+import {Chunk} from "./chunk.js";
 import {
   type Component,
   attach,
@@ -57,22 +58,22 @@ export function defineEncoder(
 
   function encode(
     ents: Entity[],
-    dest: ArrayBuffer = new ArrayBuffer(ents.length * instanceSize)
+    chunk: Chunk = new Chunk(new ArrayBuffer(ents.length * instanceSize + 4))
   ) {
-    const view = new DataView(dest);
-    let offset = 0;
+    const len = ents.length * instanceSize + 4;
+    chunk.grow(len);
+    // write len
+    chunk.writeUint32(len);
 
     for (const ent of ents) {
-      view.setInt32(offset, ent, true);
-      offset += 4;
+      chunk.writeInt32(ent);
 
       for (const comp of components) {
         //@todo fix component id getting
         const id = comp.__id;
         const Schema = getSchema(id)! as MultipleTypesSchema;
 
-        view.setInt32(offset, id, true);
-        offset += 4;
+        chunk.writeInt32(id);
 
         for (const field in Schema) {
           const type = Schema[field]!;
@@ -81,28 +82,25 @@ export function defineEncoder(
             throw new Error("Cannot encode non primitive type");
           }
           //@ts-expect-error
-          view[setters[type.name]!](offset, comp[field][ent], true);
-          offset += type.BYTES_PER_ELEMENT;
+          chunk[setters[type.name]!](comp[field][ent]);
         }
       }
     }
 
-    return view.buffer;
+    return chunk.buffer;
   }
 
   function decode(world: World, data: ArrayBuffer) {
-    const view = new DataView(data);
-    let offset = 0;
+    const chunk = new Chunk(data);
+    const len = chunk.readUint32();
 
-    while (offset < view.byteLength) {
-      const ent = view.getInt32(offset, true);
-      offset += 4;
+    while (chunk.offset < len) {
+      const ent = chunk.readInt32();
 
       decodingStrategy(world, ent);
 
       for (let i = 0; i < components.length; i++) {
-        const compID = view.getInt32(offset, true);
-        offset += 4;
+        const compID = chunk.readInt32();
 
         const Schema = getSchema(compID)! as MultipleTypesSchema;
 
@@ -116,8 +114,7 @@ export function defineEncoder(
           attach(world, compID, ent);
 
           //@ts-expect-error
-          const val = view[getters[type.name]!](offset, true);
-          offset += type.BYTES_PER_ELEMENT;
+          const val = chunk[getters[type.name]!]();
 
           const comp = getComponentByID(compID as ComponentId);
           comp[field][ent] = val;
@@ -149,27 +146,27 @@ function getComponentByteSize(comp: Component) {
 }
 
 const setters = {
-  [u8.name]: "setUint8",
-  [i8.name]: "setInt8",
-  [i16.name]: "setInt16",
-  [u16.name]: "setUint16",
-  [f32.name]: "setFloat32",
-  [u32.name]: "setUint32",
-  [i32.name]: "setInt32",
-  [u64.name]: "setUint64",
-  [i64.name]: "setInt64",
-  [f64.name]: "setFloat64",
+  [u8.name]: "writeUint8",
+  [i8.name]: "writeInt8",
+  [i16.name]: "writeInt16",
+  [u16.name]: "writeUint16",
+  [f32.name]: "writeFloat32",
+  [u32.name]: "writeUint32",
+  [i32.name]: "writeInt32",
+  [u64.name]: "writeUint64",
+  [i64.name]: "writeInt64",
+  [f64.name]: "writeFloat64",
 };
 
 const getters = {
-  [u8.name]: "getUint8",
-  [i8.name]: "getInt8",
-  [i16.name]: "getInt16",
-  [u16.name]: "getUint16",
-  [f32.name]: "getFloat32",
-  [u32.name]: "getUint32",
-  [i32.name]: "getInt32",
-  [u64.name]: "getUint64",
-  [i64.name]: "getInt64",
-  [f64.name]: "getFloat64",
+  [u8.name]: "readUint8",
+  [i8.name]: "readInt8",
+  [i16.name]: "readInt16",
+  [u16.name]: "readUint16",
+  [f32.name]: "readFloat32",
+  [u32.name]: "readUint32",
+  [i32.name]: "readInt32",
+  [u64.name]: "readtUint64",
+  [i64.name]: "readInt64",
+  [f64.name]: "readFloat64",
 };
