@@ -32,7 +32,7 @@ describe("Encoder", () => {
     TestComponent2.test[e] = 125;
 
     const [encode, decode] = defineEncoder([TestComponent1, TestComponent2]);
-    const buffer = encode([e]);
+    const chunk = encode([e]);
 
     removeEntity(world, e);
 
@@ -40,7 +40,7 @@ describe("Encoder", () => {
     TestComponent1.y[e] = 0;
     TestComponent2.test[e] = 0;
 
-    decode(world, buffer);
+    decode(world, chunk);
 
     expect(TestComponent1.x[e]).toBe(5);
     expect(TestComponent1.y[e]).toBe(10);

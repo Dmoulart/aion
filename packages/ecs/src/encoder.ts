@@ -86,12 +86,10 @@ export function defineEncoder(
         }
       }
     }
-
-    return chunk.buffer;
+    return chunk;
   }
 
-  function decode(world: World, data: ArrayBuffer) {
-    const chunk = new Chunk(data);
+  function decode(world: World, chunk: Chunk) {
     const len = chunk.readUint32();
 
     while (chunk.offset < len) {
@@ -121,6 +119,8 @@ export function defineEncoder(
         }
       }
     }
+
+    return chunk;
   }
 
   return [encode, decode] as const;

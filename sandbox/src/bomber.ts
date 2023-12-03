@@ -14,6 +14,7 @@ import {
   TILE_SIZE,
   decodeTile,
 } from "./bomber/shared";
+import {Chunk} from "../../packages/ecs/dist/chunk";
 
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d")!;
@@ -38,7 +39,7 @@ try {
     console.time("decode");
     const ab = await msg.data.arrayBuffer();
     console.log("array buffer", ab);
-    decodeTile(world, await msg.data.arrayBuffer());
+    decodeTile(world, new Chunk(await msg.data.arrayBuffer()));
     console.timeEnd("decode");
   };
 } catch (e) {

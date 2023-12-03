@@ -36,10 +36,10 @@ wss.on("connection", (socket) => {
       }
     }
     console.time("encoded tiles in");
-    const buffer = encodeTile(ents);
+    const chunk = encodeTile(ents);
     console.timeEnd("encode");
 
-    socket.send(buffer);
+    socket.send(chunk.buffer);
   }
 
   {
