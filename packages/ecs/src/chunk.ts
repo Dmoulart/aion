@@ -1,12 +1,13 @@
 export class Chunk {
   #buffer!: ArrayBuffer;
   #view!: DataView;
+  #array!: Uint8Array;
   #offset = 0;
 
   constructor(buffer: ArrayBuffer) {
     this.#buffer = buffer;
     this.#view = new DataView(buffer);
-    this.#view;
+    this.#array = new Uint8Array(buffer);
   }
 
   writeUint8(value: number) {
@@ -100,6 +101,24 @@ export class Chunk {
     const value = this.#view.getBigInt64(this.#offset, true);
     this.#offset += 8;
     return value;
+  }
+
+  #ensureCapacity(newSize: number): void {
+    if (this.buffer.byteLength < newSize) {
+      const newBuffer = new ArrayBuffer(newSize);
+      const newArray = new Uint8Array(newBuffer);
+      const newView = new DataView(newBuffer);
+      newArray.set(this.#array, 0);
+      this.#view = newView;
+      this.#buffer = newBuffer;
+      this.#array = newArray;
+    }
+  }
+
+  grow(newSize: number): void {
+    if (newSize > this.buffer.byteLength) {
+      this.#ensureCapacity(newSize);
+    }
   }
 
   get offset() {
