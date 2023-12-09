@@ -10,11 +10,12 @@ import {
   Tile,
   encodeTile,
   encodePlayer,
+  initMessage,
 } from "./shared.js";
 
 import {Entity} from "../../../packages/ecs/dist/entity.js";
 
-const {prefab, query} = bombi();
+const {prefab, query, world, remove} = bombi();
 
 const createPlayer = prefab(Character);
 
@@ -23,54 +24,56 @@ initMap();
 
 const wss = new WebSocketServer({port: 4321});
 wss.on("connection", (socket) => {
-  console.log("Player connected");
+  // {
+  //   const ents: Array<Entity> = [];
 
-  {
-    const ents: Array<Entity> = [];
+  //   const archetypes = query(Tile).archetypes;
 
-    const archetypes = query(Tile).archetypes;
+  //   for (const arch of archetypes) {
+  //     for (const eid of arch.entities.dense) {
+  //       ents.push(eid);
+  //     }
+  //   }
+  //   console.time("encoded tiles in");
+  //   const chunk = encodeTile(ents);
+  //   console.timeEnd("encode");
 
-    for (const arch of archetypes) {
-      for (const eid of arch.entities.dense) {
-        ents.push(eid);
-      }
-    }
-    console.time("encoded tiles in");
-    const chunk = encodeTile(ents);
-    console.timeEnd("encode");
+  //   // socket.send(chunk.buffer);
+  // }
 
-    socket.send(chunk.buffer);
-  }
+  // {
+  //   const ents: Array<Entity> = [];
+  const player = createPlayer({
+    Animation: {
+      start: 0,
+    },
+    Position: {
+      x: 1,
+      y: 1,
+    },
+    Sprite: {
+      value: SPRITES["./src/bomber/assets/bomberman-b0.png"],
+    },
+    Velocity: {
+      x: 0,
+      y: 0,
+    },
+  });
 
-  {
-    const ents: Array<Entity> = [];
-    const player = createPlayer({
-      Animation: {
-        start: 0,
-      },
-      Position: {
-        x: 1,
-        y: 1,
-      },
-      Sprite: {
-        value: SPRITES["./src/bomber/assets/bomberman-b0.png"],
-      },
-      Velocity: {
-        x: 0,
-        y: 0,
-      },
-    });
+  socket.onclose = (ev) => {
+    remove(player);
+  };
 
-    const archetypes = query(Character).archetypes;
+  //   const archetypes = query(Character).archetypes;
 
-    for (const arch of archetypes) {
-      for (const eid of arch.entities.dense) {
-        ents.push(eid);
-      }
-    }
-
-    // socket.send(encodePlayer(ents));
-  }
+  //   for (const arch of archetypes) {
+  //     for (const eid of arch.entities.dense) {
+  //       ents.push(eid);
+  //     }
+  //   }
+  const chunk = initMessage.encode(world);
+  socket.send(chunk);
+  // socket.send(encodePlayer(ents));
 });
 
 function initMap() {

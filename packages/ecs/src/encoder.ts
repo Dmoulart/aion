@@ -61,7 +61,7 @@ export function defineEncoder(
     chunk: Chunk = new Chunk(new ArrayBuffer(ents.length * instanceSize + 4))
   ) {
     const len = ents.length * instanceSize + 4;
-    chunk.grow(len);
+    chunk.ensureAvailableCapacity(len);
     // write len
     chunk.writeUint32(len);
 
@@ -90,9 +90,10 @@ export function defineEncoder(
   }
 
   function decode(world: World, chunk: Chunk) {
+    const startOffset = chunk.offset;
     const len = chunk.readUint32();
 
-    while (chunk.offset < len) {
+    while (chunk.offset < startOffset + len) {
       const ent = chunk.readInt32();
 
       decodingStrategy(world, ent);

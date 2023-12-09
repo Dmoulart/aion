@@ -1,5 +1,5 @@
 import "./style.css";
-import {Entity} from "../../packages/ecs/dist/index.js";
+import {Entity, onEnterQuery} from "../../packages/ecs/dist/index.js";
 import {useInput} from "./bomber/input";
 import {
   Drawable,
@@ -12,9 +12,12 @@ import {
   SPRITES,
   isWalkable,
   TILE_SIZE,
-  decodeTile,
+  initMessage,
+  Tile,
+  TileDesc,
+  setWalkable,
+  Character,
 } from "./bomber/shared";
-import {Chunk} from "../../packages/ecs/dist/chunk";
 
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d")!;
@@ -36,11 +39,8 @@ const {query, world} = bombi();
 try {
   const socket = new WebSocket(`ws://${window.location.hostname}:4321`);
   socket.onmessage = async (msg) => {
-    console.time("decode");
     const ab = await msg.data.arrayBuffer();
-    console.log("array buffer", ab);
-    decodeTile(world, new Chunk(await msg.data.arrayBuffer()));
-    console.timeEnd("decode");
+    initMessage.decode(world, ab);
   };
 } catch (e) {
   console.error(e);
@@ -55,68 +55,90 @@ let step = 0;
 
 const lastPlayerDirection = {x: 0, y: 0};
 
-let player = 0;
+const onTileCreated = onEnterQuery(query(Tile));
+const onCharacterCreated = onEnterQuery(query(Character));
 
+onCharacterCreated((ch) => {
+  console.log("player created ", ch);
+});
+
+onTileCreated((e) => {
+  const x = Position.x[e];
+  const y = Position.y[e];
+  const isBlocking = TileDesc.blocking[e];
+
+  setWalkable(x, y, !isBlocking);
+});
+const characters = query(Character);
+function whenPlayerCreated(cb: (player: Entity) => void) {
+  query(Character).each(cb);
+  // if (player) {
+  //   cb(player);
+  // }
+}
 (function loop() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  whenPlayerCreated((player) => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  const {direction} = useInput();
-  const {x, y} = direction();
-  Velocity.x[player] = x * 0.1;
-  Velocity.y[player] = y * 0.1;
+    const {direction} = useInput();
+    const {x, y} = direction();
+    Velocity.x[player] = x * 0.1;
+    Velocity.y[player] = y * 0.1;
 
-  onTurn(UPDATE_ANIM_TURN, () => {
-    query(Sprite, Animation, Velocity).each((e) => {
-      if (isMoving(player)) {
-        lastPlayerDirection.x = Velocity.x[e];
-        lastPlayerDirection.y = Velocity.y[e];
+    onTurn(UPDATE_ANIM_TURN, () => {
+      query(Sprite, Animation, Velocity).each((e) => {
+        if (isMoving(player)) {
+          lastPlayerDirection.x = Velocity.x[e];
+          lastPlayerDirection.y = Velocity.y[e];
 
-        if (Animation.start[e] === 0) {
-          // start animation
-          Animation.start[e] = Date.now();
+          if (Animation.start[e] === 0) {
+            // start animation
+            Animation.start[e] = Date.now();
+          }
+        } else {
+          // stop animation
+          Animation.start[e] = 0;
         }
-      } else {
-        // stop animation
-        Animation.start[e] = 0;
-      }
-      // of animation has stopped set default sprite
-      if (Animation.start[e] === 0) {
-        Sprite.value[e] = getAnimationSprite(lastPlayerDirection, 1);
-        return;
-      }
+        // of animation has stopped set default sprite
+        if (Animation.start[e] === 0) {
+          Sprite.value[e] = getAnimationSprite(lastPlayerDirection, 1);
+          return;
+        }
 
-      const elapsed = Date.now() - Animation.start[e];
+        const elapsed = Date.now() - Animation.start[e];
 
-      Sprite.value[e] = getAnimationSprite(lastPlayerDirection, elapsed % 3);
+        Sprite.value[e] = getAnimationSprite(lastPlayerDirection, elapsed % 3);
+      });
     });
+
+    query(Movable).each((e) => {
+      const newX = Position.x[e] + Velocity.x[e];
+      const newY = Position.y[e] + Velocity.y[e];
+      if (
+        isWalkable(
+          newX + CHARACTER_SPRITE_WIDTH,
+          newY + CHARACTER_SPRITE_HEIGHT
+        )
+      ) {
+        Position.x[e] += Velocity.x[e];
+        Position.y[e] += Velocity.y[e];
+      } else {
+        Velocity.x[e] = 0;
+        Velocity.y[e] = 0;
+      }
+    });
+
+    query(Drawable).each((e) => {
+      const asset = Sprite.value[e];
+
+      const x = Position.x[e];
+      const y = Position.y[e];
+
+      ctx.drawImage(SPRITES_IMAGES[asset], x * TILE_SIZE, y * TILE_SIZE);
+    });
+
+    step += 1;
   });
-
-  query(Movable).each((e) => {
-    const newX = Position.x[e] + Velocity.x[e];
-    const newY = Position.y[e] + Velocity.y[e];
-
-    if (
-      isWalkable(newX + CHARACTER_SPRITE_WIDTH, newY + CHARACTER_SPRITE_HEIGHT)
-    ) {
-      Position.x[e] += Velocity.x[e];
-      Position.y[e] += Velocity.y[e];
-    } else {
-      Velocity.x[e] = 0;
-      Velocity.y[e] = 0;
-    }
-  });
-
-  query(Drawable).each((e) => {
-    const asset = Sprite.value[e];
-
-    const x = Position.x[e];
-    const y = Position.y[e];
-
-    ctx.drawImage(SPRITES_IMAGES[asset], x * TILE_SIZE, y * TILE_SIZE);
-  });
-
-  step += 1;
-
   requestAnimationFrame(loop);
 })();
 
@@ -174,7 +196,7 @@ function getAnimationSprite(direction: {x: number; y: number}, step: number) {
       }
     }
   }
-  console.log(`./src/bomber/assets/bomberman-${d}${s.toString()}.png`);
+
   return SPRITES[`./src/bomber/assets/bomberman-${d}${s.toString()}.png`];
 }
 

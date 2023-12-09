@@ -1,3 +1,4 @@
+import {Chunk} from "../../../packages/ecs/dist/chunk.js";
 import {
   aion,
   defineComponent,
@@ -6,6 +7,9 @@ import {
   u16,
   u8,
   defineEncoder,
+  defineMessage,
+  Entity,
+  query,
 } from "../../../packages/ecs/dist/index.js";
 import block from "./assets/block.png";
 import tile from "./assets/tile.png";
@@ -46,7 +50,12 @@ export const Tile = {...Drawable, TileDesc};
 
 export const createTileEntity = bombi().prefab(Tile);
 
-const walkable: Array<boolean[]> = [];
+export const walkable: Array<boolean[]> = [];
+
+export const setWalkable = (x: number, y: number, isWalkable: boolean) => {
+  walkable[x] ??= [];
+  walkable[x][y] = isWalkable;
+};
 
 function initMap() {
   for (let x = 0; x < 50; x++) {
@@ -99,9 +108,55 @@ const [encodeTile, decodeTile] = defineEncoder([Position, TileDesc, Sprite]);
 export {encodeTile, decodeTile};
 
 const [encodePlayer, decodePlayer] = defineEncoder([
-  Position,
   Animation,
-  Velocity,
+  Position,
   Sprite,
+  Velocity,
 ]);
 export {encodePlayer, decodePlayer};
+
+export const MESSAGES = {
+  INIT: 1,
+};
+
+export const initMessage = defineMessage(MESSAGES.INIT, {
+  encode(world) {
+    let chunk: Chunk;
+    {
+      const ents: Array<Entity> = [];
+
+      const archetypes = query(world, Tile).archetypes;
+
+      for (const arch of archetypes) {
+        for (const eid of arch.entities.dense) {
+          ents.push(eid);
+        }
+      }
+      console.time("encoded tiles in");
+      chunk = encodeTile(ents);
+    }
+
+    {
+      const ents: Array<Entity> = [];
+
+      const archetypes = query(world, Character).archetypes;
+      console.log("encode player");
+      for (const arch of archetypes) {
+        for (const eid of arch.entities.dense) {
+          ents.push(eid);
+          console.log({eid});
+        }
+      }
+
+      chunk = encodePlayer(ents, chunk);
+    }
+
+    return chunk.buffer;
+  },
+  decode(world, buffer) {
+    console.log("decode tile");
+    let chunk = decodeTile(world, new Chunk(buffer));
+    console.log("decode player");
+    decodePlayer(world, chunk);
+  },
+});

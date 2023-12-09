@@ -138,4 +138,11 @@ export class Chunk {
       this.#ensureCapacity(length);
     }
   }
+
+  ensureAvailableCapacity(capacity: number): void {
+    const available = this.buffer.byteLength - this.#offset;
+    if (available < capacity) {
+      this.#ensureCapacity(this.buffer.byteLength + capacity);
+    }
+  }
 }

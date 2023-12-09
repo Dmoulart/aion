@@ -7,3 +7,4 @@ export * from "./collections/index.js";
 export * from "./prefab.js";
 export * from "./relation.js";
 export * from "./encoder.js";
+export * from "./message.js";
