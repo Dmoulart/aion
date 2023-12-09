@@ -69,76 +69,67 @@ onTileCreated((e) => {
 
   setWalkable(x, y, !isBlocking);
 });
-const characters = query(Character);
-function whenPlayerCreated(cb: (player: Entity) => void) {
-  query(Character).each(cb);
-  // if (player) {
-  //   cb(player);
-  // }
-}
-(function loop() {
-  whenPlayerCreated((player) => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+(function loop() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  query(Character).each((player) => {
     const {direction} = useInput();
     const {x, y} = direction();
     Velocity.x[player] = x * 0.1;
     Velocity.y[player] = y * 0.1;
-
-    onTurn(UPDATE_ANIM_TURN, () => {
-      query(Sprite, Animation, Velocity).each((e) => {
-        if (isMoving(player)) {
-          lastPlayerDirection.x = Velocity.x[e];
-          lastPlayerDirection.y = Velocity.y[e];
-
-          if (Animation.start[e] === 0) {
-            // start animation
-            Animation.start[e] = Date.now();
-          }
-        } else {
-          // stop animation
-          Animation.start[e] = 0;
-        }
-        // of animation has stopped set default sprite
-        if (Animation.start[e] === 0) {
-          Sprite.value[e] = getAnimationSprite(lastPlayerDirection, 1);
-          return;
-        }
-
-        const elapsed = Date.now() - Animation.start[e];
-
-        Sprite.value[e] = getAnimationSprite(lastPlayerDirection, elapsed % 3);
-      });
-    });
-
-    query(Movable).each((e) => {
-      const newX = Position.x[e] + Velocity.x[e];
-      const newY = Position.y[e] + Velocity.y[e];
-      if (
-        isWalkable(
-          newX + CHARACTER_SPRITE_WIDTH,
-          newY + CHARACTER_SPRITE_HEIGHT
-        )
-      ) {
-        Position.x[e] += Velocity.x[e];
-        Position.y[e] += Velocity.y[e];
-      } else {
-        Velocity.x[e] = 0;
-        Velocity.y[e] = 0;
-      }
-    });
-
-    query(Drawable).each((e) => {
-      const asset = Sprite.value[e];
-
-      const x = Position.x[e];
-      const y = Position.y[e];
-
-      ctx.drawImage(SPRITES_IMAGES[asset], x * TILE_SIZE, y * TILE_SIZE);
-    });
-
-    step += 1;
   });
+
+  onTurn(UPDATE_ANIM_TURN, () => {
+    query(Character).each((e) => {
+      if (isMoving(e)) {
+        lastPlayerDirection.x = Velocity.x[e];
+        lastPlayerDirection.y = Velocity.y[e];
+
+        if (Animation.start[e] === 0) {
+          // start animation
+          Animation.start[e] = Date.now();
+        }
+      } else {
+        // stop animation
+        Animation.start[e] = 0;
+      }
+      // of animation has stopped set default sprite
+      if (Animation.start[e] === 0) {
+        Sprite.value[e] = getAnimationSprite(lastPlayerDirection, 1);
+        return;
+      }
+
+      const elapsed = Date.now() - Animation.start[e];
+
+      Sprite.value[e] = getAnimationSprite(lastPlayerDirection, elapsed % 3);
+    });
+  });
+
+  query(Movable).each((e) => {
+    const newX = Position.x[e] + Velocity.x[e];
+    const newY = Position.y[e] + Velocity.y[e];
+    if (
+      isWalkable(newX + CHARACTER_SPRITE_WIDTH, newY + CHARACTER_SPRITE_HEIGHT)
+    ) {
+      Position.x[e] += Velocity.x[e];
+      Position.y[e] += Velocity.y[e];
+    } else {
+      Velocity.x[e] = 0;
+      Velocity.y[e] = 0;
+    }
+  });
+
+  query(Drawable).each((e) => {
+    const asset = Sprite.value[e];
+
+    const x = Position.x[e];
+    const y = Position.y[e];
+
+    ctx.drawImage(SPRITES_IMAGES[asset], x * TILE_SIZE, y * TILE_SIZE);
+  });
+
+  step += 1;
   requestAnimationFrame(loop);
 })();
 
