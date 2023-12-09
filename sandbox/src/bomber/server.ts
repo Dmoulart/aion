@@ -24,25 +24,6 @@ initMap();
 
 const wss = new WebSocketServer({port: 4321});
 wss.on("connection", (socket) => {
-  // {
-  //   const ents: Array<Entity> = [];
-
-  //   const archetypes = query(Tile).archetypes;
-
-  //   for (const arch of archetypes) {
-  //     for (const eid of arch.entities.dense) {
-  //       ents.push(eid);
-  //     }
-  //   }
-  //   console.time("encoded tiles in");
-  //   const chunk = encodeTile(ents);
-  //   console.timeEnd("encode");
-
-  //   // socket.send(chunk.buffer);
-  // }
-
-  // {
-  //   const ents: Array<Entity> = [];
   const player = createPlayer({
     Animation: {
       start: 0,
@@ -64,16 +45,8 @@ wss.on("connection", (socket) => {
     remove(player);
   };
 
-  //   const archetypes = query(Character).archetypes;
-
-  //   for (const arch of archetypes) {
-  //     for (const eid of arch.entities.dense) {
-  //       ents.push(eid);
-  //     }
-  //   }
   const chunk = initMessage.encode(world);
   socket.send(chunk);
-  // socket.send(encodePlayer(ents));
 });
 
 function initMap() {
