@@ -10,6 +10,7 @@ import {
   defineMessage,
   Entity,
   query,
+  createSnapshot,
 } from "../../../packages/ecs/dist/index.js";
 import block from "./assets/block.png";
 import tile from "./assets/tile.png";
@@ -117,33 +118,8 @@ export {encodePlayer, decodePlayer};
 
 export const initMessage = defineMessage({
   encode(world, chunk) {
-    {
-      const ents: Array<Entity> = [];
-
-      const archetypes = query(world, Tile).archetypes;
-
-      for (const arch of archetypes) {
-        for (const eid of arch.entities.dense) {
-          ents.push(eid);
-        }
-      }
-      chunk = encodeTile(ents, chunk);
-    }
-
-    {
-      const ents: Array<Entity> = [];
-
-      const archetypes = query(world, Character).archetypes;
-      console.log("encode player");
-      for (const arch of archetypes) {
-        for (const eid of arch.entities.dense) {
-          ents.push(eid);
-          console.log({eid});
-        }
-      }
-
-      chunk = encodePlayer(ents, chunk);
-    }
+    chunk = createSnapshot(world, chunk, ...Object.values(Tile));
+    chunk = createSnapshot(world, chunk, ...Object.values(Character));
 
     return chunk.buffer;
   },

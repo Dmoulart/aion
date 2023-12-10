@@ -9,3 +9,4 @@ export * from "./relation.js";
 export * from "./encoder.js";
 export * from "./message.js";
 export * from "./transport.js";
+export * from "./snapshot.js";
