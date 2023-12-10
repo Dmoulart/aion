@@ -16,7 +16,6 @@ import {
   SPRITES,
   isWalkable,
   TILE_SIZE,
-  initMessage,
   Tile,
   TileDesc,
   setWalkable,
@@ -71,7 +70,8 @@ onTileCreated((e) => {
   const x = Position.x[e];
   const y = Position.y[e];
   const isBlocking = TileDesc.blocking[e];
-  console.log("tile crearted");
+  console.log("tile crearted", isBlocking);
+
   setWalkable(x, y, !isBlocking);
 });
 
@@ -115,6 +115,7 @@ onTileCreated((e) => {
     const newX = Position.x[e] + Velocity.x[e];
     const newY = Position.y[e] + Velocity.y[e];
     if (
+      (Velocity.x[e] !== 0 || Velocity.y[e] !== 0) &&
       isWalkable(newX + CHARACTER_SPRITE_WIDTH, newY + CHARACTER_SPRITE_HEIGHT)
     ) {
       Position.x[e] += Velocity.x[e];

@@ -102,7 +102,9 @@ function createTile(x: number, y: number) {
 }
 
 export function isWalkable(x: number, y: number) {
-  return walkable?.[Math.round(x)]?.[Math.round(y)] ?? false;
+  x = Math.round(x);
+  y = Math.round(y);
+  return walkable?.[x]?.[y] ?? false;
 }
 
 const [encodeTile, decodeTile] = defineEncoder([Position, TileDesc, Sprite]);
@@ -118,7 +120,7 @@ export {encodePlayer, decodePlayer};
 
 export const initMessage = defineMessage({
   encode(world, chunk) {
-    chunk = createSnapshot(world, chunk, ...Object.values(Tile));
+    chunk = createSnapshot(world, chunk, ...[Position, TileDesc, Sprite]);
     chunk = createSnapshot(world, chunk, ...Object.values(Character));
 
     return chunk.buffer;

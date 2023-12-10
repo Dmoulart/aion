@@ -60,17 +60,18 @@ function initMap() {
 function createTile(x: number, y: number) {
   const isWalkable = Math.random() > 0.1;
   const t = createTileEntity({
+    TileDesc: {
+      blocking: isWalkable ? Number(false) : Number(true),
+    },
     Position: {
       x,
       y,
     },
     Sprite: {value: SPRITES[isWalkable ? tileAsset : blockAsset]},
-    TileDesc: {
-      blocking: isWalkable ? Number(false) : Number(true),
-    },
   });
   const isBlocking = Boolean(TileDesc.blocking[t]);
 
   walkable[x] ??= [];
   walkable[x][y] = !isBlocking;
+  console.log({isBlocking});
 }
