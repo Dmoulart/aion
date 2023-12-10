@@ -7,15 +7,11 @@ import {
   bombi,
   createTileEntity,
   tileAsset,
-  Tile,
-  encodeTile,
-  encodePlayer,
   initMessage,
 } from "./shared.js";
+import {createTransport} from "../../../packages/ecs/dist/transport.js";
 
-import {Entity} from "../../../packages/ecs/dist/entity.js";
-
-const {prefab, query, world, remove} = bombi();
+const {prefab, world, remove} = bombi();
 
 const createPlayer = prefab(Character);
 
@@ -24,6 +20,8 @@ initMap();
 
 const wss = new WebSocketServer({port: 4321});
 wss.on("connection", (socket) => {
+  const transport = createTransport(socket);
+
   const player = createPlayer({
     Animation: {
       start: 0,
@@ -41,12 +39,14 @@ wss.on("connection", (socket) => {
     },
   });
 
+  transport.send(world, initMessage);
+
   socket.onclose = (ev) => {
     remove(player);
   };
 
-  const chunk = initMessage.encode(world);
-  socket.send(chunk);
+  // const chunk = initMessage.encode(world);
+  // socket.send(chunk);
 });
 
 function initMap() {

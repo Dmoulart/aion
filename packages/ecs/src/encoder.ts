@@ -55,11 +55,8 @@ export function defineEncoder(
 
   const instanceSize =
     componentsInstanceSize + componentsHeaderSize + entitySize;
-
-  function encode(
-    ents: Entity[],
-    chunk: Chunk = new Chunk(new ArrayBuffer(ents.length * instanceSize + 4))
-  ) {
+  //= new Chunk(new ArrayBuffer(ents.length * instanceSize + 4))
+  function encode(ents: Entity[], chunk: Chunk) {
     const len = ents.length * instanceSize + 4;
     chunk.ensureAvailableCapacity(len);
     // write len

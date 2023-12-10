@@ -1,5 +1,9 @@
 import "./style.css";
-import {Entity, onEnterQuery} from "../../packages/ecs/dist/index.js";
+import {
+  Entity,
+  createTransport,
+  onEnterQuery,
+} from "../../packages/ecs/dist/index.js";
 import {useInput} from "./bomber/input";
 import {
   Drawable,
@@ -38,9 +42,10 @@ const {query, world} = bombi();
 
 try {
   const socket = new WebSocket(`ws://${window.location.hostname}:4321`);
+  const transport = createTransport(socket);
   socket.onmessage = async (msg) => {
     const ab = await msg.data.arrayBuffer();
-    initMessage.decode(world, ab);
+    transport.receive(world, ab);
   };
 } catch (e) {
   console.error(e);
@@ -76,8 +81,8 @@ onTileCreated((e) => {
   query(Character).each((player) => {
     const {direction} = useInput();
     const {x, y} = direction();
-    Velocity.x[player] = x * 0.1;
-    Velocity.y[player] = y * 0.1;
+    Velocity.x[player] = x * 0.25;
+    Velocity.y[player] = y * 0.25;
   });
 
   onTurn(UPDATE_ANIM_TURN, () => {

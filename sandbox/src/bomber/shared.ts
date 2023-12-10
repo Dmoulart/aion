@@ -115,13 +115,8 @@ const [encodePlayer, decodePlayer] = defineEncoder([
 ]);
 export {encodePlayer, decodePlayer};
 
-export const MESSAGES = {
-  INIT: 1,
-};
-
-export const initMessage = defineMessage(MESSAGES.INIT, {
-  encode(world) {
-    let chunk: Chunk;
+export const initMessage = defineMessage({
+  encode(world, chunk) {
     {
       const ents: Array<Entity> = [];
 
@@ -132,8 +127,7 @@ export const initMessage = defineMessage(MESSAGES.INIT, {
           ents.push(eid);
         }
       }
-      console.time("encoded tiles in");
-      chunk = encodeTile(ents);
+      chunk = encodeTile(ents, chunk);
     }
 
     {
@@ -153,10 +147,9 @@ export const initMessage = defineMessage(MESSAGES.INIT, {
 
     return chunk.buffer;
   },
-  decode(world, buffer) {
-    console.log("decode tile");
-    let chunk = decodeTile(world, new Chunk(buffer));
-    console.log("decode player");
-    decodePlayer(world, chunk);
+  decode(world, chunk) {
+    chunk = decodeTile(world, chunk);
+    chunk = decodePlayer(world, chunk);
+    return chunk;
   },
 });
