@@ -1,4 +1,3 @@
-import {Chunk} from "../../../packages/ecs/dist/chunk.js";
 import {
   aion,
   defineComponent,
@@ -8,8 +7,6 @@ import {
   u8,
   defineEncoder,
   defineMessage,
-  Entity,
-  query,
   createSnapshot,
 } from "../../../packages/ecs/dist/index.js";
 import block from "./assets/block.png";

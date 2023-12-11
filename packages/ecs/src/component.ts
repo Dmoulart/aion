@@ -116,7 +116,7 @@ function createColumn(
   }
 }
 // @temp, work symbols out
-export const components: Component = [];
+export const components: Component[] = [];
 /**
  * Create a new component from a component definition.
  * @param def component definition

@@ -4,6 +4,7 @@ import {
   attach,
   getComponentByID,
   type ComponentId,
+  getComponentID,
 } from "./component.js";
 import {insertEntity, type Entity} from "./entity.js";
 import {
@@ -55,6 +56,7 @@ export function defineEncoder(
 
   const instanceSize =
     componentsInstanceSize + componentsHeaderSize + entitySize;
+
   //= new Chunk(new ArrayBuffer(ents.length * instanceSize + 4))
   function encode(ents: Entity[], chunk: Chunk) {
     const len = ents.length * instanceSize + 4;
