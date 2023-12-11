@@ -22,10 +22,12 @@ export function defineRelation<S extends Schema>(
 
   return function <T extends Entity | "*">(
     entityOrWildcard: T
-  ): T extends "*" ? Component<S>[] : Component<S> {
+  ): T extends "*" ? Array<ComponentId | ID>[] : Component<S> {
     if (isWildcard(entityOrWildcard)) {
-      //@ts-expect-error
-      return instances;
+      //@todo proper typings
+      return instances as T extends "*"
+        ? Array<ComponentId | ID>[]
+        : Component<S>;
     }
 
     const entity = entityOrWildcard as Entity;
@@ -33,13 +35,17 @@ export function defineRelation<S extends Schema>(
     const id = pair(entity, baseID);
 
     if (relations.has(id)) {
-      //@todo: return coponent
       const componentOrID = relations.get(id);
-      return componentOrID;
+      //@todo: proper typing
+      return componentOrID as T extends "*"
+        ? Array<ComponentId | ID>[]
+        : Component<S>;
     }
     let ret: Component | ID;
 
     if (schema) {
+      //@todo proper typing
+      //@ts-expect-error
       ret = defineComponent(schema, size, id);
     } else {
       ret = id;
@@ -47,6 +53,6 @@ export function defineRelation<S extends Schema>(
 
     instances.push(id);
     relations.set(id, ret);
-    return ret;
+    return ret as T extends "*" ? Array<ComponentId | ID>[] : Component<S>;
   };
 }
