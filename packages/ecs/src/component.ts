@@ -32,7 +32,7 @@ export type InferSchemaFromID<ID extends ComponentId> = ID extends ComponentId<
   ? Schema
   : never;
 
-export type Component<S extends Schema = any> = {
+export type Component<S extends Schema = Schema> = {
   [$cid]: ComponentId<S>;
 } & Columns<S>;
 
@@ -115,8 +115,10 @@ function createColumn(
     throw new Error("Unknown field type");
   }
 }
-// @temp, work symbols out
+
+// All the components indexed by ID.
 export const components: Component[] = [];
+
 /**
  * Create a new component from a component definition.
  * @param def component definition
@@ -132,17 +134,15 @@ export const defineComponent = <S extends Schema>(
 
   setSchema(componentID, schema);
 
-  const storage = createComponentColumns(schema, size) as Component<
+  const component = createComponentColumns(schema, size) as Component<
     typeof schema
   >;
 
-  storage[$cid] = componentID;
-  //daffu
-  (storage as any).__id = componentID;
+  component[$cid] = componentID;
 
-  components[componentID] = storage;
-  // compsById.set(storage, componentID);
-  return storage;
+  components[componentID] = component;
+
+  return component;
 };
 
 export const isComponent = (obj: object): obj is Component => $cid in obj;

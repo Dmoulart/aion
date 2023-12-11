@@ -106,13 +106,12 @@ const hashQueryTerms = (terms: QueryTerm[]) => {
 
   for (let i = 0; i < terms.length; i++) {
     const term = terms[i]!;
-    // Convert the number to a string before hashing
     const type = term.type;
 
     hash = (hash << 5) + hash + type;
 
     for (let j = 0; j < term.comps.length; j++) {
-      const id = getComponentID(term.comps[j])!;
+      const id = getComponentID(term.comps[j]!)!;
       hash = (hash << 5) + hash + id;
     }
   }

@@ -12,6 +12,7 @@ import {
   isPrimitiveType,
   isSingleTypeSchema,
   type MultipleTypesSchema,
+  type Schema,
 } from "./schemas.js";
 import {f32, f64, i16, i32, i64, i8, u16, u64, u8, u32} from "./types.js";
 import type {World} from "./world.js";
@@ -32,15 +33,17 @@ function replace(world: World, eid: Entity) {
  * Define a encoding and decoding function for a group of components.
  * @todo perf
  * @param components
- * @param param1
+ * @param options
  * @returns
  */
 export function defineEncoder(
   components: Component[],
   {decodingStrategy} = DEFAULT_ENCODER_CONFIG
 ) {
-  for (const component of components) {
-    if (isSingleTypeSchema(component)) {
+  for (const comp of components) {
+    const schema = getSchema(getComponentID(comp))!;
+
+    if (isSingleTypeSchema(schema)) {
       throw new Error("Single type schema encoding not supported");
     }
   }
@@ -68,8 +71,7 @@ export function defineEncoder(
       chunk.writeInt32(ent);
 
       for (const comp of components) {
-        //@todo fix component id getting
-        const id = comp.__id;
+        const id = getComponentID(comp);
         const Schema = getSchema(id)! as MultipleTypesSchema;
 
         chunk.writeInt32(id);
@@ -80,8 +82,11 @@ export function defineEncoder(
           if (!isPrimitiveType(type)) {
             throw new Error("Cannot encode non primitive type");
           }
-          //@ts-expect-error
-          chunk[setters[type.name]!](comp[field][ent]);
+
+          const write = chunk[setters[type.name]!];
+          const value = comp[field as keyof Schema][ent];
+
+          write(value);
         }
       }
     }
@@ -98,24 +103,26 @@ export function defineEncoder(
       decodingStrategy(world, ent);
 
       for (let i = 0; i < components.length; i++) {
-        const compID = chunk.readInt32();
+        const id = chunk.readInt32();
 
-        const Schema = getSchema(compID)! as MultipleTypesSchema;
+        const Schema = getSchema(id)! as MultipleTypesSchema;
 
         for (const field in Schema) {
           const type = Schema[field]!;
 
           if (!isPrimitiveType(type)) {
-            throw new Error("Cannot encode non primitive type");
+            throw new Error("Cannot decode non primitive type");
           }
 
-          attach(world, compID, ent);
+          attach(world, id, ent);
 
-          //@ts-expect-error
-          const val = chunk[getters[type.name]!]();
+          const read = chunk[getters[type.name]!];
 
-          const comp = getComponentByID(compID as ComponentId);
-          comp[field][ent] = val;
+          const comp = getComponentByID(
+            id as ComponentId
+          )! as Component<MultipleTypesSchema>;
+
+          comp[field]![ent] = read();
         }
       }
     }
@@ -128,7 +135,8 @@ export function defineEncoder(
 
 function getComponentByteSize(comp: Component) {
   let size = 0;
-  const schema = getSchema(comp.__id)!;
+  const id = getComponentID(comp);
+  const schema = getSchema(id)!;
 
   if (isSingleTypeSchema(schema)) {
     throw new Error("Cannot encode single type schema");
@@ -156,7 +164,7 @@ const setters = {
   [u64.name]: "writeUint64",
   [i64.name]: "writeInt64",
   [f64.name]: "writeFloat64",
-};
+} as const;
 
 const getters = {
   [u8.name]: "readUint8",
@@ -166,7 +174,7 @@ const getters = {
   [f32.name]: "readFloat32",
   [u32.name]: "readUint32",
   [i32.name]: "readInt32",
-  [u64.name]: "readtUint64",
+  [u64.name]: "readUint64",
   [i64.name]: "readInt64",
   [f64.name]: "readFloat64",
-};
+} as const;

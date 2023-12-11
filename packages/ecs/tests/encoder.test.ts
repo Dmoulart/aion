@@ -10,6 +10,7 @@ import {
 import {defineEncoder} from "../src/encoder.js";
 import {$cid, attach, defineComponent} from "../src/component.js";
 import {i32, u8} from "../src/types.js";
+import {Chunk} from "../src/chunk.js";
 
 describe("Encoder", () => {
   it("can encode and decode", () => {
@@ -32,7 +33,7 @@ describe("Encoder", () => {
     TestComponent2.test[e] = 125;
 
     const [encode, decode] = defineEncoder([TestComponent1, TestComponent2]);
-    const chunk = encode([e]);
+    const chunk = encode([e], new Chunk(new ArrayBuffer(10_000)));
 
     removeEntity(world, e);
 
@@ -40,7 +41,7 @@ describe("Encoder", () => {
     TestComponent1.y[e] = 0;
     TestComponent2.test[e] = 0;
 
-    decode(world, chunk);
+    decode(world, new Chunk(chunk.buffer));
 
     expect(TestComponent1.x[e]).toBe(5);
     expect(TestComponent1.y[e]).toBe(10);

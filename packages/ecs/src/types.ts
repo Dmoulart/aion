@@ -1,5 +1,3 @@
-import {aion} from "./world.js";
-
 export const i8 = Int8Array;
 export const u8 = Uint8Array;
 
@@ -26,7 +24,7 @@ export const types = {
   i16,
   u16,
   i32,
-  ui32: u32,
+  u32,
   f32,
   f64,
   i64,
@@ -39,6 +37,19 @@ export type Types = typeof types;
 
 export type PrimitiveType = Types[keyof Types];
 
+// The nested arrays fields will be defined like in bitECS : a typed array constructor and the length of the array
+export type ArrayType<T extends PrimitiveType = PrimitiveType> = [T, number];
+
+export type CustomType<T = any> = (size: number) => Array<T>;
+
+export type InferArrayType<T extends ArrayType> = T extends ArrayType<
+  infer Element
+>
+  ? Element
+  : never;
+
+export type Type = PrimitiveType | ArrayType | CustomType;
+
 /**
  * Typed arrays constructor
  */
@@ -46,14 +57,3 @@ const TypedArray = Object.getPrototypeOf(Uint8Array);
 
 export const isTypedArray = (obj: object): obj is typeof TypedArray =>
   Boolean("BYTES_PER_ELEMENT" in obj);
-
-// The nested arrays fields will be defined like in bitECS : a typed array constructor and the length of the array
-export type ArrayType<T extends PrimitiveType = PrimitiveType> = [T, number];
-
-export type CustomType<T = any> = (size: number) => Array<T>;
-
-export type InferArrayType<T extends ArrayType> = T extends ArrayType<infer El>
-  ? El
-  : never;
-
-export type Type = PrimitiveType | ArrayType | CustomType;

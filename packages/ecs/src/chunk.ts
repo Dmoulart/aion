@@ -62,6 +62,11 @@ export class Chunk {
     this.#offset += 8;
   }
 
+  writeUint64(value: bigint) {
+    this.#view.setBigUint64(this.#offset, value, true);
+    this.#offset += 8;
+  }
+
   writeInt64(value: bigint) {
     this.#view.setBigInt64(this.#offset, value, true);
     this.#offset += 8;
@@ -111,6 +116,12 @@ export class Chunk {
 
   readFloat64(): number {
     const value = this.#view.getFloat64(this.#offset, true);
+    this.#offset += 8;
+    return value;
+  }
+
+  readUint64(): BigInt {
+    const value = this.#view.getBigUint64(this.#offset, true);
     this.#offset += 8;
     return value;
   }
