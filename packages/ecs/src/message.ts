@@ -14,13 +14,11 @@ const nextMessageId = () => messageId++;
 
 export function defineMessage(message: Message): Message {
   const id = nextMessageId();
-  console.log("mid", {id});
   messages[id] = message;
   return {
     encode(world, chunk) {
       chunk.ensureAvailableCapacity(4);
       chunk.writeInt32(id);
-      console.log("write int 32", id);
       return message.encode(world, chunk);
     },
     decode(world, chunk) {

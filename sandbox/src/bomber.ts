@@ -70,7 +70,6 @@ onTileCreated((e) => {
   const x = Position.x[e];
   const y = Position.y[e];
   const isBlocking = TileDesc.blocking[e];
-  console.log("tile crearted", isBlocking);
 
   setWalkable(x, y, !isBlocking);
 });

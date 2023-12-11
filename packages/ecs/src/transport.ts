@@ -15,13 +15,12 @@ export class Transport {
 
   send(world: World, message: Message) {
     const data = message.encode(world, new Chunk(new ArrayBuffer(0)));
-    console.log(new DataView(data).getInt32(0, true));
     return this.#socket.send(data);
   }
 
   receive(world: World, buffer: ArrayBuffer) {
     let chunk = new Chunk(buffer);
-    while (chunk.offset + 4 < chunk.buffer.byteLength) {
+    while (chunk.offset < chunk.buffer.byteLength) {
       const id = chunk.readInt32();
       const message = getMessage(id);
       if (message) {

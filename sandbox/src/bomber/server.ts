@@ -73,5 +73,4 @@ function createTile(x: number, y: number) {
 
   walkable[x] ??= [];
   walkable[x][y] = !isBlocking;
-  console.log({isBlocking});
 }
