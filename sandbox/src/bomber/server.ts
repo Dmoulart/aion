@@ -16,6 +16,7 @@ const {prefab, world, remove} = bombi();
 const createPlayer = prefab(Character);
 
 const walkable: Array<boolean[]> = [];
+
 initMap();
 
 const wss = new WebSocketServer({port: 4321});
@@ -38,15 +39,11 @@ wss.on("connection", (socket) => {
       y: 0,
     },
   });
-
   transport.send(world, initMessage);
 
   socket.onclose = (ev) => {
     remove(player);
   };
-
-  // const chunk = initMessage.encode(world);
-  // socket.send(chunk);
 });
 
 function initMap() {

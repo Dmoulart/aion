@@ -14,18 +14,29 @@ export class Transport {
   }
 
   send(world: World, message: Message) {
-    const data = message.encode(world, new Chunk(new ArrayBuffer(0)));
-    return this.#socket.send(data);
+    try {
+      const data = message.encode(world, new Chunk(new ArrayBuffer(0)));
+      console.log("data", data);
+      return this.#socket.send(data);
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   receive(world: World, buffer: ArrayBuffer) {
-    let chunk = new Chunk(buffer);
-    while (chunk.offset < chunk.buffer.byteLength) {
-      const id = chunk.readInt32();
-      const message = getMessage(id);
-      if (message) {
-        chunk = message.decode(world, chunk);
+    try {
+      let chunk = new Chunk(buffer);
+      while (chunk.offset < chunk.buffer.byteLength) {
+        const id = chunk.readInt32();
+        const message = getMessage(id);
+        if (message) {
+          chunk = message.decode(world, chunk);
+        } else {
+          throw Error("Unknown message");
+        }
       }
+    } catch (e) {
+      console.error(e);
     }
   }
 }

@@ -8,6 +8,7 @@ import type {World} from "./world.js";
 import type {Archetype} from "./archetype.js";
 import type {Entity} from "./entity.js";
 import {BitSet} from "./collections/index.js";
+import type {Schema} from "./schemas.js";
 
 /**
  * A matcher represents the conditional expression used for every query operators.
@@ -158,6 +159,7 @@ export function createQuery(...terms: QueryTerm[]): Query {
   };
 }
 
+type QueryElement = Component<any> | QueryTerm | ComponentsGroup;
 /**
  * Define a query, register it to the world and returns it.
  * Query terms or components can be used to define this query.
@@ -167,7 +169,7 @@ export function createQuery(...terms: QueryTerm[]): Query {
  * @param termsOrComponents the query terms or components the query will target.
  * @returns query object
  */
-export const query = <T extends (QueryTerm | Component | ComponentsGroup)[]>(
+export const query = <T extends Array<QueryElement>>(
   world: World,
   ...termsOrComponents: T
 ): Query => {
@@ -183,7 +185,9 @@ export const query = <T extends (QueryTerm | Component | ComponentsGroup)[]>(
     }
     //component group
     else {
-      freeFloatingComponents.push(...Object.values(termOrComponent));
+      freeFloatingComponents.push(
+        ...Object.values(termOrComponent as ComponentsGroup)
+      );
     }
   }
 
