@@ -5,6 +5,7 @@ import {
   getComponentByID,
   type ComponentId,
   getComponentID,
+  $cid,
 } from "./component.js";
 import {insertEntity, type Entity} from "./entity.js";
 import {
@@ -40,6 +41,17 @@ export function defineEncoder(
   components: Component[],
   {decodingStrategy} = DEFAULT_ENCODER_CONFIG
 ) {
+  console.log(
+    "before",
+    components.map((c) => c[$cid])
+  );
+  components.sort((a, b) => {
+    return getComponentID(a) - getComponentID(b);
+  });
+  console.log(
+    "after",
+    components.map((c) => c[$cid])
+  );
   for (const comp of components) {
     const schema = getSchema(getComponentID(comp))!;
 
@@ -83,10 +95,9 @@ export function defineEncoder(
             throw new Error("Cannot encode non primitive type");
           }
 
-          const write = chunk[setters[type.name]!];
           const value = comp[field as keyof Schema][ent];
 
-          write(value);
+          chunk[setters[type.name]!](value);
         }
       }
     }
@@ -116,13 +127,11 @@ export function defineEncoder(
 
           attach(world, id, ent);
 
-          const read = chunk[getters[type.name]!];
-
           const comp = getComponentByID(
             id as ComponentId
           )! as Component<MultipleTypesSchema>;
 
-          comp[field]![ent] = read();
+          comp[field]![ent] = chunk[getters[type.name]!]();
         }
       }
     }
