@@ -117,7 +117,7 @@ export {encodePlayer, decodePlayer};
 
 export const initMessage = defineMessage({
   encode(world, chunk) {
-    chunk = createSnapshot(world, chunk, ...[Position, TileDesc, Sprite]);
+    chunk = createSnapshot(world, chunk, ...Object.values(Tile));
     chunk = createSnapshot(world, chunk, ...Object.values(Character));
 
     return chunk.buffer;

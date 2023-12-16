@@ -45,7 +45,7 @@ export function defineEncoder(
     "before",
     components.map((c) => c[$cid])
   );
-  components.sort((a, b) => {
+  components = components.sort((a, b) => {
     return getComponentID(a) - getComponentID(b);
   });
   console.log(
