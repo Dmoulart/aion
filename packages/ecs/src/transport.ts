@@ -16,7 +16,6 @@ export class Transport {
   send(world: World, message: Message) {
     try {
       const data = message.encode(world, new Chunk(new ArrayBuffer(0)));
-      console.log("data", data);
       return this.#socket.send(data);
     } catch (e) {
       console.error(e);

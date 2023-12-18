@@ -9,7 +9,7 @@ import {
 } from "../src/index.js";
 import {defineEncoder} from "../src/encoder.js";
 import {$cid, attach, defineComponent} from "../src/component.js";
-import {i32, u8} from "../src/types.js";
+import {f32, i32, u16, u8} from "../src/types.js";
 import {Chunk} from "../src/chunk.js";
 
 describe("Encoder", () => {
@@ -21,7 +21,7 @@ describe("Encoder", () => {
     const TestComponent2 = defineComponent({
       test: u8,
     });
-    console.log(TestComponent1[$cid]);
+
     const world = createWorld();
     const e = createEntity(world);
 

@@ -21,7 +21,7 @@ initMap();
 
 const wss = new WebSocketServer({port: 4321});
 wss.on("connection", (socket) => {
-  const transport = createTransport(socket);
+  const transport = createTransport(socket as any);
 
   const player = createPlayer({
     Animation: {
@@ -56,17 +56,18 @@ function initMap() {
 
 function createTile(x: number, y: number) {
   const isWalkable = Math.random() > 0.1;
-  const t = createTileEntity({
-    TileDesc: {
-      blocking: isWalkable ? Number(false) : Number(true),
-    },
+  const tile = createTileEntity({
     Position: {
       x,
       y,
     },
+    TileDesc: {
+      blocking: isWalkable ? Number(false) : Number(true),
+    },
     Sprite: {value: SPRITES[isWalkable ? tileAsset : blockAsset]},
   });
-  const isBlocking = Boolean(TileDesc.blocking[t]);
+
+  const isBlocking = Boolean(TileDesc.blocking[tile]);
 
   walkable[x] ??= [];
   walkable[x][y] = !isBlocking;

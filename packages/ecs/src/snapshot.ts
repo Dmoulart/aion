@@ -10,7 +10,7 @@ export function createSnapshot(
   chunk: Chunk,
   ...components: Component[]
 ) {
-  const [encode, decode] = defineEncoder(components);
+  const [encode] = defineEncoder(components);
 
   const ents: Array<Entity> = [];
 

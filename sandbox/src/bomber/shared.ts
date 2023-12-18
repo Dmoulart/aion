@@ -55,14 +55,6 @@ export const setWalkable = (x: number, y: number, isWalkable: boolean) => {
   walkable[x][y] = isWalkable;
 };
 
-function initMap() {
-  for (let x = 0; x < 50; x++) {
-    for (let y = 0; y < 30; y++) {
-      createTile(x, y);
-    }
-  }
-}
-
 export const SPRITES = {
   [block]: 0,
   [tile]: 1,
@@ -80,39 +72,19 @@ export const SPRITES = {
   "./src/bomber/assets/bomberman-r2.png": 13,
 };
 
-function createTile(x: number, y: number) {
-  const isWalkable = Math.random() > 0.1;
-  const t = createTileEntity({
-    Position: {
-      x,
-      y,
-    },
-    Sprite: {value: SPRITES[isWalkable ? tile : block]},
-    TileDesc: {
-      blocking: isWalkable ? Number(false) : Number(true),
-    },
-  });
-  const isBlocking = Boolean(TileDesc.blocking[t]);
-
-  walkable[x] ??= [];
-  walkable[x][y] = !isBlocking;
-}
-
 export function isWalkable(x: number, y: number) {
   x = Math.round(x);
   y = Math.round(y);
   return walkable?.[x]?.[y] ?? false;
 }
 
-const [encodeTile, decodeTile] = defineEncoder([Position, TileDesc, Sprite]);
+const [encodeTile, decodeTile] = defineEncoder([...Object.values(Tile)]);
 export {encodeTile, decodeTile};
 
 const [encodePlayer, decodePlayer] = defineEncoder([
-  Animation,
-  Position,
-  Sprite,
-  Velocity,
+  ...Object.values(Character),
 ]);
+
 export {encodePlayer, decodePlayer};
 
 export const initMessage = defineMessage({
@@ -125,6 +97,7 @@ export const initMessage = defineMessage({
   decode(world, chunk) {
     chunk = decodeTile(world, chunk);
     chunk = decodePlayer(world, chunk);
+
     return chunk;
   },
 });

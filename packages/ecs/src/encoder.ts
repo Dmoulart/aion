@@ -41,17 +41,6 @@ export function defineEncoder(
   components: Component[],
   {decodingStrategy} = DEFAULT_ENCODER_CONFIG
 ) {
-  console.log(
-    "before",
-    components.map((c) => c[$cid])
-  );
-  components = components.sort((a, b) => {
-    return getComponentID(a) - getComponentID(b);
-  });
-  console.log(
-    "after",
-    components.map((c) => c[$cid])
-  );
   for (const comp of components) {
     const schema = getSchema(getComponentID(comp))!;
 
@@ -112,12 +101,10 @@ export function defineEncoder(
       const ent = chunk.readInt32();
 
       decodingStrategy(world, ent);
-
-      for (let i = 0; i < components.length; i++) {
+      for (const _ of components) {
         const id = chunk.readInt32();
 
         const Schema = getSchema(id)! as MultipleTypesSchema;
-
         for (const field in Schema) {
           const type = Schema[field]!;
 
@@ -125,13 +112,24 @@ export function defineEncoder(
             throw new Error("Cannot decode non primitive type");
           }
 
-          attach(world, id, ent);
+          // attach(world, id, ent);
 
           const comp = getComponentByID(
             id as ComponentId
           )! as Component<MultipleTypesSchema>;
 
-          comp[field]![ent] = chunk[getters[type.name]!]();
+          const value = chunk[getters[type.name]!]();
+
+          console.log({Schema, value, ent});
+
+          if (field === "blocking" && value === 1) {
+            debugger;
+          }
+
+          comp[field]![ent] = value;
+
+          // Wait the component values to be setted before attaching the components
+          attach(world, id, ent);
         }
       }
     }
