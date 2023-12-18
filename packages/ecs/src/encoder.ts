@@ -112,19 +112,11 @@ export function defineEncoder(
             throw new Error("Cannot decode non primitive type");
           }
 
-          // attach(world, id, ent);
-
           const comp = getComponentByID(
             id as ComponentId
           )! as Component<MultipleTypesSchema>;
 
           const value = chunk[getters[type.name]!]();
-
-          console.log({Schema, value, ent});
-
-          if (field === "blocking" && value === 1) {
-            debugger;
-          }
 
           comp[field]![ent] = value;
 
