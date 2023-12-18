@@ -8,6 +8,8 @@ import {
   defineEncoder,
   defineMessage,
   createSnapshot,
+  u32,
+  attach,
 } from "../../../packages/ecs/dist/index.js";
 import block from "./assets/block.png";
 import tile from "./assets/tile.png";
@@ -20,31 +22,37 @@ export let bombi = () => {
   return w;
 };
 
+const {prefab, create} = bombi();
+
 export const Position = defineComponent({
   x: f32,
   y: f32,
 });
-
 export const Velocity = defineComponent({
   x: f32,
   y: f32,
 });
-
 export const Animation = defineComponent({
   start: i32,
 });
-
 export const Sprite = defineComponent({value: u16});
-
-export const Movable = {Position, Velocity};
-export const Drawable = {Position, Sprite};
-export const Character = {...Movable, ...Drawable, Animation};
-
 export const TileDesc = defineComponent({
   blocking: u8,
 });
-export const TILE_SIZE = 16;
+export const Transport = defineComponent({
+  id: u32,
+});
+
+export const Movable = {Position, Velocity};
+export const Drawable = {Position, Sprite};
+export const Character = {...Movable, ...Drawable, Animation, Transport};
 export const Tile = {...Drawable, TileDesc};
+
+export const ClientTransport = create();
+
+export const TILE_SIZE = 16;
+
+const createPlayer = prefab(Character);
 
 export const createTileEntity = bombi().prefab(Tile);
 
@@ -87,7 +95,7 @@ const [encodePlayer, decodePlayer] = defineEncoder([
 
 export {encodePlayer, decodePlayer};
 
-export const initMessage = defineMessage({
+export const initWorldMessage = defineMessage({
   encode(world, chunk) {
     chunk = createSnapshot(world, chunk, ...Object.values(Tile));
     chunk = createSnapshot(world, chunk, ...Object.values(Character));
@@ -97,6 +105,47 @@ export const initMessage = defineMessage({
   decode(world, chunk) {
     chunk = decodeTile(world, chunk);
     chunk = decodePlayer(world, chunk);
+
+    return chunk;
+  },
+});
+
+export const initPlayerMessage = defineMessage({
+  encode(world, chunk) {
+    const {create} = bombi();
+
+    const transportID = create();
+
+    const player = createPlayer({
+      Animation: {
+        start: 0,
+      },
+      Position: {
+        x: 1,
+        y: 1,
+      },
+      Sprite: {
+        value: SPRITES["./src/bomber/assets/bomberman-b0.png"],
+      },
+      Velocity: {
+        x: 0,
+        y: 0,
+      },
+      Transport: {
+        id: transportID,
+      },
+    });
+
+    chunk = encodePlayer([player], chunk);
+    chunk.ensureAvailableCapacity(4);
+    chunk.writeInt32(transportID);
+
+    return chunk.buffer;
+  },
+  decode(world, chunk) {
+    chunk = decodePlayer(world, chunk);
+    const transportID = chunk.readInt32();
+    attach(world, transportID, ClientTransport);
 
     return chunk;
   },

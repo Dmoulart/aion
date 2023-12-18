@@ -101,6 +101,7 @@ export function defineEncoder(
       const ent = chunk.readInt32();
 
       decodingStrategy(world, ent);
+
       for (const _ of components) {
         const id = chunk.readInt32();
 

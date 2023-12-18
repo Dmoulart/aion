@@ -1,49 +1,52 @@
 import {WebSocketServer} from "ws";
 import {
-  Character,
   SPRITES,
   TileDesc,
   blockAsset,
   bombi,
   createTileEntity,
   tileAsset,
-  initMessage,
+  initWorldMessage,
+  initPlayerMessage,
 } from "./shared.js";
 import {createTransport} from "../../../packages/ecs/dist/transport.js";
 
-const {prefab, world, remove} = bombi();
-
-const createPlayer = prefab(Character);
+const {world} = bombi();
 
 const walkable: Array<boolean[]> = [];
 
 initMap();
 
 const wss = new WebSocketServer({port: 4321});
+
 wss.on("connection", (socket) => {
   const transport = createTransport(socket as any);
+  // const player = createPlayer({
+  //   Animation: {
+  //     start: 0,
+  //   },
+  //   Position: {
+  //     x: 1,
+  //     y: 1,
+  //   },
+  //   Sprite: {
+  //     value: SPRITES["./src/bomber/assets/bomberman-b0.png"],
+  //   },
+  //   Velocity: {
+  //     x: 0,
+  //     y: 0,
+  //   },
+  //   Transport: {
+  //     id: create(),
+  //   },
+  // });
 
-  const player = createPlayer({
-    Animation: {
-      start: 0,
-    },
-    Position: {
-      x: 1,
-      y: 1,
-    },
-    Sprite: {
-      value: SPRITES["./src/bomber/assets/bomberman-b0.png"],
-    },
-    Velocity: {
-      x: 0,
-      y: 0,
-    },
-  });
-  transport.send(world, initMessage);
+  transport.send(world, initWorldMessage);
+  transport.send(world, initPlayerMessage);
 
-  socket.onclose = (ev) => {
-    remove(player);
-  };
+  // socket.onclose = (ev) => {
+  //   remove(player);
+  // };
 });
 
 function initMap() {

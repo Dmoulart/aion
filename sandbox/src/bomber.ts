@@ -2,6 +2,7 @@ import "./style.css";
 import {
   Entity,
   createTransport,
+  hasComponent,
   onEnterQuery,
 } from "../../packages/ecs/dist/index.js";
 import {useInput} from "./bomber/input";
@@ -20,6 +21,8 @@ import {
   TileDesc,
   setWalkable,
   Character,
+  ClientTransport,
+  Transport,
 } from "./bomber/shared";
 
 const canvas = document.createElement("canvas");
@@ -78,36 +81,35 @@ onTileCreated((e) => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   query(Character).each((player) => {
-    const {direction} = useInput();
-    const {x, y} = direction();
-    Velocity.x[player] = x * 0.25;
-    Velocity.y[player] = y * 0.25;
+    if (hasComponent(world, Transport.id[player], ClientTransport)) {
+      const {direction} = useInput();
+      const {x, y} = direction();
+      Velocity.x[player] = x * 0.25;
+      Velocity.y[player] = y * 0.25;
+    }
   });
 
   onTurn(UPDATE_ANIM_TURN, () => {
-    query(Character).each((e) => {
-      if (isMoving(e)) {
-        lastPlayerDirection.x = Velocity.x[e];
-        lastPlayerDirection.y = Velocity.y[e];
-
-        if (Animation.start[e] === 0) {
-          // start animation
-          Animation.start[e] = Date.now();
-        }
-      } else {
-        // stop animation
-        Animation.start[e] = 0;
-      }
-      // of animation has stopped set default sprite
-      if (Animation.start[e] === 0) {
-        Sprite.value[e] = getAnimationSprite(lastPlayerDirection, 1);
-        return;
-      }
-
-      const elapsed = Date.now() - Animation.start[e];
-
-      Sprite.value[e] = getAnimationSprite(lastPlayerDirection, elapsed % 3);
-    });
+    // query(Character).each((e) => {
+    //   if (isMoving(e)) {
+    //     lastPlayerDirection.x = Velocity.x[e];
+    //     lastPlayerDirection.y = Velocity.y[e];
+    //     if (Animation.start[e] === 0) {
+    //       // start animation
+    //       Animation.start[e] = Date.now();
+    //     }
+    //   } else {
+    //     // stop animation
+    //     Animation.start[e] = 0;
+    //   }
+    //   // of animation has stopped set default sprite
+    //   if (Animation.start[e] === 0) {
+    //     Sprite.value[e] = getAnimationSprite(lastPlayerDirection, 1);
+    //     return;
+    //   }
+    //   const elapsed = Date.now() - Animation.start[e];
+    //   Sprite.value[e] = getAnimationSprite(lastPlayerDirection, elapsed % 3);
+    // });
   });
 
   query(Movable).each((e) => {
@@ -126,6 +128,9 @@ onTileCreated((e) => {
   });
 
   query(Drawable).each((e) => {
+    if (hasComponent(world, Transport, e)) {
+      debugger;
+    }
     const asset = Sprite.value[e];
 
     const x = Position.x[e];
