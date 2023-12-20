@@ -145,7 +145,7 @@ export const initPlayerMessage = defineMessage({
   },
   decode(world, chunk) {
     chunk = decodePlayer(world, chunk);
-    const transportID = chunk.readInt32();
+    const transportID = chunk.readInt32(); //@todo bind socket to player ?
     const player = chunk.readInt32();
     attach(world, player, ClientTransport);
     return chunk;
