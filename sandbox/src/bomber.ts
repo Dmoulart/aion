@@ -22,7 +22,8 @@ import {
   setWalkable,
   Character,
   ClientTransport,
-  Transport,
+  playerUpdateMessage,
+  player,
 } from "./bomber/shared";
 
 const canvas = document.createElement("canvas");
@@ -42,16 +43,12 @@ const SPRITES_IMAGES = await Promise.all(
 
 const {query, world} = bombi();
 
-try {
-  const socket = new WebSocket(`ws://${window.location.hostname}:4321`);
-  const transport = createTransport(socket);
-  socket.onmessage = async (msg) => {
-    const ab = await msg.data.arrayBuffer();
-    transport.receive(world, ab);
-  };
-} catch (e) {
-  console.error(e);
-}
+const socket = new WebSocket(`ws://${window.location.hostname}:4321`);
+const transport = createTransport(socket);
+socket.onmessage = async (msg) => {
+  const ab = await msg.data.arrayBuffer();
+  transport.receive(world, ab);
+};
 
 const CHARACTER_SPRITE_HEIGHT = 1;
 const CHARACTER_SPRITE_WIDTH = 0;
@@ -63,9 +60,9 @@ let step = 0;
 const lastPlayersDirections: Array<{x: number; y: number}> = [];
 
 const onTileCreated = onEnterQuery(query(Tile));
-// const onCharacterCreated = onEnterQuery(query(Character));
 
 export function usePlayer(cb: (player: Entity) => void) {
+  const {query, world} = bombi();
   //@todo: pass id to query
   query(Character).each((e) => {
     if (hasComponent(world, e, ClientTransport)) {
@@ -85,12 +82,10 @@ onTileCreated((e) => {
 (function loop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  usePlayer((e) => {
-    const {direction} = useInput();
-    const {x, y} = direction();
-    Velocity.x[e] = x * 0.1;
-    Velocity.y[e] = y * 0.1;
-  });
+  const {direction} = useInput();
+  const {x, y} = direction();
+  Velocity.x[player] = x * 0.1;
+  Velocity.y[player] = y * 0.1;
 
   onTurn(UPDATE_ANIM_TURN, () => {
     query(Character).each((e) => {
@@ -153,6 +148,9 @@ onTileCreated((e) => {
   });
 
   step += 1;
+
+  onTurn(10, () => transport.send(world, playerUpdateMessage));
+
   requestAnimationFrame(loop);
 })();
 

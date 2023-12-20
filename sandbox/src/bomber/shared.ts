@@ -11,6 +11,7 @@ import {
   u32,
   attach,
   Entity,
+  hasComponent,
 } from "../../../packages/ecs/dist/index.js";
 import block from "./assets/block.png";
 import tile from "./assets/tile.png";
@@ -111,6 +112,17 @@ export const initWorldMessage = defineMessage({
   },
 });
 
+export let player: Entity = 0;
+export let usePlayer = (cb: (player: Entity) => void) => {
+  const {query, world} = bombi();
+  //@todo: pass id to query
+  query(Character).each((e) => {
+    if (hasComponent(world, e, ClientTransport)) {
+      cb(e);
+    }
+  });
+};
+
 export let lastCreatedPlayer: Entity | undefined;
 export function setLastCreatedPlayer(player: Entity) {
   lastCreatedPlayer = player;
@@ -127,8 +139,30 @@ export const initPlayerMessage = defineMessage({
   },
   decode(world, chunk) {
     chunk = decodePlayer(world, chunk);
-    const player = chunk.readInt32();
+    player = chunk.readInt32();
     attach(world, player, ClientTransport);
+    return chunk;
+  },
+});
+
+export const playerUpdateMessage = defineMessage({
+  encode(world, chunk) {
+    chunk = encodePlayer([player], chunk);
+    return chunk.buffer;
+  },
+  decode(world, chunk) {
+    chunk = decodePlayer(world, chunk);
+    return chunk;
+  },
+});
+
+export const playersSnapshotMessage = defineMessage({
+  encode(world, chunk) {
+    chunk = createSnapshot(world, chunk, ...Object.values(Character));
+    return chunk.buffer;
+  },
+  decode(world, chunk) {
+    chunk = decodePlayer(world, chunk);
     return chunk;
   },
 });

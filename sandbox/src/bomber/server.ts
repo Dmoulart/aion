@@ -9,8 +9,8 @@ import {
   initWorldMessage,
   initPlayerMessage,
   createPlayer,
-  lastCreatedPlayer,
   setLastCreatedPlayer,
+  playersSnapshotMessage,
 } from "./shared.js";
 import {createTransport} from "../../../packages/ecs/dist/transport.js";
 
@@ -57,6 +57,16 @@ wss.on("connection", (socket) => {
   socket.onclose = (ev) => {
     remove(player);
   };
+
+  socket.on("message", (ev) => {
+    const data = ev.slice(0) as Buffer; //  why slice ?? I want the buffer dude
+    const arrayBuffer = data.buffer;
+
+    transport.receive(world, arrayBuffer);
+  });
+  setInterval(() => {
+    transport.send(world, playersSnapshotMessage);
+  }, 1000 / 10);
 });
 
 function initMap() {
