@@ -81,7 +81,7 @@ onTileCreated((e) => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   query(Character).each((player) => {
-    if (hasComponent(world, Transport.id[player], ClientTransport)) {
+    if (hasComponent(world, player, ClientTransport)) {
       const {direction} = useInput();
       const {x, y} = direction();
       Velocity.x[player] = x * 0.25;
@@ -90,26 +90,26 @@ onTileCreated((e) => {
   });
 
   onTurn(UPDATE_ANIM_TURN, () => {
-    // query(Character).each((e) => {
-    //   if (isMoving(e)) {
-    //     lastPlayerDirection.x = Velocity.x[e];
-    //     lastPlayerDirection.y = Velocity.y[e];
-    //     if (Animation.start[e] === 0) {
-    //       // start animation
-    //       Animation.start[e] = Date.now();
-    //     }
-    //   } else {
-    //     // stop animation
-    //     Animation.start[e] = 0;
-    //   }
-    //   // of animation has stopped set default sprite
-    //   if (Animation.start[e] === 0) {
-    //     Sprite.value[e] = getAnimationSprite(lastPlayerDirection, 1);
-    //     return;
-    //   }
-    //   const elapsed = Date.now() - Animation.start[e];
-    //   Sprite.value[e] = getAnimationSprite(lastPlayerDirection, elapsed % 3);
-    // });
+    query(Character).each((e) => {
+      if (isMoving(e)) {
+        lastPlayerDirection.x = Velocity.x[e];
+        lastPlayerDirection.y = Velocity.y[e];
+        if (Animation.start[e] === 0) {
+          // start animation
+          Animation.start[e] = Date.now();
+        }
+      } else {
+        // stop animation
+        Animation.start[e] = 0;
+      }
+      // of animation has stopped set default sprite
+      if (Animation.start[e] === 0) {
+        Sprite.value[e] = getAnimationSprite(lastPlayerDirection, 1);
+        return;
+      }
+      const elapsed = Date.now() - Animation.start[e];
+      Sprite.value[e] = getAnimationSprite(lastPlayerDirection, elapsed % 3);
+    });
   });
 
   query(Movable).each((e) => {
@@ -127,7 +127,16 @@ onTileCreated((e) => {
     }
   });
 
-  query(Drawable).each((e) => {
+  query(Tile).each((e) => {
+    const asset = Sprite.value[e];
+
+    const x = Position.x[e];
+    const y = Position.y[e];
+
+    ctx.drawImage(SPRITES_IMAGES[asset], x * TILE_SIZE, y * TILE_SIZE);
+  });
+
+  query(Character).each((e) => {
     if (hasComponent(world, Transport, e)) {
       debugger;
     }

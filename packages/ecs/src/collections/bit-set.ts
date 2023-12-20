@@ -64,7 +64,7 @@ export class BitSet implements BitsetInterface {
     const index = val >>> 5;
 
     if (index > this.size) {
-      this.resize();
+      this.growTo(index + 1);
       return false;
     }
 
@@ -75,7 +75,7 @@ export class BitSet implements BitsetInterface {
     const index = val >>> 5;
 
     if (index > this.size) {
-      this.resize();
+      this.growTo(index + 1);
     }
 
     this.mask[index] |= 1 << (val & 31);
@@ -83,6 +83,10 @@ export class BitSet implements BitsetInterface {
 
   xor(val: number) {
     const index = val >>> 5;
+
+    if (index > this.size) {
+      this.growTo(index + 1);
+    }
 
     this.mask[index] ^= 1 << (val & 31);
   }
@@ -121,8 +125,9 @@ export class BitSet implements BitsetInterface {
     return this.mask.join("");
   }
 
-  private resize() {
-    this.size += BitSet.GROW_FACTOR;
+  private growTo(to: number) {
+    const diff = to - this.size;
+    this.size += diff;
     const newMask = new Uint32Array(this.size);
     newMask.set(this.mask);
     this.mask = newMask;

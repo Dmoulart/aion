@@ -104,6 +104,9 @@ export function defineEncoder(
 
       for (const _ of components) {
         const id = chunk.readInt32();
+        // if (id === 6) {
+        //   debugger;
+        // }
 
         const Schema = getSchema(id)! as MultipleTypesSchema;
         for (const field in Schema) {

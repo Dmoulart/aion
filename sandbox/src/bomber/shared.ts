@@ -137,16 +137,17 @@ export const initPlayerMessage = defineMessage({
     });
 
     chunk = encodePlayer([player], chunk);
-    chunk.ensureAvailableCapacity(4);
+    chunk.ensureAvailableCapacity(8);
     chunk.writeInt32(transportID);
+    chunk.writeInt32(player);
 
     return chunk.buffer;
   },
   decode(world, chunk) {
     chunk = decodePlayer(world, chunk);
     const transportID = chunk.readInt32();
-    attach(world, transportID, ClientTransport);
-
+    const player = chunk.readInt32();
+    attach(world, player, ClientTransport);
     return chunk;
   },
 });
