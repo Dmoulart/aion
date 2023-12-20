@@ -10,6 +10,7 @@ import {
   createSnapshot,
   u32,
   attach,
+  Entity,
 } from "../../../packages/ecs/dist/index.js";
 import block from "./assets/block.png";
 import tile from "./assets/tile.png";
@@ -52,7 +53,7 @@ export const ClientTransport = create();
 
 export const TILE_SIZE = 16;
 
-const createPlayer = prefab(Character);
+export const createPlayer = prefab(Character);
 
 export const createTileEntity = bombi().prefab(Tile);
 
@@ -110,42 +111,22 @@ export const initWorldMessage = defineMessage({
   },
 });
 
+export let lastCreatedPlayer: Entity | undefined;
+export function setLastCreatedPlayer(player: Entity) {
+  lastCreatedPlayer = player;
+  return player;
+}
 export const initPlayerMessage = defineMessage({
   encode(world, chunk) {
-    const {create} = bombi();
-
-    const transportID = create();
-
-    const player = createPlayer({
-      Animation: {
-        start: 0,
-      },
-      Position: {
-        x: 1,
-        y: 1,
-      },
-      Sprite: {
-        value: SPRITES["./src/bomber/assets/bomberman-b0.png"],
-      },
-      Velocity: {
-        x: 0,
-        y: 0,
-      },
-      Transport: {
-        id: transportID,
-      },
-    });
-
-    chunk = encodePlayer([player], chunk);
+    if (!lastCreatedPlayer) throw new Error("No last player created");
+    chunk = encodePlayer([lastCreatedPlayer], chunk);
     chunk.ensureAvailableCapacity(8);
-    chunk.writeInt32(transportID);
-    chunk.writeInt32(player);
-
+    chunk.writeInt32(lastCreatedPlayer);
+    lastCreatedPlayer = undefined;
     return chunk.buffer;
   },
   decode(world, chunk) {
     chunk = decodePlayer(world, chunk);
-    const transportID = chunk.readInt32(); //@todo bind socket to player ?
     const player = chunk.readInt32();
     attach(world, player, ClientTransport);
     return chunk;

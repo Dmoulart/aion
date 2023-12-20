@@ -60,15 +60,19 @@ const UPDATE_ANIM_TURN = 5;
 
 let step = 0;
 
-const lastPlayerDirection = {x: 0, y: 0};
-const lastPlayersDirections = [{x: 0, y: 0}];
+const lastPlayersDirections: Array<{x: number; y: number}> = [];
 
 const onTileCreated = onEnterQuery(query(Tile));
-const onCharacterCreated = onEnterQuery(query(Character));
+// const onCharacterCreated = onEnterQuery(query(Character));
 
-onCharacterCreated((ch) => {
-  console.log("player created ", ch);
-});
+export function usePlayer(cb: (player: Entity) => void) {
+  //@todo: pass id to query
+  query(Character).each((e) => {
+    if (hasComponent(world, e, ClientTransport)) {
+      cb(e);
+    }
+  });
+}
 
 onTileCreated((e) => {
   const x = Position.x[e];
@@ -81,13 +85,11 @@ onTileCreated((e) => {
 (function loop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  query(Character).each((player) => {
-    if (hasComponent(world, player, ClientTransport)) {
-      const {direction} = useInput();
-      const {x, y} = direction();
-      Velocity.x[player] = x * 0.25;
-      Velocity.y[player] = y * 0.25;
-    }
+  usePlayer((e) => {
+    const {direction} = useInput();
+    const {x, y} = direction();
+    Velocity.x[e] = x * 0.1;
+    Velocity.y[e] = y * 0.1;
   });
 
   onTurn(UPDATE_ANIM_TURN, () => {
@@ -142,9 +144,6 @@ onTileCreated((e) => {
   });
 
   query(Character).each((e) => {
-    if (hasComponent(world, Transport, e)) {
-      debugger;
-    }
     const asset = Sprite.value[e];
 
     const x = Position.x[e];
