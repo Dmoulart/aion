@@ -61,6 +61,7 @@ const UPDATE_ANIM_TURN = 5;
 let step = 0;
 
 const lastPlayerDirection = {x: 0, y: 0};
+const lastPlayersDirections = [{x: 0, y: 0}];
 
 const onTileCreated = onEnterQuery(query(Tile));
 const onCharacterCreated = onEnterQuery(query(Character));
@@ -91,9 +92,10 @@ onTileCreated((e) => {
 
   onTurn(UPDATE_ANIM_TURN, () => {
     query(Character).each((e) => {
+      lastPlayersDirections[e] ??= {x: 0, y: 0};
       if (isMoving(e)) {
-        lastPlayerDirection.x = Velocity.x[e];
-        lastPlayerDirection.y = Velocity.y[e];
+        lastPlayersDirections[e].x = Velocity.x[e];
+        lastPlayersDirections[e].y = Velocity.y[e];
         if (Animation.start[e] === 0) {
           // start animation
           Animation.start[e] = Date.now();
@@ -104,11 +106,14 @@ onTileCreated((e) => {
       }
       // of animation has stopped set default sprite
       if (Animation.start[e] === 0) {
-        Sprite.value[e] = getAnimationSprite(lastPlayerDirection, 1);
+        Sprite.value[e] = getAnimationSprite(lastPlayersDirections[e], 1);
         return;
       }
       const elapsed = Date.now() - Animation.start[e];
-      Sprite.value[e] = getAnimationSprite(lastPlayerDirection, elapsed % 3);
+      Sprite.value[e] = getAnimationSprite(
+        lastPlayersDirections[e],
+        elapsed % 3
+      );
     });
   });
 
