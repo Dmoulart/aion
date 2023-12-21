@@ -1,5 +1,5 @@
-import {Chunk} from "./chunk.js";
-import type {World} from "./world.js";
+import {Chunk} from "aion-ecs";
+import type {World} from "aion-ecs";
 
 export type Message = {
   encode: (world: World, chunk: Chunk) => ArrayBuffer;

@@ -1,7 +1,6 @@
 import "./style.css";
 import {
   Entity,
-  createTransport,
   hasComponent,
   onEnterQuery,
 } from "../../packages/ecs/dist/index.js";
@@ -25,6 +24,7 @@ import {
   playerUpdateMessage,
   player,
 } from "./bomber/shared";
+import {createTransport} from "../../packages/net/src/transport";
 
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d")!;

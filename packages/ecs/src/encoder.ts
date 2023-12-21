@@ -61,7 +61,6 @@ export function defineEncoder(
   const instanceSize =
     componentsInstanceSize + componentsHeaderSize + entitySize;
 
-  //= new Chunk(new ArrayBuffer(ents.length * instanceSize + 4))
   function encode(ents: Entity[], chunk: Chunk) {
     const len = ents.length * instanceSize + 4;
     chunk.ensureAvailableCapacity(len);
@@ -104,9 +103,6 @@ export function defineEncoder(
 
       for (const _ of components) {
         const id = chunk.readInt32();
-        // if (id === 6) {
-        //   debugger;
-        // }
 
         const Schema = getSchema(id)! as MultipleTypesSchema;
         for (const field in Schema) {

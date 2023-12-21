@@ -6,13 +6,12 @@ import {
   u16,
   u8,
   defineEncoder,
-  defineMessage,
-  createSnapshot,
   u32,
   attach,
   Entity,
   hasComponent,
 } from "../../../packages/ecs/dist/index.js";
+import {defineMessage, createSnapshot} from "../../../packages/net/src";
 import block from "./assets/block.png";
 import tile from "./assets/tile.png";
 

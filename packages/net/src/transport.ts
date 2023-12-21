@@ -1,6 +1,6 @@
-import {Chunk} from "./chunk.js";
+import {Chunk} from "aion-ecs";
 import {getMessage, type Message} from "./message.js";
-import type {World} from "./world.js";
+import type {World} from "aion-ecs";
 
 export function createTransport(socket: WebSocket) {
   return new Transport(socket);

@@ -12,7 +12,7 @@ import {
   setLastCreatedPlayer,
   playersSnapshotMessage,
 } from "./shared.js";
-import {createTransport} from "../../../packages/ecs/dist/transport.js";
+import {createTransport} from "../../../packages/net/src/transport.js";
 
 const {world, remove} = bombi();
 

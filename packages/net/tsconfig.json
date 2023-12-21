@@ -5,6 +5,7 @@
     "outDir": "./dist"
   },
     "references": [
-        { "path": "../core/tsconfig.json" }
+        { "path": "../core/tsconfig.json" },
+        { "path": "../ecs/tsconfig.json" }
     ]
 }

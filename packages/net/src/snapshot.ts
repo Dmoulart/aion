@@ -1,9 +1,9 @@
-import type {Chunk} from "./chunk.js";
-import type {Component} from "./component.js";
-import {defineEncoder} from "./encoder.js";
-import type {Entity} from "./entity.js";
-import {query} from "./query.js";
-import type {World} from "./world.js";
+import type {Chunk} from "aion-ecs";
+import type {Component} from "aion-ecs";
+import {defineEncoder} from "aion-ecs";
+import type {Entity} from "aion-ecs";
+import {query} from "aion-ecs";
+import type {World} from "aion-ecs";
 
 export function createSnapshot(
   world: World,

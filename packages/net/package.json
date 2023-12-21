@@ -1,5 +1,5 @@
 {
-  "name": "aion-render",
+  "name": "aion-net",
   "version": "0.0.1",
   "type": "module",
   "main": "dist/index.js",
@@ -11,7 +11,7 @@
     "build": "tsc --build"
   },
   "dependencies": {
-    "aion-core": "workspace:*"
+    "aion-ecs": "workspace:*"
   },
   "devDependencies": {
     "bun-types": "latest"
