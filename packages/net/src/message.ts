@@ -22,8 +22,6 @@ export function defineMessage(message: Message): Message {
       return message.encode(world, chunk);
     },
     decode(world, chunk) {
-      // const chunk = new Chunk(buffer);
-      // const id = chunk.readInt32();
       return message.decode(world, chunk);
     },
   };

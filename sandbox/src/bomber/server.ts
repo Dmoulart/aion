@@ -14,7 +14,7 @@ import {
 } from "./shared.js";
 import {createTransport} from "../../../packages/net/src/transport.js";
 
-const {world, remove} = bombi();
+const {world, remove, create} = bombi();
 
 const walkable: Array<boolean[]> = [];
 
@@ -24,7 +24,6 @@ const wss = new WebSocketServer({port: 4321});
 
 wss.on("connection", (socket) => {
   const transport = createTransport(socket as any);
-  const {create} = bombi();
 
   // @todo: delete ?
   const transportID = create();
@@ -56,6 +55,7 @@ wss.on("connection", (socket) => {
 
   socket.onclose = (ev) => {
     remove(player);
+    remove(transportID);
   };
 
   socket.on("message", (ev) => {
