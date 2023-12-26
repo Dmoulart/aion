@@ -23,6 +23,7 @@ import {
   ClientTransport,
   playerUpdateMessage,
   player,
+  InputCommand,
 } from "./bomber/shared";
 import {createTransport} from "../../packages/net/src/transport";
 
@@ -61,15 +62,12 @@ const lastPlayersDirections: Array<{x: number; y: number}> = [];
 
 const onTileCreated = onEnterQuery(query(Tile));
 
-export function usePlayer(cb: (player: Entity) => void) {
-  const {query, world} = bombi();
-  //@todo: pass id to query
-  query(Character).each((e) => {
-    if (hasComponent(world, e, ClientTransport)) {
-      cb(e);
-    }
-  });
-}
+const onCharacterCreated = onEnterQuery(query(Character));
+
+onCharacterCreated((e) => {
+  debugger;
+  console.log(e);
+});
 
 onTileCreated((e) => {
   const x = Position.x[e];
@@ -82,10 +80,18 @@ onTileCreated((e) => {
 (function loop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  const {direction} = useInput();
-  const {x, y} = direction();
-  Velocity.x[player] = x * 0.1;
-  Velocity.y[player] = y * 0.1;
+  {
+    const {direction} = useInput();
+    const {x, y} = direction();
+    InputCommand.horizontal[player] = x;
+    InputCommand.vertical[player] = y;
+    // if (x > 0 || y > 0) {
+    //   debugger;
+    // }
+    console.log("input command", x, y);
+    // Velocity.x[player] = x * 0.1;
+    // Velocity.y[player] = y * 0.1;
+  }
 
   onTurn(UPDATE_ANIM_TURN, () => {
     query(Character).each((e) => {
@@ -112,6 +118,14 @@ onTileCreated((e) => {
         elapsed % 3
       );
     });
+  });
+
+  query(Character).each((e) => {
+    Velocity.x[e] = InputCommand.horizontal[e] * 0.1;
+    Velocity.y[e] = InputCommand.vertical[e] * 0.1;
+
+    InputCommand.horizontal[e] = 0;
+    InputCommand.vertical[e] = 0;
   });
 
   query(Movable).each((e) => {
@@ -149,7 +163,7 @@ onTileCreated((e) => {
 
   step += 1;
 
-  onTurn(10, () => transport.send(world, playerUpdateMessage));
+  // onTurn(10, () => transport.send(world, playerUpdateMessage));
 
   requestAnimationFrame(loop);
 })();

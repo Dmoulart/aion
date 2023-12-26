@@ -4,7 +4,9 @@
   "type": "module",
   "scripts": {
     "sandbox": "cd sandbox && bun run dev",
-    "test": "vitest run"
+    "test": "vitest run",
+    "watch:ecs": "cd ./packages/ecs && bun run watch",
+    "watch:net": "cd ./packages/net && bun run watch"
   },
   "workspaces": [
     "packages/*"

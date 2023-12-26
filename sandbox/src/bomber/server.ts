@@ -49,7 +49,6 @@ wss.on("connection", (socket) => {
   });
 
   setLastCreatedPlayer(player);
-
   transport.send(world, initWorldMessage);
   transport.send(world, initPlayerMessage);
 
@@ -64,9 +63,9 @@ wss.on("connection", (socket) => {
 
     transport.receive(world, arrayBuffer);
   });
-  setInterval(() => {
-    transport.send(world, playersSnapshotMessage);
-  }, 1000 / 10);
+  // setInterval(() => {
+  //   transport.send(world, playersSnapshotMessage);
+  // }, 1000 / 10);
 });
 
 function initMap() {

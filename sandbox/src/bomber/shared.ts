@@ -10,6 +10,7 @@ import {
   attach,
   Entity,
   hasComponent,
+  i16,
 } from "../../../packages/ecs/dist/index.js";
 import {defineMessage, createSnapshot} from "../../../packages/net/src";
 import block from "./assets/block.png";
@@ -43,10 +44,20 @@ export const TileDesc = defineComponent({
 export const Transport = defineComponent({
   id: u32,
 });
+export const InputCommand = defineComponent({
+  horizontal: i16,
+  vertical: i16,
+});
 
 export const Movable = {Position, Velocity};
 export const Drawable = {Position, Sprite};
-export const Character = {...Movable, ...Drawable, Animation, Transport};
+export const Character = {
+  ...Movable,
+  ...Drawable,
+  InputCommand,
+  Animation,
+  Transport,
+};
 export const Tile = {...Drawable, TileDesc};
 
 export const ClientTransport = create();
@@ -112,15 +123,6 @@ export const initWorldMessage = defineMessage({
 });
 
 export let player: Entity = 0;
-export let usePlayer = (cb: (player: Entity) => void) => {
-  const {query, world} = bombi();
-  //@todo: pass id to query
-  query(Character).each((e) => {
-    if (hasComponent(world, e, ClientTransport)) {
-      cb(e);
-    }
-  });
-};
 
 export let lastCreatedPlayer: Entity | undefined;
 export function setLastCreatedPlayer(player: Entity) {
@@ -131,7 +133,7 @@ export const initPlayerMessage = defineMessage({
   encode(world, chunk) {
     if (!lastCreatedPlayer) throw new Error("No last player created");
     chunk = encodePlayer([lastCreatedPlayer], chunk);
-    chunk.ensureAvailableCapacity(8);
+    chunk.ensureAvailableCapacity(4);
     chunk.writeInt32(lastCreatedPlayer);
     lastCreatedPlayer = undefined;
     return chunk.buffer;
