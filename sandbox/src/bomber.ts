@@ -70,6 +70,8 @@ onCharacterCreated((e) => {
 });
 
 onTileCreated((e) => {
+  debugger;
+  console.log(e);
   const x = Position.x[e];
   const y = Position.y[e];
   const isBlocking = TileDesc.blocking[e];
@@ -121,6 +123,9 @@ onTileCreated((e) => {
   });
 
   query(Character).each((e) => {
+    if (InputCommand.horizontal[e] > 0) {
+      debugger;
+    }
     Velocity.x[e] = InputCommand.horizontal[e] * 0.1;
     Velocity.y[e] = InputCommand.vertical[e] * 0.1;
 

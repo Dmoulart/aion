@@ -1,3 +1,4 @@
+import {onEnterArchetype} from "./component.js";
 import {nextID} from "./id.js";
 import type {World} from "./world.js";
 
@@ -36,7 +37,7 @@ export const createEntity = (
 };
 
 /**
- * Insert a specific entity.
+ * Insert a specific entity. If the entity already exist it will do nothing.
  * Warning ! This will break the entity counter
  * @todo find a way to make this work while creating new entity in the classic way also ?
  * @param world
@@ -56,6 +57,10 @@ export const insertEntity = (
       `World maximum capacity of ${world.size} exceeded`
     );
   }
+
+  if (world.entitiesArchetypes[eid] === archetype) return eid;
+
+  onEnterArchetype(world, eid, archetype);
 
   archetype.entities.insert(eid);
   world.entitiesArchetypes[eid] = archetype;

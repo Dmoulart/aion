@@ -8,7 +8,7 @@ import {
 } from "./types.js";
 import type {World} from "./world.js";
 import {type ID, NonExistantEntity} from "./entity.js";
-import {deriveArchetype} from "./archetype.js";
+import {deriveArchetype, type Archetype} from "./archetype.js";
 import {type Entity} from "./entity.js";
 import {nextID} from "./id.js";
 import {
@@ -184,13 +184,7 @@ export function attach(
   archetype.entities.remove(eid);
   newArchetype.entities.insert(eid);
 
-  const handlers = world.handlers.enter[newArchetype.id];
-  //@todo handlers for exiting old arch ?
-  if (handlers) {
-    for (const fn of handlers) {
-      fn(eid);
-    }
-  }
+  onEnterArchetype(world, eid, newArchetype);
 
   world.entitiesArchetypes[eid] = newArchetype;
 }
@@ -229,13 +223,7 @@ export function detach(
   archetype.entities.remove(eid);
   newArchetype.entities.insert(eid);
 
-  //@todo handlers for entering new arch ?
-  const handlers = world.handlers.exit[archetype.id];
-  if (handlers) {
-    for (const fn of handlers) {
-      fn(eid);
-    }
-  }
+  onExitArchetype(world, eid, archetype);
 
   world.entitiesArchetypes[eid] = newArchetype;
 }
@@ -276,4 +264,44 @@ export function hasComponent(
     typeof idOrComponent === "object" ? idOrComponent[$cid] : idOrComponent;
 
   return archetype.mask.has(id);
+}
+
+/**
+ * Call the handlers of a specific archetype on the given entity.
+ * @param world
+ * @param eid
+ * @param archetype
+ */
+export function onEnterArchetype(
+  world: World,
+  eid: Entity,
+  archetype: Archetype
+) {
+  const handlers = world.handlers.enter[archetype.id];
+  //@todo handlers for exiting old arch ?
+  if (handlers) {
+    for (const fn of handlers) {
+      fn(eid);
+    }
+  }
+}
+
+/**
+ * Call the handlers of a specific archetype on the given entity.
+ * @param world
+ * @param eid
+ * @param archetype
+ */
+export function onExitArchetype(
+  world: World,
+  eid: Entity,
+  archetype: Archetype
+) {
+  //@todo handlers for entering new arch ?
+  const handlers = world.handlers.exit[archetype.id];
+  if (handlers) {
+    for (const fn of handlers) {
+      fn(eid);
+    }
+  }
 }

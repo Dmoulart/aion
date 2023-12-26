@@ -1,3 +1,4 @@
+import {buildArchetype, type Archetype} from "./archetype.js";
 import {Chunk} from "./chunk.js";
 import {
   type Component,
@@ -19,15 +20,15 @@ import {f32, f64, i16, i32, i64, i8, u16, u64, u8, u32} from "./types.js";
 import type {World} from "./world.js";
 
 export type EncoderConfig = {
-  decodingStrategy: (world: World, eid: Entity) => Entity;
+  decodingStrategy: (world: World, eid: Entity, arch: Archetype) => Entity;
 };
 
 const DEFAULT_ENCODER_CONFIG: EncoderConfig = {
   decodingStrategy: replace,
 };
 
-function replace(world: World, eid: Entity) {
-  return insertEntity(world, eid);
+function replace(world: World, eid: Entity, archetype: Archetype) {
+  return insertEntity(world, eid, archetype);
 }
 
 /**
@@ -93,13 +94,13 @@ export function defineEncoder(
   }
 
   function decode(world: World, chunk: Chunk) {
+    const archetype = buildArchetype(components.map(getComponentID), world);
+
     const startOffset = chunk.offset;
     const len = chunk.readUint32();
 
     while (chunk.offset < startOffset + len) {
       const ent = chunk.readInt32();
-
-      decodingStrategy(world, ent);
 
       for (const _ of components) {
         const id = chunk.readInt32();
@@ -119,11 +120,10 @@ export function defineEncoder(
           const value = chunk[getters[type.name]!]();
 
           comp[field]![ent] = value;
-
-          // Wait the component values to be setted before attaching the components
-          attach(world, id, ent);
         }
       }
+
+      decodingStrategy(world, ent, archetype);
     }
 
     return chunk;
