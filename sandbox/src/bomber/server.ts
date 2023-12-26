@@ -11,6 +11,7 @@ import {
   createPlayer,
   setLastCreatedPlayer,
   playersSnapshotMessage,
+  handleMovement,
 } from "./shared.js";
 import {createTransport} from "../../../packages/net/src/transport.js";
 
@@ -63,11 +64,14 @@ wss.on("connection", (socket) => {
 
     transport.receive(world, arrayBuffer);
   });
-  // setInterval(() => {
-  //   transport.send(world, playersSnapshotMessage);
-  // }, 1000 / 10);
+  setInterval(() => {
+    transport.send(world, playersSnapshotMessage);
+  }, 1000 / 60);
 });
 
+setInterval(() => {
+  handleMovement(world);
+}, 1000 / 60);
 function initMap() {
   for (let x = 0; x < 50; x++) {
     for (let y = 0; y < 30; y++) {

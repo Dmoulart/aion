@@ -11,6 +11,7 @@ import {
   Entity,
   hasComponent,
   i16,
+  World,
 } from "../../../packages/ecs/dist/index.js";
 import {defineMessage, createSnapshot} from "../../../packages/net/src";
 import block from "./assets/block.png";
@@ -75,6 +76,33 @@ export const setWalkable = (x: number, y: number, isWalkable: boolean) => {
   walkable[x][y] = isWalkable;
 };
 
+const CHARACTER_SPRITE_HEIGHT = 1;
+const CHARACTER_SPRITE_WIDTH = 0;
+export function handleMovement(world: World) {
+  const {query} = bombi();
+  query(Character).each((e) => {
+    Velocity.x[e] = InputCommand.horizontal[e] * 0.1;
+    Velocity.y[e] = InputCommand.vertical[e] * 0.1;
+
+    InputCommand.horizontal[e] = 0;
+    InputCommand.vertical[e] = 0;
+  });
+
+  query(Movable).each((e) => {
+    const newX = Position.x[e] + Velocity.x[e];
+    const newY = Position.y[e] + Velocity.y[e];
+    if (
+      (Velocity.x[e] !== 0 || Velocity.y[e] !== 0) &&
+      isWalkable(newX + CHARACTER_SPRITE_WIDTH, newY + CHARACTER_SPRITE_HEIGHT)
+    ) {
+      Position.x[e] += Velocity.x[e];
+      Position.y[e] += Velocity.y[e];
+    } else {
+      Velocity.x[e] = 0;
+      Velocity.y[e] = 0;
+    }
+  });
+}
 export const SPRITES = {
   [block]: 0,
   [tile]: 1,
