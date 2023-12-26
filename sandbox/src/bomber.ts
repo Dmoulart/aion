@@ -25,6 +25,10 @@ import {
   player,
   InputCommand,
   handleMovement,
+  BombCommand,
+  Bomb,
+  CHARACTER_SPRITE_WIDTH,
+  CHARACTER_SPRITE_HEIGHT,
 } from "./bomber/shared";
 import {createTransport} from "../../packages/net/src/transport";
 
@@ -73,6 +77,7 @@ onTileCreated((e) => {
 });
 
 (function loop() {
+  BombCommand.bomb[player] = Number(false);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   {
@@ -82,6 +87,19 @@ onTileCreated((e) => {
     InputCommand.vertical[player] = y;
   }
   console.log("player", player);
+
+  onTurn(2, () => {
+    const {key} = useInput();
+    if (key(" ")) {
+      BombCommand.bomb[player] = Number(true);
+      BombCommand.x[player] = Position.x[player] + CHARACTER_SPRITE_WIDTH;
+      BombCommand.y[player] = Position.y[player] + CHARACTER_SPRITE_HEIGHT;
+      // transport.send(world, bombMessage)
+    }
+  });
+
+  handleMovement(world);
+
   // onTurn(UPDATE_ANIM_TURN, () => {
   //   query(Character).each((e) => {
   //     console.log(e, lastPlayersDirections[e]);
@@ -110,25 +128,10 @@ onTileCreated((e) => {
   //   });
   // });
 
-  handleMovement(world);
+  query(Tile).each(draw);
+  query(Bomb).each(draw);
 
-  query(Tile).each((e) => {
-    const asset = Sprite.value[e];
-
-    const x = Position.x[e];
-    const y = Position.y[e];
-
-    ctx.drawImage(SPRITES_IMAGES[asset], x * TILE_SIZE, y * TILE_SIZE);
-  });
-
-  query(Character).each((e) => {
-    const asset = Sprite.value[e];
-
-    const x = Position.x[e];
-    const y = Position.y[e];
-
-    ctx.drawImage(SPRITES_IMAGES[asset], x * TILE_SIZE, y * TILE_SIZE);
-  });
+  query(Character).each(draw);
 
   step += 1;
 
@@ -199,4 +202,13 @@ function getAnimationSprite(direction: {x: number; y: number}, step: number) {
 
 function isMoving(e: Entity) {
   return Velocity.x[e] !== 0 || Velocity.y[e] !== 0;
+}
+
+function draw(e: Entity) {
+  const asset = Sprite.value[e];
+
+  const x = Position.x[e];
+  const y = Position.y[e];
+
+  ctx.drawImage(SPRITES_IMAGES[asset], x * TILE_SIZE, y * TILE_SIZE);
 }

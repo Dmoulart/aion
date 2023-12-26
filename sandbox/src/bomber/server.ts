@@ -14,6 +14,10 @@ import {
   handleMovement,
   removePlayerMessage,
   setLastRemovedPlayer,
+  handleBombs,
+  bombsSnapshotMessage,
+  explodedBombs,
+  explodedBombsMessage,
 } from "./shared.js";
 import {
   Transport,
@@ -57,7 +61,6 @@ wss.on("connection", (socket) => {
     remove(player);
     const i = transports.indexOf(transport);
     setLastRemovedPlayer(player);
-    debugger;
     if (i !== -1) {
       transports.splice(i, 1);
     }
@@ -68,10 +71,9 @@ wss.on("connection", (socket) => {
 
   socket.on("message", (ev) => {
     const data = ev.slice(0) as Buffer; //  why slice ?? I want the buffer dude
-    const arrayBuffer = data.buffer;
-
-    transport.receive(world, arrayBuffer);
+    transport.receive(world, data.buffer);
   });
+
   setInterval(() => {
     transport.send(world, playersSnapshotMessage);
   }, 1000 / 60);
@@ -79,7 +81,14 @@ wss.on("connection", (socket) => {
 
 setInterval(() => {
   handleMovement(world);
+  handleBombs(world);
+  transports.forEach((transport) => {
+    transport.send(world, bombsSnapshotMessage);
+    transport.send(world, explodedBombsMessage);
+  });
+  explodedBombs.length = 0;
 }, 1000 / 60);
+
 function initMap() {
   for (let x = 0; x < 50; x++) {
     for (let y = 0; y < 30; y++) {

@@ -9,9 +9,9 @@ import {
   u32,
   attach,
   Entity,
-  hasComponent,
   i16,
   World,
+  i64,
 } from "../../../packages/ecs/dist/index.js";
 import {defineMessage, createSnapshot} from "../../../packages/net/src";
 import block from "./assets/block.png";
@@ -35,10 +35,12 @@ export const Velocity = defineComponent({
   x: f32,
   y: f32,
 });
+
 export const Animation = defineComponent({
   start: i32,
 });
 export const Sprite = defineComponent({value: u16});
+
 export const TileDesc = defineComponent({
   blocking: u8,
 });
@@ -48,6 +50,17 @@ export const InputCommand = defineComponent({
   vertical: i16,
 });
 
+export const BombCommand = defineComponent({
+  bomb: u8,
+  x: i32,
+  y: i32,
+});
+
+export const BombComponent = defineComponent({
+  created: f32,
+  lifetime: i32, // in seconds
+});
+
 export const Movable = {Position, Velocity};
 export const Drawable = {Position, Sprite};
 export const Character = {
@@ -55,9 +68,10 @@ export const Character = {
   ...Drawable,
   InputCommand,
   Animation,
+  BombCommand,
 };
 export const Tile = {...Drawable, TileDesc};
-
+export const Bomb = {BombComponent, ...Drawable};
 export const ClientTransport = create();
 
 export const TILE_SIZE = 16;
@@ -65,6 +79,7 @@ export const TILE_SIZE = 16;
 export const createPlayer = prefab(Character);
 
 export const createTileEntity = bombi().prefab(Tile);
+export const createBomb = bombi().prefab(Bomb);
 
 export const walkable: Array<boolean[]> = [];
 
@@ -73,13 +88,13 @@ export const setWalkable = (x: number, y: number, isWalkable: boolean) => {
   walkable[x][y] = isWalkable;
 };
 
-const CHARACTER_SPRITE_HEIGHT = 1;
-const CHARACTER_SPRITE_WIDTH = 0;
+export const CHARACTER_SPRITE_HEIGHT = 1;
+export const CHARACTER_SPRITE_WIDTH = 0;
 export function handleMovement(world: World) {
   const {query} = bombi();
   query(Character).each((e) => {
-    Velocity.x[e] = InputCommand.horizontal[e] * 0.1;
-    Velocity.y[e] = InputCommand.vertical[e] * 0.1;
+    Velocity.x[e] = InputCommand.horizontal[e] * 0.25;
+    Velocity.y[e] = InputCommand.vertical[e] * 0.25;
 
     InputCommand.horizontal[e] = 0;
     InputCommand.vertical[e] = 0;
@@ -100,6 +115,56 @@ export function handleMovement(world: World) {
     }
   });
 }
+
+export function handleBombs(world: World) {
+  const {query} = bombi();
+
+  // bomb spawning
+  query(Character).each((e) => {
+    if (BombCommand.bomb[e]) {
+      const created = Date.now();
+      debugger;
+      const bomb = createBomb({
+        BombComponent: {
+          created: created,
+          lifetime: 1000,
+        },
+        Position: {x: BombCommand.x[e], y: BombCommand.y[e]},
+        Sprite: {
+          value: SPRITES["./src/bomber/assets/bomb-1.png"],
+        },
+      });
+
+      setTimeout(() => {
+        console.log("delete");
+        explodedBombs.push(bomb);
+        remove(bomb);
+      }, 1_000);
+
+      BombCommand.bomb[e] = Number(false);
+    }
+  });
+
+  // query(Bomb).each((e) => {
+  //   const created = BombComponent.created[e];
+  //   const lifetime = BombComponent.lifetime[e];
+  //   console.log("created + lifetime", Date.now() - (created + lifetime));
+  //   const mustExplode = Date.now() - (created + lifetime) > 0;
+
+  //   console.log(e, "created at ", created);
+  //   console.log(e, "explodes at at ", created + lifetime);
+  //   console.log("now", Date.now());
+  //   console.log(e, "will explode in ", Date.now() - (created + lifetime));
+
+  //   if (mustExplode) {
+  //     console.log(e, "will explode", mustExplode);
+  //     explodedBombs.push(e);
+  //     remove(e);
+  //   }
+  // });
+}
+export let explodedBombs: Array<Entity> = [];
+
 export const SPRITES = {
   [block]: 0,
   [tile]: 1,
@@ -115,6 +180,7 @@ export const SPRITES = {
   "./src/bomber/assets/bomberman-r0.png": 11,
   "./src/bomber/assets/bomberman-r1.png": 12,
   "./src/bomber/assets/bomberman-r2.png": 13,
+  "./src/bomber/assets/bomb-1.png": 14,
 };
 
 export function isWalkable(x: number, y: number) {
@@ -129,8 +195,9 @@ export {encodeTile, decodeTile};
 const [encodePlayer, decodePlayer] = defineEncoder([
   ...Object.values(Character),
 ]);
-
 export {encodePlayer, decodePlayer};
+
+const [encodeBombs, decodeBombs] = defineEncoder([...Object.values(Bomb)]);
 
 export const initWorldMessage = defineMessage({
   encode(world, chunk) {
@@ -193,13 +260,45 @@ export const playersSnapshotMessage = defineMessage({
   },
 });
 
+export const bombsSnapshotMessage = defineMessage({
+  encode(world, chunk) {
+    chunk = createSnapshot(world, chunk, ...Object.values(Bomb));
+    return chunk.buffer;
+  },
+  decode(world, chunk) {
+    chunk = decodeBombs(world, chunk);
+    return chunk;
+  },
+});
+
+export const explodedBombsMessage = defineMessage({
+  encode(world, chunk) {
+    const len = 4 * explodedBombs.length + 4;
+    chunk.ensureAvailableCapacity(len);
+    chunk.writeUint32(len);
+    for (const bomb of explodedBombs) {
+      chunk.writeUint32(bomb);
+    }
+
+    return chunk.buffer;
+  },
+  decode(world, chunk) {
+    const len = chunk.readUint32();
+    let i = 0;
+    while (i < len) {
+      remove(chunk.readUint32());
+      i += 4;
+    }
+    return chunk;
+  },
+});
+
 export let lastRemovedPlayer: Entity = 0;
 export function setLastRemovedPlayer(eid: Entity) {
   lastRemovedPlayer = eid;
 }
 export const removePlayerMessage = defineMessage({
   encode(world, chunk) {
-    debugger;
     chunk.ensureAvailableCapacity(4);
     console.log(chunk.offset, chunk.buffer.byteLength);
     chunk.writeUint32(lastRemovedPlayer);
