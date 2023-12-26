@@ -25,7 +25,7 @@ export let bombi = () => {
   return w;
 };
 
-const {prefab, create} = bombi();
+const {prefab, create, remove} = bombi();
 
 export const Position = defineComponent({
   x: f32,
@@ -192,6 +192,24 @@ export const playersSnapshotMessage = defineMessage({
   },
   decode(world, chunk) {
     chunk = decodePlayer(world, chunk);
+    return chunk;
+  },
+});
+
+export let lastRemovedPlayer: Entity = 0;
+export function setLastRemovedPlayer(eid: Entity) {
+  lastRemovedPlayer = eid;
+}
+export const removePlayerMessage = defineMessage({
+  encode(world, chunk) {
+    debugger;
+    chunk.ensureAvailableCapacity(4);
+    console.log(chunk.offset, chunk.buffer.byteLength);
+    chunk.writeUint32(lastRemovedPlayer);
+    return chunk.buffer;
+  },
+  decode(world, chunk) {
+    remove(chunk.readUint32());
     return chunk;
   },
 });

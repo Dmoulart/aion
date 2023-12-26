@@ -12,7 +12,7 @@ export class Transport {
   constructor(socket: WebSocket) {
     this.#socket = socket;
   }
-
+  //@todo concat messages
   send(world: World, message: Message) {
     try {
       const data = message.encode(world, new Chunk(new ArrayBuffer(0)));

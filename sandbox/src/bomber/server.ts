@@ -12,8 +12,13 @@ import {
   setLastCreatedPlayer,
   playersSnapshotMessage,
   handleMovement,
+  removePlayerMessage,
+  setLastRemovedPlayer,
 } from "./shared.js";
-import {createTransport} from "../../../packages/net/src/transport.js";
+import {
+  Transport,
+  createTransport,
+} from "../../../packages/net/src/transport.js";
 
 const {world, remove, create} = bombi();
 
@@ -22,10 +27,10 @@ const walkable: Array<boolean[]> = [];
 initMap();
 
 const wss = new WebSocketServer({port: 4321});
-
+const transports: Array<Transport> = [];
 wss.on("connection", (socket) => {
   const transport = createTransport(socket as any);
-
+  transports.push(transport);
   // @todo: delete ?
   const transportID = create();
 
@@ -56,6 +61,15 @@ wss.on("connection", (socket) => {
   socket.onclose = (ev) => {
     remove(player);
     remove(transportID);
+    const i = transports.indexOf(transport);
+    setLastRemovedPlayer(player);
+    debugger;
+    if (i !== -1) {
+      transports.splice(i, 1);
+    }
+    transports.forEach((transport) =>
+      transport.send(world, removePlayerMessage)
+    );
   };
 
   socket.on("message", (ev) => {
