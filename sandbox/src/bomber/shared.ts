@@ -42,9 +42,7 @@ export const Sprite = defineComponent({value: u16});
 export const TileDesc = defineComponent({
   blocking: u8,
 });
-export const Transport = defineComponent({
-  id: u32,
-});
+
 export const InputCommand = defineComponent({
   horizontal: i16,
   vertical: i16,
@@ -57,7 +55,6 @@ export const Character = {
   ...Drawable,
   InputCommand,
   Animation,
-  Transport,
 };
 export const Tile = {...Drawable, TileDesc};
 

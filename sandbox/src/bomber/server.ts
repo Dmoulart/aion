@@ -31,8 +31,6 @@ const transports: Array<Transport> = [];
 wss.on("connection", (socket) => {
   const transport = createTransport(socket as any);
   transports.push(transport);
-  // @todo: delete ?
-  const transportID = create();
 
   const player = createPlayer({
     Animation: {
@@ -49,9 +47,6 @@ wss.on("connection", (socket) => {
       x: 0,
       y: 0,
     },
-    Transport: {
-      id: transportID,
-    },
   });
 
   setLastCreatedPlayer(player);
@@ -60,7 +55,6 @@ wss.on("connection", (socket) => {
 
   socket.onclose = (ev) => {
     remove(player);
-    remove(transportID);
     const i = transports.indexOf(transport);
     setLastRemovedPlayer(player);
     debugger;
