@@ -285,7 +285,7 @@ export const explodedBombsMessage = defineMessage({
   decode(world, chunk) {
     const len = chunk.readUint32();
     let i = 0;
-    while (i < len) {
+    while (i + 4 < len) {
       remove(chunk.readUint32());
       i += 4;
     }

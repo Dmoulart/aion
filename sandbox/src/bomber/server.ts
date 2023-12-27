@@ -84,7 +84,9 @@ setInterval(() => {
   handleBombs(world);
   transports.forEach((transport) => {
     transport.send(world, bombsSnapshotMessage);
-    transport.send(world, explodedBombsMessage);
+    if (explodedBombs.length > 0) {
+      transport.send(world, explodedBombsMessage);
+    }
   });
   explodedBombs.length = 0;
 }, 1000 / 60);

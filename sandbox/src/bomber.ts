@@ -88,45 +88,39 @@ onTileCreated((e) => {
   }
   console.log("player", player);
 
-  onTurn(2, () => {
-    const {key} = useInput();
-    if (key(" ")) {
-      BombCommand.bomb[player] = Number(true);
-      BombCommand.x[player] = Position.x[player] + CHARACTER_SPRITE_WIDTH;
-      BombCommand.y[player] = Position.y[player] + CHARACTER_SPRITE_HEIGHT;
-      // transport.send(world, bombMessage)
+  const {key} = useInput();
+  if (key(" ")) {
+    BombCommand.bomb[player] = Number(true);
+    BombCommand.x[player] = Position.x[player] + CHARACTER_SPRITE_WIDTH;
+    BombCommand.y[player] = Position.y[player] + CHARACTER_SPRITE_HEIGHT;
+    // transport.send(world, bombMessage)
+  }
+
+  query(Character).each((e) => {
+    // console.log(e, lastPlayersDirections[e]);
+    lastPlayersDirections[e] ??= {x: 0, y: 0};
+    if (isMoving(e)) {
+      lastPlayersDirections[e].x = Velocity.x[e];
+      lastPlayersDirections[e].y = Velocity.y[e];
+      console.log("last pl d", e, lastPlayersDirections[e]);
+      if (Animation.start[e] === 0) {
+        // start animation
+        Animation.start[e] = Date.now();
+      }
+    } else {
+      // stop animation
+      Animation.start[e] = 0;
     }
+    // of animation has stopped set default sprite
+    if (Animation.start[e] === 0) {
+      Sprite.value[e] = getAnimationSprite(lastPlayersDirections[e], 1);
+      return;
+    }
+    const elapsed = Date.now() - Animation.start[e];
+    Sprite.value[e] = getAnimationSprite(lastPlayersDirections[e], elapsed % 3);
   });
 
   handleMovement(world);
-
-  // onTurn(UPDATE_ANIM_TURN, () => {
-  //   query(Character).each((e) => {
-  //     console.log(e, lastPlayersDirections[e]);
-  //     lastPlayersDirections[e] ??= {x: 0, y: 0};
-  //     if (isMoving(e)) {
-  //       lastPlayersDirections[e].x = Velocity.x[e];
-  //       lastPlayersDirections[e].y = Velocity.y[e];
-  //       if (Animation.start[e] === 0) {
-  //         // start animation
-  //         Animation.start[e] = Date.now();
-  //       }
-  //     } else {
-  //       // stop animation
-  //       Animation.start[e] = 0;
-  //     }
-  //     // of animation has stopped set default sprite
-  //     if (Animation.start[e] === 0) {
-  //       Sprite.value[e] = getAnimationSprite(lastPlayersDirections[e], 1);
-  //       return;
-  //     }
-  //     const elapsed = Date.now() - Animation.start[e];
-  //     Sprite.value[e] = getAnimationSprite(
-  //       lastPlayersDirections[e],
-  //       elapsed % 3
-  //     );
-  //   });
-  // });
 
   query(Tile).each(draw);
   query(Bomb).each(draw);
@@ -196,7 +190,6 @@ function getAnimationSprite(direction: {x: number; y: number}, step: number) {
       }
     }
   }
-
   return SPRITES[`./src/bomber/assets/bomberman-${d}${s.toString()}.png`];
 }
 
