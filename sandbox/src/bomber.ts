@@ -96,6 +96,8 @@ onTileCreated((e) => {
     // transport.send(world, bombMessage)
   }
 
+  handleMovement(world);
+
   query(Character).each((e) => {
     // console.log(e, lastPlayersDirections[e]);
     lastPlayersDirections[e] ??= {x: 0, y: 0};
@@ -119,9 +121,6 @@ onTileCreated((e) => {
     const elapsed = Date.now() - Animation.start[e];
     Sprite.value[e] = getAnimationSprite(lastPlayersDirections[e], elapsed % 3);
   });
-
-  handleMovement(world);
-
   query(Tile).each(draw);
   query(Bomb).each(draw);
 

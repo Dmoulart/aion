@@ -37,7 +37,7 @@ export const Velocity = defineComponent({
 });
 
 export const Animation = defineComponent({
-  start: i32,
+  start: f32,
 });
 export const Sprite = defineComponent({value: u16});
 
