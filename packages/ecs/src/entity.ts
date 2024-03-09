@@ -1,6 +1,6 @@
-import {onEnterArchetype} from "./component.js";
-import {nextID} from "./id.js";
-import type {World} from "./world.js";
+import { onEnterArchetype } from "./component.js";
+import { nextID } from "./id.js";
+import type { World } from "./world.js";
 
 export type ID = number;
 /**
@@ -9,7 +9,7 @@ export type ID = number;
 export type Entity = ID;
 
 /**
- * Creates an entity, add it in the given world and returns it.
+ * Creates an entity, add it to the given world and returns it.
  * @param world
  * @param archetype
  * @throws {ExceededWorldCapacity}

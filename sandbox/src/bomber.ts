@@ -4,7 +4,7 @@ import {
   hasComponent,
   onEnterQuery,
 } from "../../packages/ecs/dist/index.js";
-import {useInput} from "./bomber/input";
+import { useInput } from "./bomber/input";
 import {
   Drawable,
   Velocity,
@@ -30,7 +30,7 @@ import {
   CHARACTER_SPRITE_WIDTH,
   CHARACTER_SPRITE_HEIGHT,
 } from "./bomber/shared";
-import {createTransport} from "../../packages/net/src/transport";
+import { createTransport } from "../../packages/net/src/transport";
 
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d")!;
@@ -47,7 +47,7 @@ const SPRITES_IMAGES = await Promise.all(
   Object.keys(SPRITES).map((src) => loadImage(src))
 );
 
-const {query, world} = bombi();
+const { query, world } = bombi();
 
 const socket = new WebSocket(`ws://${window.location.hostname}:4321`);
 const transport = createTransport(socket);
@@ -60,7 +60,7 @@ const UPDATE_ANIM_TURN = 5;
 
 let step = 0;
 
-const lastPlayersDirections: Array<{x: number; y: number}> = [];
+const lastPlayersDirections: Array<{ x: number; y: number }> = [];
 
 const onTileCreated = onEnterQuery(query(Tile));
 
@@ -81,14 +81,14 @@ onTileCreated((e) => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   {
-    const {direction} = useInput();
-    const {x, y} = direction();
+    const { direction } = useInput();
+    const { x, y } = direction();
     InputCommand.horizontal[player] = x;
     InputCommand.vertical[player] = y;
   }
   console.log("player", player);
 
-  const {key} = useInput();
+  const { key } = useInput();
   if (key(" ")) {
     BombCommand.bomb[player] = Number(true);
     BombCommand.x[player] = Position.x[player] + CHARACTER_SPRITE_WIDTH;
@@ -100,7 +100,7 @@ onTileCreated((e) => {
 
   query(Character).each((e) => {
     // console.log(e, lastPlayersDirections[e]);
-    lastPlayersDirections[e] ??= {x: 0, y: 0};
+    lastPlayersDirections[e] ??= { x: 0, y: 0 };
     if (isMoving(e)) {
       lastPlayersDirections[e].x = Velocity.x[e];
       lastPlayersDirections[e].y = Velocity.y[e];
@@ -156,7 +156,7 @@ function onTurn(nTurn: number, fn: () => void) {
   }
 }
 
-function getAnimationSprite(direction: {x: number; y: number}, step: number) {
+function getAnimationSprite(direction: { x: number; y: number }, step: number) {
   let d = "b";
   let s = step;
   if (direction.x !== 0) {
