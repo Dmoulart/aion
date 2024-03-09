@@ -1,14 +1,12 @@
-import {buildArchetype, type Archetype} from "./archetype.js";
-import {Chunk} from "./chunk.js";
+import { buildArchetype, type Archetype } from "./archetype.js";
+import { Chunk } from "./chunk.js";
 import {
   type Component,
-  attach,
   getComponentByID,
   type ComponentId,
   getComponentID,
-  $cid,
 } from "./component.js";
-import {insertEntity, type Entity} from "./entity.js";
+import { insertEntity, type Entity } from "./entity.js";
 import {
   getSchema,
   isPrimitiveType,
@@ -16,8 +14,8 @@ import {
   type MultipleTypesSchema,
   type Schema,
 } from "./schemas.js";
-import {f32, f64, i16, i32, i64, i8, u16, u64, u8, u32} from "./types.js";
-import type {World} from "./world.js";
+import { f32, f64, i16, i32, i64, i8, u16, u64, u8, u32 } from "./types.js";
+import type { World } from "./world.js";
 
 export type EncoderConfig = {
   decodingStrategy: (world: World, eid: Entity, arch: Archetype) => Entity;
@@ -40,7 +38,7 @@ function replace(world: World, eid: Entity, archetype: Archetype) {
  */
 export function defineEncoder(
   components: Component[],
-  {decodingStrategy} = DEFAULT_ENCODER_CONFIG
+  { decodingStrategy } = DEFAULT_ENCODER_CONFIG
 ) {
   for (const comp of components) {
     const schema = getSchema(getComponentID(comp))!;

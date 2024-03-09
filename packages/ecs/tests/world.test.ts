@@ -1,4 +1,4 @@
-import {expect, it, describe} from "vitest";
+import { expect, it, describe } from "vitest";
 import {
   defineComponent,
   createEntity,
@@ -12,25 +12,19 @@ import {
 } from "../src/index.js";
 
 describe("World", () => {
-  it("can be created", () => {
-    expect(() => createWorld()).not.toThrowError();
-  });
   it("throws when world capacity exceeded", () => {
     const world = createWorld(2);
     createEntity(world);
     createEntity(world);
     expect(() => createEntity(world)).toThrowError();
   });
+
   it("can create multiple world", () => {
-    const worldA = createWorld(100_000);
-    const worldB = createWorld(100_000);
+    createWorld(100_000);
+    createWorld(100_000);
     expect(() => createWorld(100_000)).not.toThrowError();
   });
-  it("can create multiple world", () => {
-    const worldA = createWorld(100_000);
-    const worldB = createWorld(100_000);
-    expect(() => createWorld(100_000)).not.toThrowError();
-  });
+
   it("can use world API", () => {
     const TestComponent = defineComponent({
       field: i8,
@@ -41,7 +35,7 @@ describe("World", () => {
 
     const world = createWorld();
 
-    const actor = prefab(world, {TestComponent});
+    const actor = prefab(world, { TestComponent });
 
     const player = actor({
       TestComponent: {

@@ -4,11 +4,10 @@ import {
   type ComponentsGroup,
   getComponentID,
 } from "./component.js";
-import type {World} from "./world.js";
-import type {Archetype} from "./archetype.js";
-import type {Entity} from "./entity.js";
-import {BitSet} from "./collections/index.js";
-import type {Schema} from "./schemas.js";
+import type { World } from "./world.js";
+import type { Archetype } from "./archetype.js";
+import type { Entity } from "./entity.js";
+import { BitSet } from "./collections/index.js";
 
 /**
  * A matcher represents the conditional expression used for every query operators.
@@ -17,7 +16,7 @@ export type Matcher = (archetype: Archetype) => boolean;
 
 export type QueryHandler = (entities: Entity) => void;
 
-export type QueryTerm = {type: number; comps: Component[]; matcher: Matcher};
+export type QueryTerm = { type: number; comps: Component[]; matcher: Matcher };
 
 export const all = (...comps: Component[]): QueryTerm => {
   const mask = makeComponentsMask(comps);
@@ -80,7 +79,7 @@ export type Query = {
   /**
    * The callback to execute when entities enter the query or exit the query.
    */
-  handlers: {enter: Array<QueryHandler>; exit: Array<QueryHandler>};
+  handlers: { enter: Array<QueryHandler>; exit: Array<QueryHandler> };
 
   /**
    * Execute the given function for each entities.
@@ -146,7 +145,7 @@ export function createQuery(...terms: QueryTerm[]): Query {
     matchers: terms.map((term) => term.matcher),
     archetypes,
     world: undefined,
-    handlers: {enter: [], exit: []},
+    handlers: { enter: [], exit: [] },
     each(fn: (eid: Entity, index: number) => void) {
       for (let i = 0; i < this.archetypes.length; i++) {
         const ents = this.archetypes[i]!.entities.dense;
@@ -399,5 +398,5 @@ export const onExitQuery = (query: Query) => {
   };
 };
 
-export class AlreadyRegisteredQueryError extends Error {}
-export class RemoveQueryError extends Error {}
+export class AlreadyRegisteredQueryError extends Error { }
+export class RemoveQueryError extends Error { }

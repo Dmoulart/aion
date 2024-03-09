@@ -1,16 +1,15 @@
 import {
-  isTypedArray,
   type ArrayType,
   type CustomType,
   type InferArrayType,
   type PrimitiveType,
   type Type,
 } from "./types.js";
-import type {World} from "./world.js";
-import {type ID, NonExistantEntity} from "./entity.js";
-import {deriveArchetype, type Archetype} from "./archetype.js";
-import {type Entity} from "./entity.js";
-import {nextID} from "./id.js";
+import type { World } from "./world.js";
+import { type ID, NonExistantEntity } from "./entity.js";
+import { deriveArchetype, type Archetype } from "./archetype.js";
+import { type Entity } from "./entity.js";
+import { nextID } from "./id.js";
 import {
   type Schema,
   type MultipleTypesSchema,
@@ -22,7 +21,7 @@ import {
   isSingleTypeSchema,
 } from "./schemas.js";
 
-export type ComponentId<S extends Schema = Schema> = ID & {__brand: S};
+export type ComponentId<S extends Schema = Schema> = ID & { __brand: S };
 
 export const $cid: unique symbol = Symbol("$cid");
 

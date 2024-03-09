@@ -1,22 +1,18 @@
-import {expect, it, describe} from "vitest";
+import { expect, it, describe } from "vitest";
 import {
   any,
   attach,
   createEntity,
   createQuery,
   createWorld,
-  defineQuery,
   defineRelation,
   detach,
   hasComponent,
+  i32,
   runQuery,
 } from "../src/index.js";
-import {i32} from "../dist/types.js";
 
 describe("Relation", () => {
-  it("can be created", () => {
-    expect(() => defineRelation()).not.toThrowError();
-  });
   it("can be used in queries", () => {
     const world = createWorld(10_000);
     const Likes = defineRelation();
@@ -34,6 +30,7 @@ describe("Relation", () => {
     detach(world, Likes(computer), dave);
     expect(!hasComponent(world, Likes(computer), dave));
   });
+
   it("Same relations are same components", () => {
     const world = createWorld(10_000);
     const Likes = defineRelation();
@@ -42,6 +39,7 @@ describe("Relation", () => {
 
     expect(Likes(computer) === Likes(computer));
   });
+
   it("Can use wildcard", () => {
     const world = createWorld(10_000);
     const Likes = defineRelation();
@@ -59,6 +57,7 @@ describe("Relation", () => {
 
     expect(runQuery(world, query).length === 2);
   });
+
   it("Can define relations with schema", () => {
     const world = createWorld(10_000);
 
@@ -72,6 +71,7 @@ describe("Relation", () => {
     expect("speed" in Vehicle(Boat));
     expect("speed" in Vehicle(Car));
   });
+
   it("must cache relations components", () => {
     const world = createWorld(10_000);
 

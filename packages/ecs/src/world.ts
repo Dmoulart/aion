@@ -5,7 +5,7 @@ import {
   removeEntity,
   lo,
 } from "./entity.js";
-import {type Archetype, createArchetype} from "./archetype.js";
+import { type Archetype, createArchetype } from "./archetype.js";
 import {
   type QueryHandler,
   addQuery,
@@ -62,7 +62,7 @@ export type World = {
   /**
    * The callback to execute when entities enter the query or exit the query
    */
-  handlers: {enter: Array<QueryHandler[]>; exit: Array<QueryHandler[]>};
+  handlers: { enter: Array<QueryHandler[]>; exit: Array<QueryHandler[]> };
 };
 
 /**

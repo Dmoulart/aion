@@ -96,8 +96,8 @@ export const removeEntity = (world: World, eid: Entity) => {
 export const entityExists = (world: World, eid: Entity) =>
   Boolean(world.entitiesArchetypes[eid]);
 
-export class NonExistantEntity extends Error {}
-export class ExceededWorldCapacity extends Error {}
+export class NonExistantEntity extends Error { }
+export class ExceededWorldCapacity extends Error { }
 
 /**
  * Get the low part of an identifier

@@ -1,5 +1,5 @@
-import {expect, it, describe} from "vitest";
-import {createArchetype, deriveArchetype} from "../src/archetype.js";
+import { expect, it, describe } from "vitest";
+import { createArchetype, deriveArchetype } from "../src/archetype.js";
 import {
   defineComponent,
   createWorld,
@@ -9,9 +9,6 @@ import {
 } from "../src/index.js";
 
 describe("Archetype", () => {
-  it("can be created without component", () => {
-    expect(() => createArchetype()).not.toThrowError();
-  });
   it("can be created with component", () => {
     const TestComponent = defineComponent({
       test: i8,

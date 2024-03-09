@@ -1,8 +1,8 @@
-import type {ComponentId} from "./component.js";
-import {type World} from "./world.js";
-import {type ID} from "./entity.js";
-import {BitSet, SparseSet} from "./collections/index.js";
-import {matchQuery, registerQueryHandlersForArchetype} from "./query.js";
+import type { ComponentId } from "./component.js";
+import { type World } from "./world.js";
+import { type ID } from "./entity.js";
+import { BitSet, SparseSet } from "./collections/index.js";
+import { matchQuery, registerQueryHandlersForArchetype } from "./query.js";
 
 export type Archetype = {
   /**

@@ -1,4 +1,4 @@
-import {expect, it, describe} from "vitest";
+import { expect, it, describe } from "vitest";
 import {
   createEntity,
   removeEntity,
@@ -6,7 +6,7 @@ import {
   entityExists,
   insertEntity,
 } from "../src/index.js";
-import {cursor, nextID} from "../src/id.js";
+import { cursor } from "../src/id.js";
 
 describe("Entity", () => {
   it("can create a new entity", () => {
@@ -15,6 +15,7 @@ describe("Entity", () => {
 
     expect(eid).toStrictEqual(1);
   });
+
   it("can keep track of the entities count, starting from 1", () => {
     const world = createWorld();
 
@@ -23,6 +24,7 @@ describe("Entity", () => {
 
     expect(cursor).toStrictEqual(3);
   });
+
   it("recycle deleted entities", () => {
     const world = createWorld();
 
@@ -35,6 +37,7 @@ describe("Entity", () => {
 
     expect(eid).toStrictEqual(eidToRemove);
   });
+
   it("can verify an entity exists", () => {
     const world = createWorld();
 
@@ -42,6 +45,7 @@ describe("Entity", () => {
 
     expect(entityExists(world, eid)).toStrictEqual(true);
   });
+
   it("can remove an entity", () => {
     const world = createWorld();
 
@@ -50,10 +54,12 @@ describe("Entity", () => {
 
     expect(entityExists(world, eid)).toStrictEqual(false);
   });
+
   it("throws an error when trying to remove a non existant entity", () => {
     const world = createWorld();
     expect(() => removeEntity(world, 1)).toThrow();
   });
+
   it("can insert an entity", () => {
     const world = createWorld();
 

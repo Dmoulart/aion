@@ -1,55 +1,8 @@
-export interface BitsetInterface {
-  /**
-   * The bitset mask
-   */
-  mask: Uint32Array;
-  /**
-   * Check if the bitset contains the given value
-   * @param val
-   * @returns true if the set has the given value
-   */
-  has: (val: number) => boolean;
-  /**
-   * Set the given value.
-   * @param val
-   * @returns nothing
-   */
-  or: (val: number) => void;
-  /**
-   * Unset the given value
-   * @param val
-   * @returns nothing
-   */
-  xor: (val: number) => void;
-  /**
-   * Returns true if the bitset contains all the values of another bitset
-   * @param set
-   * @returns
-   */
-  contains: (set: BitsetInterface) => boolean;
-  /**
-   * Returns true if the bitset contains any value of another bitset
-   * @param set
-   * @returns
-   */
-  intersects: (set: BitsetInterface) => boolean;
-  /**
-   * Clone the bitset.
-   * @returns cloned bitset
-   */
-  clone: () => BitsetInterface;
-  /**
-   * Returns a string representation of the bitset
-   * @returns string representation
-   */
-  toString: () => string;
-}
-
 /**
  * Create a new bitset.
  * It allows to make bitwise operations without the size limitations of a 32 integer.
  */
-export class BitSet implements BitsetInterface {
+export class BitSet {
   mask!: Uint32Array;
   size!: number;
 
@@ -60,6 +13,11 @@ export class BitSet implements BitsetInterface {
     this.mask = new Uint32Array(size);
   }
 
+  /**
+   * Check if the bitset contains the given value
+   * @param val
+   * @returns true if the set has the given value
+   */
   has(val: number) {
     const index = val >>> 5;
 
@@ -71,6 +29,11 @@ export class BitSet implements BitsetInterface {
     return Boolean(this.mask[index]! & (1 << (val & 31)));
   }
 
+  /**
+   * Set the given value.
+   * @param val
+   * @returns nothing
+   */
   or(val: number) {
     const index = val >>> 5;
 
@@ -81,6 +44,11 @@ export class BitSet implements BitsetInterface {
     this.mask[index] |= 1 << (val & 31);
   }
 
+  /**
+   * Unset the given value
+   * @param val
+   * @returns nothing
+   */
   xor(val: number) {
     const index = val >>> 5;
 
@@ -91,7 +59,12 @@ export class BitSet implements BitsetInterface {
     this.mask[index] ^= 1 << (val & 31);
   }
 
-  contains(other: BitsetInterface) {
+  /**
+   * Returns true if the bitset contains all the values of another bitset
+   * @param set
+   * @returns
+   */
+  contains(other: BitSet) {
     const len = Math.min(this.mask.length, other.mask.length);
     for (let i = 0; i < len; i++) {
       const a = this.mask[i]!;
@@ -103,7 +76,12 @@ export class BitSet implements BitsetInterface {
     return true;
   }
 
-  intersects(other: BitsetInterface) {
+  /**
+   * Returns true if the bitset contains any value of another bitset
+   * @param set
+   * @returns
+   */
+  intersects(other: BitSet) {
     const len = Math.min(this.mask.length, other.mask.length);
     for (let i = 0; i < len; i++) {
       const a = this.mask[i]!;
@@ -115,12 +93,20 @@ export class BitSet implements BitsetInterface {
     return false;
   }
 
+  /**
+   * Clone the bitset.
+   * @returns cloned bitset
+   */
   clone() {
     const clone = new BitSet(this.size);
     clone.mask.set(this.mask);
     return clone;
   }
 
+  /**
+   * Returns a string representation of the bitset
+   * @returns string representation
+   */
   toString() {
     return this.mask.join("");
   }

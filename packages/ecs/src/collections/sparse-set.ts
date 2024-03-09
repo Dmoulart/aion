@@ -1,45 +1,30 @@
-export interface SparseSetInterface {
+export class SparseSet {
+  dense: number[] = [];
+  sparse: number[] = [];
+
   /**
    * Insert a new number in the set.
    * @param num
    * @returns nothing
    */
-  insert(num: number): void;
+  insert(num: number) {
+    this.sparse[num] = this.dense.push(num) - 1;
+  }
+
   /**
    * Check if the given number is already in the set.
    * @param num
    * @returns number is already in the set
    */
-  has(num: number): boolean;
+  has(num: number) {
+    return this.dense[this.sparse[num]!] === num;
+  }
+
   /**
    * Remove a number from the set.
    * @param num
    * @returns nothing
    */
-  remove(num: number): void;
-  /**
-   * Get the number of elements in the set.
-   * @returns number of elements in the set
-   */
-  count(): number;
-  /**
-   * The elements contained in the set
-   */
-  dense: number[];
-}
-
-export class SparseSet implements SparseSetInterface {
-  dense: number[] = [];
-  sparse: number[] = [];
-
-  insert(num: number) {
-    this.sparse[num] = this.dense.push(num) - 1;
-  }
-
-  has(num: number) {
-    return this.dense[this.sparse[num]!] === num;
-  }
-
   remove(num: number) {
     if (!this.has(num)) return;
 
@@ -52,6 +37,10 @@ export class SparseSet implements SparseSetInterface {
     this.sparse[last] = i;
   }
 
+  /**
+   * Get the number of elements in the set.
+   * @returns number of elements in the set
+   */
   count() {
     return this.dense.length;
   }

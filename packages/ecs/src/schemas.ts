@@ -1,5 +1,5 @@
-import type {Component, Value} from "./component.js";
-import type {ID} from "./entity.js";
+import type { Component, Value } from "./component.js";
+import type { ID } from "./entity.js";
 import {
   isTypedArray,
   type ArrayType,

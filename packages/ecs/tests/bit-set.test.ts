@@ -1,10 +1,7 @@
-import {expect, it, describe} from "vitest";
-import {BitSet} from "../src/index.js";
+import { expect, it, describe } from "vitest";
+import { BitSet } from "../src/index.js";
 
 describe("BitSet", () => {
-  it("can be created", () => {
-    expect(() => new BitSet()).not.toThrowError();
-  });
   it("can set value and retrieve it", () => {
     const set = new BitSet();
     set.or(5);

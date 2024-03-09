@@ -1,16 +1,15 @@
-import {expect, it, describe} from "vitest";
+import { expect, it, describe } from "vitest";
 import {
   BitSet,
   getComponentID,
   createEntity,
   createWorld,
   removeEntity,
-  entityExists,
 } from "../src/index.js";
-import {defineEncoder} from "../src/encoder.js";
-import {$cid, attach, defineComponent} from "../src/component.js";
-import {f32, i32, u16, u8} from "../src/types.js";
-import {Chunk} from "../src/chunk.js";
+import { defineEncoder } from "../src/encoder.js";
+import { attach, defineComponent } from "../src/component.js";
+import { i32, u8 } from "../src/types.js";
+import { Chunk } from "../src/chunk.js";
 
 describe("Encoder", () => {
   it("can encode and decode", () => {

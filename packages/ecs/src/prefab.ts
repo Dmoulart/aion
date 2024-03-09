@@ -1,12 +1,12 @@
-import type {World} from "./world.js";
-import {buildArchetype} from "./archetype.js";
-import {createEntity} from "./entity.js";
+import type { World } from "./world.js";
+import { buildArchetype } from "./archetype.js";
+import { createEntity } from "./entity.js";
 import {
   type Component,
   type ComponentsGroup,
   getComponentID,
 } from "./component.js";
-import {isSingleTypeSchema, type InferSchema, type Instance} from "./schemas.js";
+import { isSingleTypeSchema, type InferSchema, type Instance } from "./schemas.js";
 // @todo: This produces a nested array but we're only interested in the second level. Get rid of this level
 export type PrefabOptions<Components extends Component[]> = Map<
   Components,
@@ -18,7 +18,7 @@ export type ComponentsPrefabFields<Comps extends Component[]> = {
 };
 
 // Map function utility
-type Map<T, U> = {[K in keyof T]: U};
+type Map<T, U> = { [K in keyof T]: U };
 
 /**
  * The prefab definition is an object grouping the prefab's specific set of components.

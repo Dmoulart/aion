@@ -1,4 +1,4 @@
-import {expect, it, describe} from "vitest";
+import { expect, it, describe } from "vitest";
 import {
   addQuery,
   createWorld,
@@ -15,8 +15,6 @@ import {
   any,
   i32,
   i8,
-  type Entity,
-  runQuery,
   defineQuery,
   not,
   none,
@@ -24,9 +22,6 @@ import {
 } from "../src/index.js";
 
 describe("Query", () => {
-  it("can be created ", () => {
-    expect(() => defineQuery()).not.toThrowError();
-  });
   it("can query complete sets of components", () => {
     const world = createWorld();
 
