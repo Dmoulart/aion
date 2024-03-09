@@ -53,7 +53,7 @@ describe("Relation", () => {
     attach(world, Likes(computer), dave);
     attach(world, Likes(icecreams), kevin);
 
-    const query = createQuery(any(...Likes("*")));
+    const query = createQuery(any(...(Likes("*") as any)));
 
     expect(runQuery(world, query).length === 2);
   });
