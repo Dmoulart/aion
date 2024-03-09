@@ -10,6 +10,8 @@ export type Window = {
   circle: typeof circle;
   fill: typeof fill;
   stroke: typeof fill;
+  rotate: typeof rotate;
+  scale: typeof scale;
 };
 
 const DEFAULT_OPTIONS: CreateWindowOptions = {
@@ -76,6 +78,8 @@ export function createWindow(options?: CreateWindowOptions): Window {
     circle,
     fill,
     stroke,
+    scale,
+    rotate,
   };
 }
 
@@ -118,6 +122,18 @@ export function circle(x: number, y: number, r: number) {
 
 circle.stroke = stroke;
 circle.fill = fill;
+
+export function rotate(angle: number) {
+  instance.ctx.rotate(angle);
+
+  return instance;
+}
+
+export function scale(x: number, y: number = x) {
+  instance.ctx.scale(x, y);
+
+  return instance;
+}
 
 // export function strokeText(
 //   text: string,
