@@ -61,11 +61,11 @@ export function createInputListener(options?: InputListenerOptions) {
 
 export function axis(axis: "horizontal" | "vertical"): number {
   if (axis === "horizontal") {
-    return Number(key("ArrowRight")) - Number(key("ArrowLeft"));
+    return Number(anyKey("ArrowRight", "d")) - Number(anyKey("ArrowLeft", "q"));
   }
 
   if (axis === "vertical") {
-    return Number(key("ArrowDown")) - Number(key("ArrowUp"));
+    return Number(anyKey("ArrowDown", "s")) - Number(anyKey("ArrowUp", "z"));
   }
 
   throw new Error("Unknown axis");
@@ -85,6 +85,10 @@ export function getMouseY() {
 
 export function key(key: KeyboardEventKey) {
   return listener.pressedKeys.has(key);
+}
+
+export function anyKey(...keys: KeyboardEventKey[]) {
+  return keys.some((key) => listener.pressedKeys.has(key));
 }
 
 export function direction() {
