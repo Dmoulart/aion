@@ -8,9 +8,7 @@ export interface Engine {
 
 export function defineEngine<T>(setup: () => T) {
   function DEFAULT_LOOP() {
-    ctx.call(engine, () => {
-      engine.events.update?.forEach((cb) => cb());
-    });
+    engine.events.update?.forEach((cb) => cb());
   }
 
   const engine: Engine = {
@@ -26,7 +24,10 @@ export function defineEngine<T>(setup: () => T) {
     engine.events.boot?.forEach((cb) => cb());
 
     (function loop() {
-      engine.loop();
+      ctx.call(engine, () => {
+        engine.loop();
+      });
+
       requestAnimationFrame(loop);
     })();
   };

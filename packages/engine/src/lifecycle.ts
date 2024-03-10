@@ -1,11 +1,9 @@
 import { ctx, useEngine } from "./ctx.js";
 
-export function defineLoop(cb: () => void) {
+export function defineLoop(loop: () => void) {
   const engine = useEngine();
 
-  engine.loop = () => {
-    ctx.call(engine, cb);
-  };
+  engine.loop = loop;
 }
 
 // export function onBoot(cb: () => void) {
