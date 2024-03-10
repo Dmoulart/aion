@@ -21,14 +21,13 @@ const run = defineEngine(() => {
 
   const player = createPlayer();
 
-  on("boot", () => {
-    initWindow();
-    initInputListener();
-  });
+  initWindow();
+  initInputListener();
 
   defineLoop(() => {
-    clear();
     emit("update");
+
+    clear();
     emit("draw");
   });
 

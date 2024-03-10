@@ -38,13 +38,11 @@ export function defineEngine<T>(
   //     ? () => ctx.call(engine, engine.loop)
   //     : engine.loop;
 
-  const callLoop = () => ctx.call(engine, engine.loop);
+  const step = () => ctx.call(engine, engine.loop);
 
   return () => {
-    engine.events.boot?.forEach((cb) => cb());
-
     (function loop() {
-      callLoop();
+      step();
 
       requestAnimationFrame(loop);
     })();
