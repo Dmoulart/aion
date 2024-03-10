@@ -4,7 +4,7 @@ export type CreateWindowOptions = {
   height?: string;
 };
 
-type Window = ReturnType<typeof createWindow>;
+export type Window = ReturnType<typeof createWindow>;
 
 const DEFAULT_OPTIONS: CreateWindowOptions = {
   parent: "body",
@@ -74,9 +74,13 @@ export function createWindow(options?: CreateWindowOptions) {
     ellipse,
     circle,
     fill,
-    stroke,
-    strokeText,
+    fillStyle,
     fillText,
+    fillRect,
+    stroke,
+    strokeStyle,
+    strokeText,
+    strokeRect,
     drawImage,
     transform,
     translate,
@@ -231,12 +235,75 @@ export function ellipse(
   return instance;
 }
 
+export function strokeStyle(style: string | CanvasGradient | CanvasPattern) {
+  instance.ctx.strokeStyle = style;
+
+  return instance;
+}
+
+export function fillStyle(style: string | CanvasGradient | CanvasPattern) {
+  instance.ctx.fillStyle = style;
+
+  return instance;
+}
+
+export function strokeRect(x: number, y: number, w: number, h: number) {
+  instance.ctx.strokeRect(x, y, w, h);
+
+  return instance;
+}
+
+export function fillRect(x: number, y: number, w: number, h: number) {
+  instance.ctx.fillRect(x, y, w, h);
+
+  return instance;
+}
+
+export function strokeText(
+  text: string,
+  x: number,
+  y: number,
+  color?: string,
+  maxWidth?: number | undefined
+) {
+  if (color) {
+    instance.ctx.strokeStyle = color;
+  }
+
+  instance.ctx.strokeText(text, x, y, maxWidth);
+
+  return instance;
+}
+
+export function fillText(
+  text: string,
+  x: number,
+  y: number,
+  color?: string,
+  maxWidth?: number | undefined
+) {
+  if (color) {
+    instance.ctx.strokeStyle = color;
+  }
+
+  instance.ctx.fillText(text, x, y, maxWidth);
+
+  return instance;
+}
+
+export function font(font: string) {
+  instance.ctx.font = font;
+
+  return instance;
+}
+
 export function drawImage(image: CanvasImageSource, dx: number, dy: number) {
   image;
   instance.ctx.drawImage(image, dx, dy);
 
   return instance;
 }
+
 drawImage.resized = drawImageResized;
 export function drawImageResized(
   image: CanvasImageSource,
@@ -280,70 +347,3 @@ export function getCenter() {
 export function begin() {
   return closePath().clear().beginPath();
 }
-
-export function strokeText(
-  text: string,
-  x: number,
-  y: number,
-  color?: string,
-  maxWidth?: number | undefined
-) {
-  if (color) {
-    instance.ctx.strokeStyle = color;
-  }
-
-  instance.ctx.strokeText(text, x, y, maxWidth);
-
-  return instance;
-}
-
-export function fillText(
-  text: string,
-  x: number,
-  y: number,
-  color?: string,
-  maxWidth?: number | undefined
-) {
-  if (color) {
-    instance.ctx.strokeStyle = color;
-  }
-
-  instance.ctx.fillText(text, x, y, maxWidth);
-
-  return instance;
-}
-
-export function font(font: string) {
-  instance.ctx.font = font;
-
-  return instance;
-}
-
-// type PickMatching<T, V> = {
-//   [K in keyof T as T[K] extends V ? K : never]: T[K];
-// };
-
-// type ExtractMethods<T> = PickMatching<T, Function>;
-
-// type CanvasMethodsNames = keyof ExtractMethods<CanvasRenderingContext2D>;
-
-// function wrapCanvasMethod<T extends CanvasMethodsNames>(
-//   method: T,
-//   beforeCb?: (
-//     instance: Window,
-//     args: Parameters<CanvasRenderingContext2D[T]>
-//   ) => void
-// ) {
-//   return beforeCb
-//     ? (...args: Parameters<CanvasRenderingContext2D[T]>) => {
-//         beforeCb(instance, args);
-//         //@ts-expect-error
-//         instance.ctx[method](...args);
-//         return instance;
-//       }
-//     : (...args: Parameters<CanvasRenderingContext2D[T]>) => {
-//         //@ts-expect-error
-//         instance.ctx[method](...args);
-//         return instance;
-//       };
-// }
