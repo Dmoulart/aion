@@ -1,3 +1,5 @@
+import { createNamespace } from "aion-core";
+
 export type CreateWindowOptions = {
   parent?: string | HTMLElement | undefined;
   width?: string;

@@ -1,8 +1,4 @@
-import { startRenderLoop } from "aion-render";
-
-export function defineEngine<T>(setup: () => T) {
-  setup();
-  return () => {
-    startRenderLoop(() => {});
-  };
-}
+export * from "./engine.js";
+export * from "./ctx.js";
+export * from "./lifecycle.js";
+export * from "./loop.js";
