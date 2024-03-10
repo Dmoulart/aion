@@ -8,13 +8,9 @@ export interface Engine {
 
 export function defineEngine<T>(setup: () => T) {
   function DEFAULT_LOOP() {
-    engine.events.update?.forEach((cb) => cb());
-  }
-
-  function DEFAULT_BOOT() {
-    engine.events.boot?.forEach((cb) => cb());
-    const start = createRenderLoop(engine.loop);
-    return start;
+    ctx.call(engine, () => {
+      engine.events.update?.forEach((cb) => cb());
+    });
   }
 
   const engine: Engine = {
