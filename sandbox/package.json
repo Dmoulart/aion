@@ -9,9 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "aion-core": "workspace:*",
     "aion-render": "workspace:*",
     "aion-net": "workspace:*",
-    "aion-ecs": "workspace:*"
+    "aion-ecs": "workspace:*",
+    "aion-input": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^4.9.3",

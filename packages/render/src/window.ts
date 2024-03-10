@@ -46,12 +46,13 @@ export function createWindow(options?: CreateWindowOptions) {
   parent ??= document.body;
 
   const windowEl = document.createElement("div");
-  windowEl.classList.add("window");
+  windowEl.classList.add("aion-window");
 
   windowEl.style.height = options.height ?? "100vh";
   windowEl.style.width = options.height ?? "100vh";
 
   const canvas = document.createElement("canvas");
+  canvas.classList.add("aion-canvas");
 
   const ctx = canvas.getContext("2d");
 
