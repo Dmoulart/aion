@@ -4,13 +4,15 @@ export type CreateWindowOptions = {
   height?: string;
 };
 
+type Window = ReturnType<typeof createWindow>;
+
 const DEFAULT_OPTIONS: CreateWindowOptions = {
   parent: "body",
   width: "100vw",
   height: "100vh",
 };
 
-let instance: ReturnType<typeof createWindow>;
+let instance: Window;
 
 export function initWindow(options?: CreateWindowOptions): void {
   if (instance) {
@@ -75,6 +77,7 @@ export function createWindow(options?: CreateWindowOptions) {
     stroke,
     strokeText,
     fillText,
+    drawImage,
     transform,
     translate,
     clip,
@@ -228,6 +231,26 @@ export function ellipse(
   return instance;
 }
 
+export function drawImage(image: CanvasImageSource, dx: number, dy: number) {
+  image;
+  instance.ctx.drawImage(image, dx, dy);
+
+  return instance;
+}
+drawImage.resized = drawImageResized;
+export function drawImageResized(
+  image: CanvasImageSource,
+  dx: number,
+  dy: number,
+  dw: number,
+  dh: number
+) {
+  image;
+  instance.ctx.drawImage(image, dx, dy, dw, dh);
+
+  return instance;
+}
+
 export function moveToCenter() {
   const { x, y } = getCenter();
   instance.ctx.moveTo(x, y);
@@ -295,3 +318,32 @@ export function font(font: string) {
 
   return instance;
 }
+
+// type PickMatching<T, V> = {
+//   [K in keyof T as T[K] extends V ? K : never]: T[K];
+// };
+
+// type ExtractMethods<T> = PickMatching<T, Function>;
+
+// type CanvasMethodsNames = keyof ExtractMethods<CanvasRenderingContext2D>;
+
+// function wrapCanvasMethod<T extends CanvasMethodsNames>(
+//   method: T,
+//   beforeCb?: (
+//     instance: Window,
+//     args: Parameters<CanvasRenderingContext2D[T]>
+//   ) => void
+// ) {
+//   return beforeCb
+//     ? (...args: Parameters<CanvasRenderingContext2D[T]>) => {
+//         beforeCb(instance, args);
+//         //@ts-expect-error
+//         instance.ctx[method](...args);
+//         return instance;
+//       }
+//     : (...args: Parameters<CanvasRenderingContext2D[T]>) => {
+//         //@ts-expect-error
+//         instance.ctx[method](...args);
+//         return instance;
+//       };
+// }

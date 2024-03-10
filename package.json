@@ -7,7 +7,8 @@
     "test": "vitest run",
     "watch:ecs": "cd ./packages/ecs && bun run watch",
     "watch:net": "cd ./packages/net && bun run watch",
-    "watch:render": "cd ./packages/render && bun run watch"
+    "watch:render": "cd ./packages/render && bun run watch",
+    "watch:core": "cd ./packages/core && bun run watch"
   },
   "workspaces": [
     "packages/*",

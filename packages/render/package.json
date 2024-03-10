@@ -11,6 +11,9 @@
     "build": "tsc --build",
     "watch": "tsc -w"
   },
+  "dependencies": {
+    "aion-core": "workspace:*"
+  },
   "devDependencies": {
     "bun-types": "latest"
   },
