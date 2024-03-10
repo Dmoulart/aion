@@ -5,9 +5,3 @@ export function defineLoop(loop: () => void) {
 
   engine.loop = loop;
 }
-
-// export function onBoot(cb: () => void) {
-//   const engine = useEngine();
-
-//   engine.boot = cb;
-// }

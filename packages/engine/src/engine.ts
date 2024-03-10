@@ -6,11 +6,11 @@ export interface Engine {
 }
 
 export type DefineEngineOptions = {
-  withImplicitContext: boolean;
+  //   withImplicitContext: boolean;
 };
 
 const DEFAULT_OPTIONS: DefineEngineOptions = {
-  withImplicitContext: true,
+  //   withImplicitContext: true,
 };
 
 export function defineEngine<T>(
@@ -28,15 +28,17 @@ export function defineEngine<T>(
     loop: DEFAULT_LOOP,
   };
 
-  if (options?.withImplicitContext) {
-    ctx.call(engine, () => setup(engine));
-  } else {
-    setup(engine);
-  }
+  //   if (options?.withImplicitContext) {
+  ctx.call(engine, () => setup(engine));
+  //   } else {
+  //     setup(engine);
+  //   }
 
-  const callLoop = options?.withImplicitContext
-    ? () => ctx.call(engine, engine.loop)
-    : engine.loop;
+  //   const callLoop = options?.withImplicitContext
+  //     ? () => ctx.call(engine, engine.loop)
+  //     : engine.loop;
+
+  const callLoop = () => ctx.call(engine, engine.loop);
 
   return () => {
     engine.events.boot?.forEach((cb) => cb());
