@@ -13,7 +13,8 @@
     "aion-render": "workspace:*",
     "aion-net": "workspace:*",
     "aion-ecs": "workspace:*",
-    "aion-input": "workspace:*"
+    "aion-input": "workspace:*",
+    "aion-engine": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^4.9.3",

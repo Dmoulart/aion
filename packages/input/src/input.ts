@@ -10,7 +10,7 @@ const DEFAULT_OPTIONS: InputListenerOptions = {
   el: ".aion-canvas",
 };
 
-export function listenToInput(options?: InputListenerOptions) {
+export function initInputListener(options?: InputListenerOptions) {
   listener = createInputListener(options);
 
   return listener;
@@ -59,17 +59,6 @@ export function createInputListener(options?: InputListenerOptions) {
   };
 }
 
-export function key(key: KeyboardEventKey) {
-  return listener.pressedKeys.has(key);
-}
-
-export function direction() {
-  return {
-    x: Number(key("d")) - Number(key("q")),
-    y: Number(key("s")) - Number(key("z")),
-  };
-}
-
 export function axis(axis: "horizontal" | "vertical"): number {
   if (axis === "horizontal") {
     return Number(key("ArrowRight")) - Number(key("ArrowLeft"));
@@ -92,4 +81,15 @@ export function getMouseX() {
 
 export function getMouseY() {
   return listener.mouse.y;
+}
+
+export function key(key: KeyboardEventKey) {
+  return listener.pressedKeys.has(key);
+}
+
+export function direction() {
+  return {
+    x: Number(key("d")) - Number(key("q")),
+    y: Number(key("s")) - Number(key("z")),
+  };
 }

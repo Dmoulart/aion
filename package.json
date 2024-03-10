@@ -9,7 +9,8 @@
     "watch:net": "cd ./packages/net && bun run watch",
     "watch:render": "cd ./packages/render && bun run watch",
     "watch:core": "cd ./packages/core && bun run watch",
-    "watch:input": "cd ./packages/core && bun run watch"
+    "watch:input": "cd ./packages/core && bun run watch",
+    "watch:engine": "cd ./packages/engine && bun run watch"
   },
   "workspaces": [
     "packages/*",
