@@ -83,3 +83,16 @@ export function imgToBytes(image: HTMLImageElement): Uint8ClampedArray {
   drawImageToCanvas(image);
   return ghostCtx.getImageData(0, 0, image.width, image.height).data;
 }
+
+export function pixelAt(
+  bytes: Uint8ClampedArray,
+  w: number,
+  x: number,
+  y: number
+) {
+  const i = (y * w + x) * 4;
+
+  const [r, g, b] = bytes.slice(i, i + 3);
+
+  return (r! << 16) | (g! << 8) | b!;
+}
