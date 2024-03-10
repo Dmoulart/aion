@@ -14,7 +14,7 @@ export async function loadImages(
   srcArray: string[]
 ): Promise<HTMLImageElement[]> {
   const images = [];
-
+  // @todo use vite bundle analyze to pre-generate image links ? ?
   const result = await Promise.allSettled(
     srcArray.map((src) => loadImage(src))
   );
@@ -62,24 +62,24 @@ export async function createImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
-// export async function loadAllImages() {
-//   // use vite bundle analyze to pre-generate image links ? ?
-//   //   return await import(path).catch((e) =>
-//   //     console.warn(`Cannot load image at path ${path}\n${e}`)
-//   //   );
-//   await Promise.all(
-//     register.map((path) => loadImage(path).then((img) => (images[path] = img)))
-//   );
-// }
+let ghostCanvas: HTMLCanvasElement;
+let ghostCtx: CanvasRenderingContext2D;
+function drawImageToCanvas(image: HTMLImageElement) {
+  if (!ghostCanvas) {
+    ghostCanvas = document.createElement("canvas");
+  }
 
-// export function getAsset(index: number): AssetPath {
-//   const asset = register[index] as AssetPath;
-//   assertIsDefined(asset);
-//   return asset;
-// }
+  if (!ghostCtx) {
+    ghostCtx = ghostCanvas.getContext("2d")!;
+  }
 
-// export function getAssetID(filepath: AssetPath): AssetID {
-//   const assetID = register.indexOf(filepath); // efficiency ?
-//   assertIsDefined(assetID);
-//   return assetID;
-// }
+  const canvas = ghostCanvas;
+  canvas.width = image.width;
+  canvas.height = image.height;
+  ghostCtx.drawImage(image, 0, 0, image.width, image.height);
+}
+
+export function imgToBytes(image: HTMLImageElement): Uint8ClampedArray {
+  drawImageToCanvas(image);
+  return ghostCtx.getImageData(0, 0, image.width, image.height).data;
+}
