@@ -12,8 +12,8 @@ import {
   i16,
   World,
   i64,
-} from "../../../packages/ecs/dist/index.js";
-import {defineMessage, createSnapshot} from "../../../packages/net/src";
+} from "aion-ecs/src";
+import { defineMessage, createSnapshot } from "../../../packages/net/src";
 import block from "./assets/block.png";
 import tile from "./assets/tile.png";
 
@@ -25,7 +25,7 @@ export let bombi = () => {
   return w;
 };
 
-const {prefab, create, remove} = bombi();
+const { prefab, create, remove } = bombi();
 
 export const Position = defineComponent({
   x: f32,
@@ -39,7 +39,7 @@ export const Velocity = defineComponent({
 export const Animation = defineComponent({
   start: f32,
 });
-export const Sprite = defineComponent({value: u16});
+export const Sprite = defineComponent({ value: u16 });
 
 export const TileDesc = defineComponent({
   blocking: u8,
@@ -61,8 +61,8 @@ export const BombComponent = defineComponent({
   lifetime: i32, // in seconds
 });
 
-export const Movable = {Position, Velocity};
-export const Drawable = {Position, Sprite};
+export const Movable = { Position, Velocity };
+export const Drawable = { Position, Sprite };
 export const Character = {
   ...Movable,
   ...Drawable,
@@ -70,8 +70,8 @@ export const Character = {
   Animation,
   BombCommand,
 };
-export const Tile = {...Drawable, TileDesc};
-export const Bomb = {BombComponent, ...Drawable};
+export const Tile = { ...Drawable, TileDesc };
+export const Bomb = { BombComponent, ...Drawable };
 export const ClientTransport = create();
 
 export const TILE_SIZE = 16;
@@ -91,7 +91,7 @@ export const setWalkable = (x: number, y: number, isWalkable: boolean) => {
 export const CHARACTER_SPRITE_HEIGHT = 1;
 export const CHARACTER_SPRITE_WIDTH = 0;
 export function handleMovement(world: World) {
-  const {query} = bombi();
+  const { query } = bombi();
   query(Character).each((e) => {
     Velocity.x[e] = InputCommand.horizontal[e] * 0.25;
     Velocity.y[e] = InputCommand.vertical[e] * 0.25;
@@ -117,7 +117,7 @@ export function handleMovement(world: World) {
 }
 
 export function handleBombs(world: World) {
-  const {query} = bombi();
+  const { query } = bombi();
 
   // bomb spawning
   query(Character).each((e) => {
@@ -129,7 +129,7 @@ export function handleBombs(world: World) {
           created: created,
           lifetime: 1000,
         },
-        Position: {x: BombCommand.x[e], y: BombCommand.y[e]},
+        Position: { x: BombCommand.x[e], y: BombCommand.y[e] },
         Sprite: {
           value: SPRITES["./src/bomber/assets/bomb-1.png"],
         },
@@ -190,12 +190,12 @@ export function isWalkable(x: number, y: number) {
 }
 
 const [encodeTile, decodeTile] = defineEncoder([...Object.values(Tile)]);
-export {encodeTile, decodeTile};
+export { encodeTile, decodeTile };
 
 const [encodePlayer, decodePlayer] = defineEncoder([
   ...Object.values(Character),
 ]);
-export {encodePlayer, decodePlayer};
+export { encodePlayer, decodePlayer };
 
 const [encodeBombs, decodeBombs] = defineEncoder([...Object.values(Bomb)]);
 
