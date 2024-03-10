@@ -1,12 +1,5 @@
 import "./style.css";
-import {
-  aion,
-  f32,
-  defineComponent,
-  i32,
-  u16,
-  u8,
-} from "../../packages/ecs/dist/index.js";
+import { aion, f32, defineComponent, i32, u16, u8 } from "aion-ecs/src";
 
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d")!;
@@ -31,9 +24,9 @@ const Graphics = defineComponent({
   h: u16,
 });
 
-const MovingShape = {Position, Velocity, Graphics};
+const MovingShape = { Position, Velocity, Graphics };
 
-const {prefab, query, remove} = aion();
+const { prefab, query, remove } = aion();
 
 const rect = 0;
 const circle = 1;

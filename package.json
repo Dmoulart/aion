@@ -10,7 +10,8 @@
     "watch:render": "cd ./packages/render && bun run watch"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "sandbox"
   ],
   "devDependencies": {
     "bun-types": "latest"

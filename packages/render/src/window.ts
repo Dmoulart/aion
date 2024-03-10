@@ -4,23 +4,13 @@ export type CreateWindowOptions = {
   height?: string;
 };
 
-export type Window = {
-  ctx: CanvasRenderingContext2D;
-  rect: typeof rect;
-  circle: typeof circle;
-  fill: typeof fill;
-  stroke: typeof fill;
-  rotate: typeof rotate;
-  scale: typeof scale;
-};
-
 const DEFAULT_OPTIONS: CreateWindowOptions = {
   parent: "body",
   width: "100vw",
   height: "100vh",
 };
 
-let instance: Window;
+let instance: ReturnType<typeof createWindow>;
 
 export function initWindow(options?: CreateWindowOptions): void {
   if (instance) {
@@ -28,9 +18,11 @@ export function initWindow(options?: CreateWindowOptions): void {
   }
 
   instance = createWindow(options);
+
+  instance.ctx.beginPath();
 }
 
-export function createWindow(options?: CreateWindowOptions): Window {
+export function createWindow(options?: CreateWindowOptions) {
   options = { ...DEFAULT_OPTIONS, ...(options ?? {}) };
 
   let parent: HTMLElement;
@@ -73,6 +65,7 @@ export function createWindow(options?: CreateWindowOptions): Window {
   canvas.height = windowEl.clientHeight;
 
   return {
+    canvas,
     ctx,
     rect,
     circle,
@@ -80,6 +73,13 @@ export function createWindow(options?: CreateWindowOptions): Window {
     stroke,
     scale,
     rotate,
+    moveTo,
+    lineTo,
+    beginPath,
+    closePath,
+    clear,
+    moveToCenter,
+    begin,
   };
 }
 
@@ -109,19 +109,12 @@ export function rect(x: number, y: number, width: number, height: number) {
   return instance;
 }
 
-rect.stroke = stroke;
-
-rect.fill = fill;
-
 export function circle(x: number, y: number, r: number) {
   instance.ctx.beginPath();
-  instance.ctx.arc(95, 50, r, 0, 2 * Math.PI);
+  instance.ctx.arc(x, y, r, 0, 2 * Math.PI, false);
 
   return instance;
 }
-
-circle.stroke = stroke;
-circle.fill = fill;
 
 export function rotate(angle: number) {
   instance.ctx.rotate(angle);
@@ -133,6 +126,66 @@ export function scale(x: number, y: number = x) {
   instance.ctx.scale(x, y);
 
   return instance;
+}
+
+export function moveTo(x: number, y: number = x) {
+  instance.ctx.moveTo(x, y);
+
+  return instance;
+}
+
+export function lineTo(x: number, y: number = x) {
+  instance.ctx.lineTo(x, y);
+
+  return instance;
+}
+
+export function beginPath() {
+  instance.ctx.beginPath();
+
+  return instance;
+}
+
+export function closePath() {
+  instance.ctx.closePath();
+
+  return instance;
+}
+
+export function clear() {
+  instance.ctx.clearRect(0, 0, instance.canvas.width, instance.canvas.height);
+
+  return instance;
+}
+
+export function moveToCenter() {
+  const { x, y } = getCenter();
+  instance.ctx.moveTo(x, y);
+  return instance;
+}
+
+export function createRenderLoop(cb: () => void) {
+  return function renderLoop() {
+    begin();
+    cb();
+    requestAnimationFrame(renderLoop);
+  };
+}
+
+export function startRenderLoop(cb: () => void) {
+  const startRender = createRenderLoop(cb);
+  startRender();
+}
+
+export function getCenter() {
+  return {
+    x: instance.ctx.canvas.width / 2,
+    y: instance.ctx.canvas.height / 2,
+  };
+}
+
+export function begin() {
+  return closePath().clear().beginPath();
 }
 
 // export function strokeText(

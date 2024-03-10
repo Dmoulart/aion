@@ -1,9 +1,9 @@
-import { Colors, initWindow, rect } from "../../packages/render/dist/index";
+import { Colors, rect, initWindow, startRenderLoop } from "aion-render/src";
 
 initWindow();
 
-rect(10, 10, 100, 100)
-  .scale(1.4)
-  .rect(120, 120, 100, 100)
-  .fill(Colors["acapulco:100"])
-  .stroke(Colors["shamrock:950"]);
+startRenderLoop(() => {
+  rect(0, 0, 100, 100)
+    .fill(Colors["equator:200"])
+    .stroke(Colors["acapulco:950"]);
+});

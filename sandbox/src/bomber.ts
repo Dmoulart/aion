@@ -1,26 +1,18 @@
 import "./style.css";
-import {
-  Entity,
-  hasComponent,
-  onEnterQuery,
-} from "../../packages/ecs/dist/index.js";
+import { Entity, onEnterQuery } from "aion-ecs/src";
 import { useInput } from "./bomber/input";
 import {
-  Drawable,
   Velocity,
   Sprite,
-  Movable,
   Position,
   Animation,
   bombi,
   SPRITES,
-  isWalkable,
   TILE_SIZE,
   Tile,
   TileDesc,
   setWalkable,
   Character,
-  ClientTransport,
   playerUpdateMessage,
   player,
   InputCommand,
