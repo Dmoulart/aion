@@ -11,11 +11,8 @@ const DEFAULT_OPTIONS: InputListenerOptions = {
 };
 
 export function listenToInput(options?: InputListenerOptions) {
-  if (listener) {
-    return listener;
-  }
-
   listener = createInputListener(options);
+
   return listener;
 }
 

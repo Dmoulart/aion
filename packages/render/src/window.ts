@@ -15,10 +15,6 @@ const DEFAULT_OPTIONS: CreateWindowOptions = {
 let instance: Window;
 
 export function initWindow(options?: CreateWindowOptions): void {
-  if (instance) {
-    throw new Error("Window already instanciated");
-  }
-
   instance = createWindow(options);
 
   instance.ctx.beginPath();
@@ -299,7 +295,6 @@ export function font(font: string) {
 }
 
 export function drawImage(image: CanvasImageSource, dx: number, dy: number) {
-  image;
   instance.ctx.drawImage(image, dx, dy);
 
   return instance;
@@ -313,7 +308,6 @@ export function drawImageResized(
   dw: number,
   dh: number
 ) {
-  image;
   instance.ctx.drawImage(image, dx, dy, dw, dh);
 
   return instance;
