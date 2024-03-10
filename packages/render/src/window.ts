@@ -68,9 +68,17 @@ export function createWindow(options?: CreateWindowOptions) {
     canvas,
     ctx,
     rect,
+    arc,
+    ellipse,
     circle,
     fill,
     stroke,
+    strokeText,
+    fillText,
+    transform,
+    translate,
+    clip,
+    font,
     scale,
     rotate,
     moveTo,
@@ -128,6 +136,31 @@ export function scale(x: number, y: number = x) {
   return instance;
 }
 
+export function transform(
+  a: number,
+  b: number,
+  c: number,
+  d: number,
+  e: number,
+  f: number
+) {
+  instance.ctx.transform(a, b, c, d, e, f);
+
+  return instance;
+}
+
+export function translate(x: number, y: number) {
+  instance.ctx.translate(x, y);
+
+  return instance;
+}
+
+export function clip(fillRule?: CanvasFillRule | undefined) {
+  instance.ctx.clip(fillRule);
+
+  return instance;
+}
+
 export function moveTo(x: number, y: number = x) {
   instance.ctx.moveTo(x, y);
 
@@ -154,6 +187,43 @@ export function closePath() {
 
 export function clear() {
   instance.ctx.clearRect(0, 0, instance.canvas.width, instance.canvas.height);
+
+  return instance;
+}
+
+export function arc(
+  x: number,
+  y: number,
+  radius: number,
+  startAngle: number,
+  endAngle: number,
+  counterclockwise?: boolean | undefined
+) {
+  instance.ctx.arc(x, y, radius, startAngle, endAngle, counterclockwise);
+
+  return instance;
+}
+
+export function ellipse(
+  x: number,
+  y: number,
+  radiusX: number,
+  radiusY: number,
+  rotation: number,
+  startAngle: number,
+  endAngle: number,
+  counterclockwise?: boolean | undefined
+) {
+  instance.ctx.ellipse(
+    x,
+    y,
+    radiusX,
+    radiusY,
+    rotation,
+    startAngle,
+    endAngle,
+    counterclockwise
+  );
 
   return instance;
 }
@@ -188,18 +258,40 @@ export function begin() {
   return closePath().clear().beginPath();
 }
 
-// export function strokeText(
-//   text: string,
-//   x: number,
-//   y: number,
-//   maxWidth?: number | undefined,
-//   color?: string
-// ) {
-//   if (color) {
-//     instance.ctx.strokeStyle = color;
-//   }
+export function strokeText(
+  text: string,
+  x: number,
+  y: number,
+  color?: string,
+  maxWidth?: number | undefined
+) {
+  if (color) {
+    instance.ctx.strokeStyle = color;
+  }
 
-//   instance.ctx.strokeText(text, x, y, maxWidth);
+  instance.ctx.strokeText(text, x, y, maxWidth);
 
-//   return rect;
-// }
+  return instance;
+}
+
+export function fillText(
+  text: string,
+  x: number,
+  y: number,
+  color?: string,
+  maxWidth?: number | undefined
+) {
+  if (color) {
+    instance.ctx.strokeStyle = color;
+  }
+
+  instance.ctx.fillText(text, x, y, maxWidth);
+
+  return instance;
+}
+
+export function font(font: string) {
+  instance.ctx.font = font;
+
+  return instance;
+}
