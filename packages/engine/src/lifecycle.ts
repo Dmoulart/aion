@@ -1,13 +1,15 @@
-import { useEngine } from "./ctx.js";
+import { ctx, useEngine } from "./ctx.js";
 
-export function on(hook: string, cb: () => void) {
+export function defineLoop(cb: () => void) {
   const engine = useEngine();
 
-  engine.events[hook] ??= [];
-
-  const i = engine.events[hook]!.push(cb);
-
-  return function off() {
-    engine.events[hook]!.splice(i);
+  engine.loop = () => {
+    ctx.call(engine, cb);
   };
 }
+
+// export function onBoot(cb: () => void) {
+//   const engine = useEngine();
+
+//   engine.boot = cb;
+// }
