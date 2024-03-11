@@ -28,6 +28,7 @@ const run = defineEngine(() => {
     emit("update");
 
     clear();
+    emit("update");
     emit("draw");
   });
 
