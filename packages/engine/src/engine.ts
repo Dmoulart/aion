@@ -1,7 +1,8 @@
 import { ctx } from "./ctx.js";
+import { createEventEmitter, type EventEmitter } from "./event.js";
 
 export interface Engine {
-  events: Record<string, Array<() => void>>;
+  events: EventEmitter<BaseEvents>;
   loop: () => void;
 }
 
@@ -13,30 +14,24 @@ const DEFAULT_OPTIONS: DefineEngineOptions = {
   //   withImplicitContext: true,
 };
 
+type BaseEvents = { update: void; draw: void };
+
 export function defineEngine<T>(
   setup: (engine: Engine) => T,
-  options?: DefineEngineOptions
+  options?: DefineEngineOptions,
 ) {
   options = { ...DEFAULT_OPTIONS, ...(options ?? {}) };
 
   function DEFAULT_LOOP() {
-    engine.events.update?.forEach((cb) => cb());
+    engine.events.emit("update");
   }
 
   const engine: Engine = {
-    events: {},
+    events: createEventEmitter<BaseEvents>(),
     loop: DEFAULT_LOOP,
   };
 
-  //   if (options?.withImplicitContext) {
   ctx.call(engine, () => setup(engine));
-  //   } else {
-  //     setup(engine);
-  //   }
-
-  //   const callLoop = options?.withImplicitContext
-  //     ? () => ctx.call(engine, engine.loop)
-  //     : engine.loop;
 
   const step = () => ctx.call(engine, engine.loop);
 

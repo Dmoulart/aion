@@ -1,30 +1,48 @@
-import { useEngine } from "./ctx.js";
+type Events = Record<string, any>;
 
-export function on(hook: string, cb: () => void) {
-  const engine = useEngine();
+type Hook<T extends Events> = keyof T;
 
-  engine.events[hook] ??= [];
+type HandlerParams<T extends Events, N extends Hook<T>> = T[N];
 
-  const i = engine.events[hook]!.push(cb);
+type Handler<T extends Events, N extends Hook<T>> = (
+  params: HandlerParams<T, N>,
+) => void;
 
-  return function off() {
-    //@todo holes in array not good for perf
-    engine.events[hook]!.splice(i);
-  };
-}
+type Handlers<T extends Events> = {
+  [H in Hook<T>]: Set<Handler<T, H>>;
+};
 
-export function once(hook: string, cb: () => void) {
-  const engine = useEngine();
+export type EventEmitter<T extends Events> = ReturnType<
+  typeof createEventEmitter<T>
+>;
 
-  engine.events[hook] ??= [];
+export function createEventEmitter<T extends Events>() {
+  const events: Handlers<T> = {} as Handlers<T>;
 
-  const i = engine.events[hook]!.push(() => {
-    cb();
-    engine.events[hook]!.splice(i);
-  });
-}
+  function on<H extends Hook<T>>(hook: H, cb: Handler<T, H>) {
+    events[hook] ??= new Set<Handler<T, H>>();
 
-export function emit(hook: string) {
-  const engine = useEngine();
-  engine.events[hook]?.forEach((cb) => cb());
+    events[hook].add(cb);
+
+    return () => off(hook, cb);
+  }
+
+  function once<H extends Hook<T>>(hook: H, cb: Handler<T, H>) {
+    on(hook, (params) => {
+      cb(params);
+      off(hook, cb);
+    });
+  }
+
+  function off<Name extends Hook<T>>(hook: Name, cb: Handler<T, Name>) {
+    events[hook].delete(cb);
+  }
+
+  function emit<H extends Hook<T>>(hook: H, params?: HandlerParams<T, H>) {
+    for (const cb of events[hook].values()) {
+      cb(params as HandlerParams<T, H>);
+    }
+  }
+
+  return { on, once, off, emit };
 }
