@@ -1,6 +1,6 @@
 import { createContext } from "unctx";
-import type { Engine } from "./engine.js";
+import type { BaseEngine } from "./engine.js";
 
-export const ctx = createContext<Engine>();
+export const ctx = createContext<BaseEngine>();
 
 export const useEngine = ctx.use;

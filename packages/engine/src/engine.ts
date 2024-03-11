@@ -1,7 +1,7 @@
 import { ctx } from "./ctx.js";
 import { createEventEmitter, type EventEmitter } from "./event.js";
 
-export interface Engine {
+export interface BaseEngine {
   events: EventEmitter<BaseEvents>;
   loop: () => void;
 }
@@ -17,18 +17,14 @@ const DEFAULT_OPTIONS: DefineEngineOptions = {
 type BaseEvents = { update: void; draw: void };
 
 export function defineEngine<T>(
-  setup: (engine: Engine) => T,
+  setup: (engine: BaseEngine) => T,
   options?: DefineEngineOptions,
 ) {
-  options = { ...DEFAULT_OPTIONS, ...(options ?? {}) };
+  const config = { ...DEFAULT_OPTIONS, ...(options ?? {}) };
 
-  function DEFAULT_LOOP() {
-    engine.events.emit("update");
-  }
-
-  const engine: Engine = {
+  const engine: BaseEngine = {
     events: createEventEmitter<BaseEvents>(),
-    loop: DEFAULT_LOOP,
+    loop: () => engine.events.emit("update"),
   };
 
   ctx.call(engine, () => setup(engine));

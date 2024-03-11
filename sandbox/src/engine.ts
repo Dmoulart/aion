@@ -5,6 +5,9 @@ import { initWindow, rect } from "aion-render";
 import { clear, circle, Colors } from "aion-render";
 
 const run = defineEngine(() => {
+  initWindow();
+  initInputListener();
+
   const { prefab } = aion();
 
   const Position = defineComponent({
@@ -21,14 +24,10 @@ const run = defineEngine(() => {
 
   const player = createPlayer();
 
-  initWindow();
-  initInputListener();
-
   defineLoop(() => {
     emit("update");
 
     clear();
-    emit("update");
     emit("draw");
   });
 
