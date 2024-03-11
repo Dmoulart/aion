@@ -1,9 +1,11 @@
+import type { UseContext } from "unctx";
 import { ctx } from "./ctx.js";
 import { createEventEmitter, type EventEmitter } from "./event.js";
 
 export interface BaseEngine {
   events: EventEmitter<BaseEvents>;
   loop: () => void;
+  run: () => void;
 }
 
 export type DefineEngineOptions = {
@@ -16,26 +18,37 @@ const DEFAULT_OPTIONS: DefineEngineOptions = {
 
 type BaseEvents = { update: void; draw: void };
 
+type Engine<T> = BaseEngine & T & { use: () => Engine<T> };
+
 export function defineEngine<T>(
   setup: (engine: BaseEngine) => T,
-  options?: DefineEngineOptions,
-) {
+  options?: DefineEngineOptions
+): Engine<T> {
   const config = { ...DEFAULT_OPTIONS, ...(options ?? {}) };
 
-  const engine: BaseEngine = {
+  const baseEngine: BaseEngine = {
     events: createEventEmitter<BaseEvents>(),
-    loop: () => engine.events.emit("update"),
+    loop: () => baseEngine.events.emit("update"),
+    run: () => {
+      (function loop() {
+        step();
+
+        requestAnimationFrame(loop);
+      })();
+    },
   };
 
-  ctx.call(engine, () => setup(engine));
+  const plugins = ctx.call(baseEngine, () => setup(baseEngine));
 
-  const step = () => ctx.call(engine, engine.loop);
+  const engineWithPlugins = Object.assign(baseEngine, plugins);
 
-  return () => {
-    (function loop() {
-      step();
+  const engine: Engine<T> = Object.assign(engineWithPlugins, {
+    use: ctx.use as () => Engine<T>,
+  });
 
-      requestAnimationFrame(loop);
-    })();
-  };
+  function step() {
+    ctx.call(engine, engine.loop);
+  }
+
+  return engine;
 }

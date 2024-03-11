@@ -4,7 +4,7 @@ import { axis, getMouseX, getMouseY, initInputListener } from "aion-input";
 import { initWindow, rect } from "aion-render";
 import { clear, circle, Colors } from "aion-render";
 
-const run = defineEngine(() => {
+const engine = defineEngine(() => {
   initWindow();
   initInputListener();
 
@@ -44,6 +44,8 @@ const run = defineEngine(() => {
     Position.x[player] += Velocity.x[player];
     Position.y[player] += Velocity.y[player];
   });
+
+  return { $player: player };
 });
 
-run();
+engine.run();
