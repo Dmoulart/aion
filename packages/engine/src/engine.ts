@@ -16,13 +16,13 @@ const DEFAULT_OPTIONS: DefineEngineOptions = {
   //   withImplicitContext: true,
 };
 
-type BaseEvents = { update: void; draw: void };
+export type BaseEvents = { update: void; draw: void };
 
-type Engine<T> = BaseEngine & T & { use: () => Engine<T> };
+export type Engine<T = BaseEngine> = BaseEngine & T & { use: () => Engine<T> };
 
 export function defineEngine<T>(
   setup: (engine: BaseEngine) => T,
-  options?: DefineEngineOptions
+  options?: DefineEngineOptions,
 ): Engine<T> {
   const config = { ...DEFAULT_OPTIONS, ...(options ?? {}) };
 

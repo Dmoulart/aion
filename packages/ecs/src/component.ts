@@ -25,11 +25,8 @@ export type ComponentId<S extends Schema = Schema> = ID & { __brand: S };
 
 export const $cid: unique symbol = Symbol("$cid");
 
-export type InferSchemaFromID<ID extends ComponentId> = ID extends ComponentId<
-  infer Schema
->
-  ? Schema
-  : never;
+export type InferSchemaFromID<ID extends ComponentId> =
+  ID extends ComponentId<infer Schema> ? Schema : never;
 
 export type Component<S extends Schema = Schema> = {
   [$cid]: ComponentId<S>;
@@ -49,25 +46,25 @@ export type Columns<S extends Schema> = S extends MultipleTypesSchema
       [column in keyof S]: Column<S[column]>;
     }
   : S extends SingleTypeSchema
-  ? Column<S>
-  : never;
+    ? Column<S>
+    : never;
 
 // A component field is a typed array or an array of typed array.
 export type Column<T extends Type> = T extends PrimitiveType
   ? InstanceType<T>
   : T extends ArrayType
-  ? Array<InstanceType<InferArrayType<T>>>
-  : T extends CustomType
-  ? ReturnType<T>
-  : never;
+    ? Array<InstanceType<InferArrayType<T>>>
+    : T extends CustomType
+      ? ReturnType<T>
+      : never;
 
 export type Value<T extends Type> = T extends PrimitiveType
   ? number
   : T extends ArrayType
-  ? Array<number>
-  : T extends CustomType
-  ? ReturnType<T>[number]
-  : never;
+    ? Array<number>
+    : T extends CustomType
+      ? ReturnType<T>[number]
+      : never;
 
 /**
  * Create a component store from a component definition.
@@ -77,7 +74,7 @@ export type Value<T extends Type> = T extends PrimitiveType
  */
 const createComponentColumns = <S extends Schema>(
   schema: S,
-  size: number
+  size: number,
 ): Columns<S> => {
   if (isSingleTypeSchema(schema)) {
     return createColumn(schema, size) as any;
@@ -94,7 +91,7 @@ const createComponentColumns = <S extends Schema>(
 
 function createColumn(
   type: SingleTypeSchema | MultipleTypesSchema[keyof MultipleTypesSchema],
-  size: number
+  size: number,
 ) {
   if (isArrayType(type)) {
     const [TypedArray, arraySize] = type;
@@ -127,7 +124,7 @@ export const components: Component[] = [];
 export const defineComponent = <S extends Schema>(
   schema: S,
   size = 10_000,
-  id?: number
+  id?: number,
 ): Component<S> => {
   const componentID = (id ?? nextID()) as ComponentId<S>;
 
@@ -163,13 +160,13 @@ export function attach(world: World, component: Component, eid: Entity): void;
 export function attach(
   world: World,
   idOrComponent: ID | Component,
-  eid: Entity
+  eid: Entity,
 ) {
   const archetype = world.entitiesArchetypes[eid]!;
 
   if (!archetype) {
     throw new NonExistantEntity(
-      `Trying to add component to a non existant entity with id : ${eid}`
+      `Trying to add component to a non existant entity with id : ${eid}`,
     );
   }
 
@@ -202,13 +199,13 @@ export function detach(world: World, component: Component, eid: Entity): void;
 export function detach(
   world: World,
   idOrComponent: ID | Component,
-  eid: Entity
+  eid: Entity,
 ): void {
   const archetype = world.entitiesArchetypes[eid];
 
   if (!archetype) {
     throw new NonExistantEntity(
-      `Trying to remove component from a non existant entity with id :${eid}`
+      `Trying to remove component from a non existant entity with id :${eid}`,
     );
   }
 
@@ -239,23 +236,23 @@ export function hasComponent(world: World, id: Entity, eid: Entity): boolean;
 export function hasComponent(
   world: World,
   id: ComponentId,
-  eid: Entity
+  eid: Entity,
 ): boolean;
 export function hasComponent(
   world: World,
   component: Component,
-  eid: Entity
+  eid: Entity,
 ): boolean;
 export function hasComponent(
   world: World,
   idOrComponent: ID | ComponentId | Component,
-  eid: Entity
+  eid: Entity,
 ): boolean {
   const archetype = world.entitiesArchetypes[eid];
 
   if (!archetype) {
     throw new NonExistantEntity(
-      `Trying to check component existence of a non existant entity with id : ${eid}`
+      `Trying to check component existence of a non existant entity with id : ${eid}`,
     );
   }
 
@@ -274,7 +271,7 @@ export function hasComponent(
 export function onEnterArchetype(
   world: World,
   eid: Entity,
-  archetype: Archetype
+  archetype: Archetype,
 ) {
   const handlers = world.handlers.enter[archetype.id];
   //@todo handlers for exiting old arch ?
@@ -294,7 +291,7 @@ export function onEnterArchetype(
 export function onExitArchetype(
   world: World,
   eid: Entity,
-  archetype: Archetype
+  archetype: Archetype,
 ) {
   //@todo handlers for entering new arch ?
   const handlers = world.handlers.exit[archetype.id];

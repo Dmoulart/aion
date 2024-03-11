@@ -32,7 +32,7 @@ export function createWindow(options?: CreateWindowOptions) {
 
     if (!el) {
       console.error(
-        "Cannot find window parent element - will fallback to body"
+        "Cannot find window parent element - will fallback to body",
       );
     } else {
       parent = el;
@@ -47,7 +47,7 @@ export function createWindow(options?: CreateWindowOptions) {
   windowEl.classList.add("aion-window");
 
   windowEl.style.height = options.height ?? "100vh";
-  windowEl.style.width = options.height ?? "100vh";
+  windowEl.style.width = options.width ?? "100vw";
 
   const canvas = document.createElement("canvas");
   canvas.classList.add("aion-canvas");
@@ -62,8 +62,8 @@ export function createWindow(options?: CreateWindowOptions) {
 
   parent.appendChild(windowEl);
 
-  canvas.width = windowEl.clientWidth;
-  canvas.height = windowEl.clientHeight;
+  canvas.width = parent.clientWidth;
+  canvas.height = parent.clientHeight;
 
   return {
     canvas,
@@ -93,7 +93,7 @@ export function createWindow(options?: CreateWindowOptions) {
     closePath,
     clear,
     moveToCenter,
-    begin,
+    begin: beginDraw,
   };
 }
 
@@ -148,7 +148,7 @@ export function transform(
   c: number,
   d: number,
   e: number,
-  f: number
+  f: number,
 ) {
   instance.ctx.transform(a, b, c, d, e, f);
 
@@ -203,7 +203,7 @@ export function arc(
   radius: number,
   startAngle: number,
   endAngle: number,
-  counterclockwise?: boolean | undefined
+  counterclockwise?: boolean | undefined,
 ) {
   instance.ctx.arc(x, y, radius, startAngle, endAngle, counterclockwise);
 
@@ -218,7 +218,7 @@ export function ellipse(
   rotation: number,
   startAngle: number,
   endAngle: number,
-  counterclockwise?: boolean | undefined
+  counterclockwise?: boolean | undefined,
 ) {
   instance.ctx.ellipse(
     x,
@@ -228,7 +228,7 @@ export function ellipse(
     rotation,
     startAngle,
     endAngle,
-    counterclockwise
+    counterclockwise,
   );
 
   return instance;
@@ -263,7 +263,7 @@ export function strokeText(
   x: number,
   y: number,
   color?: string,
-  maxWidth?: number | undefined
+  maxWidth?: number | undefined,
 ) {
   if (color) {
     instance.ctx.strokeStyle = color;
@@ -279,7 +279,7 @@ export function fillText(
   x: number,
   y: number,
   color?: string,
-  maxWidth?: number | undefined
+  maxWidth?: number | undefined,
 ) {
   if (color) {
     instance.ctx.strokeStyle = color;
@@ -308,7 +308,7 @@ export function drawImageResized(
   dx: number,
   dy: number,
   dw: number,
-  dh: number
+  dh: number,
 ) {
   instance.ctx.drawImage(image, dx, dy, dw, dh);
 
@@ -323,7 +323,7 @@ export function moveToCenter() {
 
 export function createRenderLoop(cb: () => void) {
   return function renderLoop() {
-    begin();
+    beginDraw();
     cb();
     requestAnimationFrame(renderLoop);
   };
@@ -341,6 +341,6 @@ export function getCenter() {
   };
 }
 
-export function begin() {
+export function beginDraw() {
   return closePath().clear().beginPath();
 }

@@ -1,5 +1,5 @@
 import { aion, defineComponent, i32 } from "aion-ecs/src";
-import { defineEngine, defineLoop, emit, on } from "aion-engine";
+import { defineEngine, defineLoop, emit, on, aionPreset } from "aion-engine";
 import { axis, getMouseX, getMouseY, initInputListener } from "aion-input";
 import { initWindow, rect } from "aion-render";
 import { clear, circle, Colors } from "aion-render";
@@ -45,7 +45,7 @@ const engine = defineEngine(() => {
     Position.y[player] += Velocity.y[player];
   });
 
-  return { $player: player };
+  return { $player: player, ...aionPreset() };
 });
 
 engine.run();
