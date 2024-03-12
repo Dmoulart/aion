@@ -90,7 +90,9 @@ export function createWindow(options?: CreateWindowOptions) {
     moveTo,
     lineTo,
     beginPath,
+    beginFrame,
     closePath,
+    endFrame,
     clear,
     moveToCenter,
     begin: beginDraw,
@@ -343,4 +345,12 @@ export function getCenter() {
 
 export function beginDraw() {
   return closePath().clear().beginPath();
+}
+
+export function beginFrame() {
+  return clear().beginPath();
+}
+
+export function endFrame() {
+  return closePath();
 }

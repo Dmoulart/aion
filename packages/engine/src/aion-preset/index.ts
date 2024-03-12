@@ -4,7 +4,19 @@ export * from "./ecs.js";
 export * from "./shapes.js";
 
 import { aion, any, query } from "aion-ecs/src";
-import { rect, fill, circle, initWindow, clear, beginDraw } from "aion-render";
+import {
+  rect,
+  fill,
+  circle,
+  initWindow,
+  clear,
+  beginDraw,
+  stroke,
+  closePath,
+  beginFrame,
+  endFrame,
+  beginPath,
+} from "aion-render";
 import { createComponents } from "./components.js";
 import { on } from "../index.js";
 import { initInputListener } from "aion-input";
@@ -19,20 +31,23 @@ export function aionPreset() {
 
   const components = createComponents();
 
-  const { Position, Color, Circle, Rect } = components;
+  const { Position, Circle, Rect, Stroke, Fill } = components;
 
-  const createRect = $ecs.prefab({ Position, Color, Rect });
+  const createRect = $ecs.prefab({ Position, Rect, Stroke, Fill });
 
-  const createCircle = $ecs.prefab({ Position, Color, Circle });
+  const createCircle = $ecs.prefab({ Position, Circle, Stroke, Fill });
 
   on("draw", () => {
     const { x, y } = Position;
     const { w, h } = Rect;
     const { r } = Circle;
 
-    beginDraw();
+    beginFrame();
 
-    query(Position, Color, any(Rect, Circle)).each((ent) => {
+    query(Position, any(Stroke, Fill), any(Rect, Circle)).each((ent) => {
+      console.log(ent, Fill[ent]);
+
+      beginPath();
       if (has(Rect, ent)) {
         rect(x[ent]!, y[ent]!, w[ent]!, h[ent]!);
       }
@@ -40,8 +55,15 @@ export function aionPreset() {
       if (has(Circle, ent)) {
         circle(x[ent]!, y[ent]!, r[ent]!);
       }
+      closePath();
 
-      fill(Color[ent]!);
+      if (has(Stroke, ent)) {
+        stroke(Stroke[ent]!);
+      }
+
+      if (has(Fill, ent)) {
+        fill(Fill[ent]!);
+      }
     });
   });
 

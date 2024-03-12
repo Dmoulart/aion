@@ -9,7 +9,8 @@ export function createComponents() {
 
   const Circle = defineComponent({ r: i32 });
 
-  const Color = defineComponent(() => new Array<string>());
+  const Stroke = defineComponent(() => new Array<string>());
+  const Fill = defineComponent(() => new Array<string>());
 
-  return { Position, Velocity, Rect, Circle, Color };
+  return { Position, Velocity, Rect, Circle, Stroke, Fill };
 }
