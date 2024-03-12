@@ -45,9 +45,8 @@ export function aionPreset() {
     beginFrame();
 
     query(Position, any(Stroke, Fill), any(Rect, Circle)).each((ent) => {
-      console.log(ent, Fill[ent]);
-
       beginPath();
+
       if (has(Rect, ent)) {
         rect(x[ent]!, y[ent]!, w[ent]!, h[ent]!);
       }
@@ -55,6 +54,7 @@ export function aionPreset() {
       if (has(Circle, ent)) {
         circle(x[ent]!, y[ent]!, r[ent]!);
       }
+
       closePath();
 
       if (has(Stroke, ent)) {

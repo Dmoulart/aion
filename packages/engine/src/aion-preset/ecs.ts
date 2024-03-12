@@ -1,7 +1,4 @@
-import { useEngine } from "../ctx.js";
-import { type AionEngineContext } from "./ctx.js";
-
-export const useAion = useEngine<AionEngineContext>;
+import { useAion } from "./ctx.js";
 
 export function useECS() {
   return useAion().$ecs;
