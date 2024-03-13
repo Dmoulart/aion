@@ -1,68 +1,90 @@
-// /**
-//  * Configure the collider given the rapier body options of the entity.
-//  * @param colliderDesc
-//  * @param options
-//  * @returns colliderDesc
-//  */
-// export function setColliderOptions(
-//   colliderDesc: RAPIER.ColliderDesc,
-//   options: RColliderOptions,
-// ) {
-//   if (options.events) {
-//     colliderDesc.setActiveEvents(options.events)
-//   }
+import RAPIER from "@dimforge/rapier2d-compat";
+import {
+  Enum,
+  bool,
+  defineComponent,
+  i32,
+  number,
+  u8,
+  type Entity,
+} from "aion-ecs";
+import { useAion } from "../ctx.js";
+import { usePhysics } from "./init.js";
 
-//   if (options.activeCollisions) {
-//     colliderDesc.setActiveCollisionTypes(options.activeCollisions)
-//   }
+export function initColliderComponent() {
+  // const Collider = defineComponent(() => new Array<RapierColliderOptions>());
 
-//   if (options.activeHooks) {
-//     colliderDesc.setActiveHooks(options.activeHooks)
-//   }
+  const Collider = defineComponent({
+    events: u8,
+    activeCollisions: i32,
+    activeHooks: u8,
+    contactForceEventThreshold: number,
+    density: number,
+    friction: number,
+    sensor: bool,
+    mass: number,
+    centerOfMassX: number,
+    centerOfMassY: number,
+    principalAngularInertia: number,
+    restitution: number,
+    solverGroups: number,
+    frictionCombineRule: u8,
+  });
 
-//   if (options.contactForceEventThreshold) {
-//     colliderDesc.setContactForceEventThreshold(
-//       options.contactForceEventThreshold,
-//     )
-//   }
+  return { Collider };
+}
 
-//   if (options.density) {
-//     colliderDesc.setDensity(options.density)
-//   }
+/**
+ * Configure the collider given the rapier body options of the entity.
+ * @param colliderDesc
+ * @param options
+ * @returns colliderDesc
+ */
+export function setColliderOptions(
+  colliderDesc: RAPIER.ColliderDesc,
+  ent: Entity,
+) {
+  const { Collider } = usePhysics();
 
-//   if (options.friction) {
-//     colliderDesc.setFriction(options.friction)
-//   }
+  const events = Collider.events[ent]!;
+  colliderDesc.setActiveEvents(events);
 
-//   if (options.sensor) {
-//     colliderDesc.setSensor(options.sensor)
-//   }
+  const activeCollisions = Collider.activeCollisions[ent]!;
+  colliderDesc.setActiveCollisionTypes(activeCollisions);
 
-//   if (options.mass) {
-//     colliderDesc.setMass(options.mass)
-//   }
+  const activeHooks = Collider.activeHooks[ent]!;
+  colliderDesc.setActiveHooks(activeHooks);
 
-//   if (
-//     options.mass &&
-//     options.centerOfMass &&
-//     options.principalAngularIntertia
-//   ) {
-//     colliderDesc.setMassProperties(
-//       options.mass,
-//       options.centerOfMass,
-//       options.principalAngularIntertia,
-//     )
-//   }
+  const contactForceEventThreshold = Collider.contactForceEventThreshold[ent]!;
+  colliderDesc.setContactForceEventThreshold(contactForceEventThreshold);
 
-//   if (options.restitution) {
-//     colliderDesc.setRestitution(options.restitution)
-//   }
+  const density = Collider.density[ent]!;
+  colliderDesc.setDensity(density);
 
-//   if (options.solverGroups) {
-//     colliderDesc.setSolverGroups(options.solverGroups)
-//   }
+  const friction = Collider.friction[ent]!;
+  colliderDesc.setFriction(friction);
 
-//   if (options.frictionCombineRule) {
-//     colliderDesc.setFrictionCombineRule(options.frictionCombineRule)
-//   }
-// }
+  const sensor = Collider.sensor[ent];
+  colliderDesc.setSensor(Boolean(sensor));
+
+  const mass = Collider.mass[ent]!;
+  colliderDesc.setMass(mass);
+
+  const centerOfMassX = Collider.centerOfMassX[ent]!;
+  const centerOfMassY = Collider.centerOfMassY[ent]!;
+  const principalAngularInertia = Collider.principalAngularInertia[ent]!;
+  colliderDesc.setMassProperties(
+    mass,
+    { x: centerOfMassX, y: centerOfMassY },
+    principalAngularInertia,
+  );
+
+  const restitution = Collider.restitution[ent]!;
+  colliderDesc.setRestitution(restitution);
+
+  const solverGroups = Collider.solverGroups[ent]!;
+  colliderDesc.setSolverGroups(solverGroups);
+
+  const frictionCombineRule = Collider.frictionCombineRule[ent]!;
+  colliderDesc.setFrictionCombineRule(frictionCombineRule);
+}

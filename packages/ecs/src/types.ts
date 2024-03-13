@@ -1,13 +1,20 @@
+// an alias to facilitate the translations of typescript types to components fields
+
 export const i8 = Int8Array;
 export const u8 = Uint8Array;
+export const bool = u8;
 
 export const i16 = Int16Array;
 export const u16 = Uint16Array;
 
 export const i32 = Int32Array;
+
 export const u32 = Uint32Array;
 
 export const f32 = Float32Array;
+// an alias to facilitate the translations of typescript types to components fields
+export const number = f32;
+
 export const f64 = Float64Array;
 
 export const i64 = BigInt64Array;
@@ -42,11 +49,8 @@ export type ArrayType<T extends PrimitiveType = PrimitiveType> = [T, number];
 
 export type CustomType<T = any> = (size: number) => Array<T>;
 
-export type InferArrayType<T extends ArrayType> = T extends ArrayType<
-  infer Element
->
-  ? Element
-  : never;
+export type InferArrayType<T extends ArrayType> =
+  T extends ArrayType<infer Element> ? Element : never;
 
 export type Type = PrimitiveType | ArrayType | CustomType;
 
@@ -56,4 +60,9 @@ export type Type = PrimitiveType | ArrayType | CustomType;
 const TypedArray = Object.getPrototypeOf(Uint8Array);
 
 export const isTypedArray = (obj: object): obj is typeof TypedArray =>
-  Boolean("BYTES_PER_ELEMENT" in obj);
+  "BYTES_PER_ELEMENT" in obj;
+
+export function Enum<E extends Readonly<Record<string, any>>>(enumType: E) {
+  type Value = E[keyof E];
+  return new Array<Value>();
+}

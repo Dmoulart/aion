@@ -17,7 +17,7 @@ export type Entity = ID;
  */
 export const createEntity = (
   world: World,
-  archetype = world.rootArchetype
+  archetype = world.rootArchetype,
 ): Entity => {
   const eid = world.deletedEntities.length
     ? world.deletedEntities.shift()!
@@ -27,7 +27,7 @@ export const createEntity = (
   if (eid > world.size) {
     // todo: resize world automatically ?
     throw new ExceededWorldCapacity(
-      `World maximum capacity of ${world.size} exceeded`
+      `World maximum capacity of ${world.size} exceeded`,
     );
   }
 
@@ -48,13 +48,13 @@ export const createEntity = (
 export const insertEntity = (
   world: World,
   eid: Entity,
-  archetype = world.rootArchetype
+  archetype = world.rootArchetype,
 ): Entity => {
   // We start creating entities id from 1
   if (eid > world.size) {
     // todo: resize world automatically ?
     throw new ExceededWorldCapacity(
-      `World maximum capacity of ${world.size} exceeded`
+      `World maximum capacity of ${world.size} exceeded`,
     );
   }
 
@@ -78,7 +78,7 @@ export const removeEntity = (world: World, eid: Entity) => {
   const archetype = world.entitiesArchetypes[eid];
   if (!archetype) {
     throw new NonExistantEntity(
-      `Trying to remove a non existant entity with id : ${eid}`
+      `Trying to remove a non existant entity with id : ${eid}`,
     );
   }
   archetype.entities.remove(eid);
@@ -96,8 +96,8 @@ export const removeEntity = (world: World, eid: Entity) => {
 export const entityExists = (world: World, eid: Entity) =>
   Boolean(world.entitiesArchetypes[eid]);
 
-export class NonExistantEntity extends Error { }
-export class ExceededWorldCapacity extends Error { }
+export class NonExistantEntity extends Error {}
+export class ExceededWorldCapacity extends Error {}
 
 /**
  * Get the low part of an identifier

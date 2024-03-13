@@ -1,5 +1,5 @@
 //@todo why src import
-import { defineComponent, i32, u32 } from "aion-ecs/src";
+import { defineComponent, i32, u32 } from "aion-ecs";
 
 export function createComponents() {
   const Position = defineComponent({ x: i32, y: i32 });

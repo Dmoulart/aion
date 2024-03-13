@@ -1,5 +1,5 @@
 import "./style.css";
-import { Entity, onEnterQuery } from "aion-ecs/src";
+import { Entity, onEnterQuery } from "aion-ecs";
 import { useInput } from "./bomber/input";
 import {
   Velocity,
@@ -36,7 +36,7 @@ canvas.style.width = `${800 * 1.5}px`;
 canvas.style.height = `${600 * 1.5}px`;
 
 const SPRITES_IMAGES = await Promise.all(
-  Object.keys(SPRITES).map((src) => loadImage(src))
+  Object.keys(SPRITES).map((src) => loadImage(src)),
 );
 
 const { query, world } = bombi();

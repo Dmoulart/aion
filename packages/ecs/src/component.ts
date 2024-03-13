@@ -81,8 +81,8 @@ const createComponentColumns = <S extends Schema>(
   }
   const comp = {} as Columns<S>;
 
-  for (const field of Object.keys(schema) as Array<keyof S>) {
-    const type = schema[field]! as Type;
+  for (const field of Object.keys(schema)) {
+    const type = schema[field]!;
     (comp as any)[field] = createColumn(type, size);
   }
 

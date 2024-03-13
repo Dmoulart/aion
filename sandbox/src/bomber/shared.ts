@@ -12,7 +12,7 @@ import {
   i16,
   World,
   i64,
-} from "aion-ecs/src";
+} from "aion-ecs";
 import { defineMessage, createSnapshot } from "../../../packages/net/src";
 import block from "./assets/block.png";
 import tile from "./assets/tile.png";

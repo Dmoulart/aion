@@ -1,4 +1,4 @@
-import { aion, any, query } from "aion-ecs/src";
+import { aion, any, query } from "aion-ecs";
 import {
   rect,
   fill,
@@ -12,7 +12,7 @@ import {
 import { createComponents } from "./components.js";
 import { on } from "../index.js";
 import { initInputListener } from "aion-input";
-import { initPhysics } from "./physics.js";
+import { initPhysics } from "./physics/index.js";
 
 export function aionPreset() {
   initWindow();
