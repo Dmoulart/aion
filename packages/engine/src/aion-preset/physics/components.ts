@@ -20,7 +20,8 @@ import { usePhysics } from "./init.js";
 import { on, once } from "../../lifecycle.js";
 import { useECS } from "../ecs.js";
 import { Position } from "../components.js";
-import { setPosition } from "../index.js";
+import { positionOf, setPosition } from "../index.js";
+import { Vec, vec, type Vector } from "aion-core";
 
 export function initPhysicsComponent() {
   // const Collider = defineComponent({
@@ -56,24 +57,18 @@ export function initPhysicsComponent() {
     );
 
     onCreatedBody((ent) => {
-      const colliderDesc = Collider[ent];
+      const parent: RAPIER.RigidBody = world.createRigidBody(Body[ent]!);
 
-      let parent: RAPIER.RigidBody = world.createRigidBody(Body[ent]!);
-
-      const pos = { x: Position.x[ent]!, y: Position.y[ent]! };
-
-      parent.setTranslation(pos, true);
+      parent.setTranslation(toSimulation(positionOf(ent)), true);
 
       attach(BodyHandle, ent);
-
       BodyHandle[ent] = parent.handle;
 
-      if (colliderDesc) {
-        const collider = world.createCollider(colliderDesc, parent);
+      const collider = world.createCollider(Collider[ent]!, parent);
+      collider.setTranslation(toSimulation(positionOf(ent)));
 
-        attach(ColliderHandle, ent);
-        ColliderHandle[ent] = collider.handle;
-      }
+      attach(ColliderHandle, ent);
+      ColliderHandle[ent] = collider.handle;
     });
   });
 
@@ -85,14 +80,22 @@ export function initPhysicsComponent() {
       const handle = BodyHandle[ent]!;
 
       const body = world.getRigidBody(handle);
+      console.log(ent, fromSimulation(body.translation()));
 
-      setPosition(ent, body.translation());
+      setPosition(ent, fromSimulation(body.translation()));
     });
   });
 
   return { Collider, Body };
 }
 
+function fromSimulation(vec: Vector, factor = 50) {
+  return new Vec(vec.x * factor, vec.y * factor);
+}
+
+function toSimulation(vec: Vector, factor = 50) {
+  return new Vec(vec.x / factor, vec.y / factor);
+}
 // RAPIER.Coll
 // Collider[1] = RAPIER.ColliderDesc.ball(1).
 // const Collider = defineComponent({

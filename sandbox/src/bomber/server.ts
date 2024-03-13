@@ -1,4 +1,4 @@
-import {WebSocketServer} from "ws";
+import { WebSocketServer } from "ws";
 import {
   SPRITES,
   TileDesc,
@@ -24,13 +24,13 @@ import {
   createTransport,
 } from "../../../packages/net/src/transport.js";
 
-const {world, remove, create} = bombi();
+const { world, remove, create } = bombi();
 
 const walkable: Array<boolean[]> = [];
 
 initMap();
 
-const wss = new WebSocketServer({port: 4321});
+const wss = new WebSocketServer({ port: 4321 });
 const transports: Array<Transport> = [];
 wss.on("connection", (socket) => {
   const transport = createTransport(socket as any);
@@ -65,7 +65,7 @@ wss.on("connection", (socket) => {
       transports.splice(i, 1);
     }
     transports.forEach((transport) =>
-      transport.send(world, removePlayerMessage)
+      transport.send(world, removePlayerMessage),
     );
   };
 
@@ -109,7 +109,7 @@ function createTile(x: number, y: number) {
     TileDesc: {
       blocking: isWalkable ? Number(false) : Number(true),
     },
-    Sprite: {value: SPRITES[isWalkable ? tileAsset : blockAsset]},
+    Sprite: { value: SPRITES[isWalkable ? tileAsset : blockAsset] },
   });
 
   const isBlocking = Boolean(TileDesc.blocking[tile]);

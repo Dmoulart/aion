@@ -55,7 +55,7 @@ const engine = defineEngine(() => {
       });
 
       Body[ent] = RAPIER.RigidBodyDesc.dynamic();
-      Collider[ent] = RAPIER.ColliderDesc.cuboid(Rect.w[cube]!, Rect.h[cube]!);
+      Collider[ent] = RAPIER.ColliderDesc.cuboid(1, 1);
 
       $ecs.attach(Body, ent);
       $ecs.attach(Collider, ent);
