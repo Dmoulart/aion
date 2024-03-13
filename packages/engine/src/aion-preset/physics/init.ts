@@ -2,7 +2,7 @@ import { defineComponent } from "aion-ecs";
 import RAPIER from "@dimforge/rapier2d-compat";
 import { on } from "../../lifecycle.js";
 import { useAion } from "../ctx.js";
-import { initColliderComponent } from "./collider.js";
+import { initPhysicsComponent } from "./components.js";
 
 await RAPIER.init();
 
@@ -21,13 +21,9 @@ export enum RapierBodyType {
 }
 
 export function initPhysics(
-  options: PhysicsOptions = { gravity: { x: 0.0, y: -9.81 } },
+  options: PhysicsOptions = { gravity: { x: 0.0, y: -9.81 } }
 ) {
-  const Body = defineComponent(
-    () => new Array<{ type: RAPIER.RigidBodyType }>(),
-  );
-
-  const { Collider } = initColliderComponent();
+  const { Collider, Body } = initPhysicsComponent();
 
   const gravity = options.gravity;
   // Use the RAPIER module here.

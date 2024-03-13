@@ -11,23 +11,23 @@ export const on: ReturnType<typeof useEngine>["events"]["on"] = (hook, cb) => {
   return useEngine().events.on(hook, cb);
 };
 
-export const once: ReturnType<typeof useEngine>["events"]["off"] = (
+export const once: ReturnType<typeof useEngine>["events"]["once"] = (
   hook,
-  cb,
+  cb
 ) => {
   return useEngine().events.once(hook, cb);
 };
 
 export const emit: ReturnType<typeof useEngine>["events"]["emit"] = (
   hook,
-  params,
+  params
 ) => {
   return useEngine().events.emit(hook, params);
 };
 
 export const off: ReturnType<typeof useEngine>["events"]["off"] = (
   hook,
-  cb,
+  cb
 ) => {
   return useEngine().events.off(hook, cb);
 };

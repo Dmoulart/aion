@@ -1,4 +1,8 @@
-export class Vector {
+export interface Vector {
+  x: number;
+  y: number;
+}
+export class Vec implements Vector {
   constructor(public x = 0, public y = x) {}
 
   /**
@@ -7,8 +11,8 @@ export class Vector {
    * @param size
    * @returns scaled vector
    */
-  scale(size: number): Vector {
-    return new Vector(this.x * size, this.y * size);
+  scale(size: number): Vec {
+    return new Vec(this.x * size, this.y * size);
   }
 
   /**
@@ -18,7 +22,7 @@ export class Vector {
    * @param size
    * @returns scaled vector
    */
-  scaleEq(size: number): Vector {
+  scaleEq(size: number): Vec {
     this.x *= size;
     this.y *= size;
     return this;
@@ -30,8 +34,8 @@ export class Vector {
    * @param vector
    * @returns difference vector
    */
-  sub(vector: Vector): Vector {
-    return new Vector(this.x - vector.x, this.y - vector.y);
+  sub(vector: Vector): Vec {
+    return new Vec(this.x - vector.x, this.y - vector.y);
   }
 
   /**
@@ -53,8 +57,8 @@ export class Vector {
    * @param vector
    * @returns sum vector
    */
-  add(vector: Vector): Vector {
-    return new Vector(this.x + vector.x, this.y + vector.y);
+  add(vector: Vector): Vec {
+    return new Vec(this.x + vector.x, this.y + vector.y);
   }
 
   /**
@@ -76,8 +80,8 @@ export class Vector {
    * @param vector
    * @returns divided vector
    */
-  div(vector: Vector): Vector {
-    return new Vector(this.x / vector.x, this.y / vector.y);
+  div(vector: Vector): Vec {
+    return new Vec(this.x / vector.x, this.y / vector.y);
   }
 
   /**
@@ -98,7 +102,7 @@ export class Vector {
    *
    * @returns negative vector
    */
-  negate(): Vector {
+  negate(): Vec {
     return this.scale(-1);
   }
 
@@ -120,8 +124,8 @@ export class Vector {
    * @param vector
    * @returns multiplicated vector
    */
-  mult(vector: Vector): Vector {
-    return new Vector(this.x * vector.x, this.y * vector.y);
+  mult(vector: Vector): Vec {
+    return new Vec(this.x * vector.x, this.y * vector.y);
   }
 
   /**
@@ -153,12 +157,12 @@ export class Vector {
    *
    * @returns normal
    */
-  norm(): Vector {
+  norm(): Vec {
     const mag = this.mag();
     if (mag > 0) {
-      return new Vector(this.x / mag, this.y / mag);
+      return new Vec(this.x / mag, this.y / mag);
     } else {
-      return new Vector(0, 1);
+      return new Vec(0, 1);
     }
   }
 
@@ -207,8 +211,8 @@ export class Vector {
    *
    * @returns this
    */
-  perp(): Vector {
-    return new Vector(-this.y, this.x);
+  perp(): Vec {
+    return new Vec(-this.y, this.x);
   }
 
   /**
@@ -264,8 +268,8 @@ export class Vector {
    *
    * @returns rounded vector
    */
-  round(): Vector {
-    return new Vector(Math.round(this.x), Math.round(this.y));
+  round(): Vec {
+    return new Vec(Math.round(this.x), Math.round(this.y));
   }
 
   /**
@@ -274,31 +278,9 @@ export class Vector {
    * @param vector
    * @returns cloned vector
    */
-  clone(): Vector {
-    return new Vector(this.x, this.y);
+  clone(): Vec {
+    return new Vec(this.x, this.y);
   }
-
-  //   /**
-  //    * Create a random vector. If no arguments are passed, the vector will be a random vector of size 1.
-  //    * If first argument is a vector, the vector will be a random vector of the given vector size.
-  //    * If first argument is a number, this number will represent the minimum value of the vector.
-  //    *
-  //    * @param minOrVector
-  //    * @param max
-  //    * @returns
-  //    */
-  //   rand(minOrVector: number | Vector = 0, max = 1): Vector {
-  //     if (typeof minOrVector === "number") {
-  //       return new Vector(
-  //         rnd.integer(minOrVector, max),
-  //         rnd.integer(minOrVector, max)
-  //       );
-  //     }
-  //     return new Vector(
-  //       rnd.integer(0, minOrVector.x),
-  //       rnd.integer(0, minOrVector.y)
-  //     );
-  //   }
 
   /**
    * Interpolate this vector with another vector and return it.
@@ -321,7 +303,7 @@ export class Vector {
    * @param amount
    * @returns new interpolated vector
    */
-  lerp(vector: Vector, amount: number): Vector {
+  lerp(vector: Vec, amount: number): Vec {
     return this.add(vector.sub(this).scale(amount));
   }
 
@@ -330,7 +312,7 @@ export class Vector {
    * @param amount
    * @returns new vector
    */
-  limit(amount: number): Vector {
+  limit(amount: number): Vec {
     if (this.x > amount || this.y > amount) {
       return this.norm().scale(amount);
     }
@@ -343,8 +325,8 @@ export class Vector {
    * @param object
    * @returns new vector
    */
-  from(vector: { x: number; y: number }): Vector {
-    return new Vector(vector.x, vector.y);
+  fromAlike(vector: { x: number; y: number }): Vec {
+    return new Vec(vector.x, vector.y);
   }
 
   /**
@@ -382,15 +364,15 @@ export class Vector {
  * @param y
  * @returns vector
  */
-export function vec(x = 0, y = x): Vector {
-  return new Vector(x, y);
+export function vec(x = 0, y = x): Vec {
+  return new Vec(x, y);
 }
 
 /**
  * Return a vector of value zero, representing the origin of the coordinate system.
  */
-export function zero(): Vector {
-  return new Vector(0, 0);
+export function zero(): Vec {
+  return new Vec(0, 0);
 }
 
 export const origin = Object.freeze(zero());
@@ -398,59 +380,59 @@ export const origin = Object.freeze(zero());
 /**
  * Return a vector pointing to the up direction.
  */
-export function upDirection(): Vector {
-  return new Vector(0, -1);
+export function upDirection(): Vec {
+  return new Vec(0, -1);
 }
 
 /**
  * Return a vector pointing to up the left direction.
  */
-export function upLeftDirection(): Vector {
-  return new Vector(-1, -1);
+export function upLeftDirection(): Vec {
+  return new Vec(-1, -1);
 }
 
 /**
  * Return a vector pointing to up the right direction.
  */
-export function upRightDirection(): Vector {
-  return new Vector(1, -1);
+export function upRightDirection(): Vec {
+  return new Vec(1, -1);
 }
 
 /**
  * Return a vector pointing to the down direction.
  */
-export function downDirection(): Vector {
-  return new Vector(0, 1);
+export function downDirection(): Vec {
+  return new Vec(0, 1);
 }
 
 /**
  * Return a vector pointing to the down left direction.
  */
-export function downLeftDirection(): Vector {
-  return new Vector(-1, 1);
+export function downLeftDirection(): Vec {
+  return new Vec(-1, 1);
 }
 
 /**
  * Return a vector pointing to the down right direction.
  */
-export function downRightDirection(): Vector {
-  return new Vector(1, 1);
+export function downRightDirection(): Vec {
+  return new Vec(1, 1);
 }
 
 /**
  * Return a vector pointing to the left direction.
  */
-export function leftDirection(): Vector {
-  return new Vector(-1, 0);
+export function leftDirection(): Vec {
+  return new Vec(-1, 0);
 }
 
 /**
  * Return a vector pointing to the right direction.
  */
-export function rightDirection(): Vector {
-  return new Vector(1, 0);
+export function rightDirection(): Vec {
+  return new Vec(1, 0);
 }
 
-export function compareByDistance(a: Vector, b: Vector, o = origin) {
+export function compareByDistance(a: Vec, b: Vec, o = origin) {
   a.dist(o) > b.dist(o) ? 1 : -1;
 }

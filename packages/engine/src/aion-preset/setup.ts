@@ -1,4 +1,4 @@
-import { aion, any, query } from "aion-ecs";
+import { aion, any, components, query } from "aion-ecs";
 import {
   rect,
   fill,
@@ -9,8 +9,7 @@ import {
   beginFrame,
   beginPath,
 } from "aion-render";
-import { createComponents } from "./components.js";
-import { on } from "../index.js";
+import { Circle, Fill, Position, Rect, Stroke, on } from "../index.js";
 import { initInputListener } from "aion-input";
 import { initPhysics } from "./physics/index.js";
 
@@ -23,10 +22,6 @@ export function aionPreset() {
   const $ecs = aion();
 
   const { has, query } = $ecs;
-
-  const components = createComponents();
-
-  const { Position, Circle, Rect, Stroke, Fill } = components;
 
   const createRect = $ecs.prefab({ Position, Rect, Stroke, Fill });
 

@@ -1,5 +1,6 @@
 import { expect, it, describe } from "vitest";
-import { createEventEmitter } from "../src/event";
+import { createEventEmitter } from "../src/event.js";
+
 describe("Event emitter", () => {
   it(() => {
     const { on, off, once, emit } = createEventEmitter();

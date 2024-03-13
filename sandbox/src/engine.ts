@@ -20,7 +20,7 @@ const engine = defineEngine(() => {
     y: i32,
   });
 
-  const createPlayerB = prefab({ Position, Velocity });
+  const createPlayer = prefab({ Position, Velocity });
 
   const player = createPlayer();
 
