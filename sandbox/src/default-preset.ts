@@ -5,7 +5,7 @@ import { clear } from "aion-render";
 const engine = defineEngine(() => {
   const preset = aionPreset();
 
-  const { createRect } = preset;
+  const { createRect, $physics } = preset;
 
   const castle = createRect({
     Rect: {

@@ -20,6 +20,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "@dimforge/rapier2d": "^0.12.0",
     "unctx": "^2.3.1"
   }
 }
