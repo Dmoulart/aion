@@ -2,10 +2,10 @@ type Events = Record<string, any>;
 
 type Hook<T extends Events> = keyof T;
 
-type HandlerParams<T extends Events, N extends Hook<T>> = T[N];
+type HandlerParams<T extends Events, H extends Hook<T>> = T[H];
 
-type Handler<T extends Events, N extends Hook<T>> = (
-  params: HandlerParams<T, N>,
+type Handler<T extends Events, H extends Hook<T>> = (
+  params: HandlerParams<T, H>
 ) => void;
 
 type Handlers<T extends Events> = {
@@ -28,14 +28,16 @@ export function createEventEmitter<T extends Events>() {
   }
 
   function once<H extends Hook<T>>(hook: H, cb: Handler<T, H>) {
-    on(hook, (params) => {
+    const handler: Handler<T, H> = (params) => {
       cb(params);
-      off(hook, cb);
-    });
+      off(hook, handler);
+    };
+
+    on(hook, handler);
   }
 
-  function off<Name extends Hook<T>>(hook: Name, cb: Handler<T, Name>) {
-    events[hook].delete(cb);
+  function off<H extends Hook<T>>(hook: H, cb: Handler<T, H>) {
+    return events[hook].delete(cb);
   }
 
   function emit<H extends Hook<T>>(hook: H, params?: HandlerParams<T, H>) {
