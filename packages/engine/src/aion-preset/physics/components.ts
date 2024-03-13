@@ -1,27 +1,11 @@
 import RAPIER from "@dimforge/rapier2d-compat";
-import {
-  Enum,
-  bool,
-  defineComponent,
-  i32,
-  number,
-  u8,
-  type Entity,
-  onEnterQuery,
-  u32,
-  any,
-  query,
-  not,
-  all,
-  none,
-} from "aion-ecs";
-import { useAion } from "../ctx.js";
+import { defineComponent, onEnterQuery, u32, all, none } from "aion-ecs";
 import { usePhysics } from "./init.js";
 import { on, once } from "../../lifecycle.js";
 import { useECS } from "../ecs.js";
 import { Position } from "../components.js";
 import { positionOf, setPosition } from "../index.js";
-import { Vec, vec, type Vector } from "aion-core";
+import { Vec, type Vector } from "aion-core";
 
 export function initPhysicsComponent() {
   // const Collider = defineComponent({
@@ -57,18 +41,19 @@ export function initPhysicsComponent() {
     );
 
     onCreatedBody((ent) => {
+      debugger;
       const parent: RAPIER.RigidBody = world.createRigidBody(Body[ent]!);
 
-      parent.setTranslation(toSimulation(positionOf(ent)), true);
+      parent.setTranslation(toSimulation(positionOf(ent)), false);
 
-      attach(BodyHandle, ent);
       BodyHandle[ent] = parent.handle;
+      attach(BodyHandle, ent);
 
       const collider = world.createCollider(Collider[ent]!, parent);
       collider.setTranslation(toSimulation(positionOf(ent)));
 
-      attach(ColliderHandle, ent);
       ColliderHandle[ent] = collider.handle;
+      attach(ColliderHandle, ent);
     });
   });
 
