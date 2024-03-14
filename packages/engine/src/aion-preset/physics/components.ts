@@ -26,10 +26,10 @@ export function initPhysicsComponent() {
   // });
 
   const Collider = defineComponent(() => new Array<RAPIER.ColliderDesc>());
-  const ColliderHandle = defineComponent(u32);
+  const RuntimeCollider = defineComponent(() => new Array<RAPIER.Collider>());
 
   const Body = defineComponent(() => new Array<RAPIER.RigidBodyDesc>());
-  const BodyHandle = defineComponent(u32);
+  const RuntimeBody = defineComponent(() => new Array<RAPIER.RigidBody>());
 
   //@todo use init callback
   once("update", () => {
@@ -37,35 +37,31 @@ export function initPhysicsComponent() {
     const { query, attach, has } = useECS();
 
     const onCreatedBody = onEnterQuery(
-      query(Position, all(Collider, Body), none(BodyHandle, ColliderHandle))
+      query(Position, all(Collider, Body), none(RuntimeBody, RuntimeCollider))
     );
 
     onCreatedBody((ent) => {
-      debugger;
-      const parent: RAPIER.RigidBody = world.createRigidBody(Body[ent]!);
+      const bodyDesc = Body[ent]!;
+      const parent: RAPIER.RigidBody = world.createRigidBody(bodyDesc!);
 
       parent.setTranslation(toSimulation(positionOf(ent)), false);
 
-      BodyHandle[ent] = parent.handle;
-      attach(BodyHandle, ent);
+      RuntimeBody[ent] = parent;
+      attach(RuntimeBody, ent);
 
       const collider = world.createCollider(Collider[ent]!, parent);
       collider.setTranslation(toSimulation(positionOf(ent)));
 
-      ColliderHandle[ent] = collider.handle;
-      attach(ColliderHandle, ent);
+      RuntimeCollider[ent] = collider;
+      attach(RuntimeCollider, ent);
     });
   });
 
   on("update", () => {
-    const { world } = usePhysics();
     const { query } = useECS();
 
-    query(BodyHandle, Position).each((ent) => {
-      const handle = BodyHandle[ent]!;
-
-      const body = world.getRigidBody(handle);
-      console.log(ent, fromSimulation(body.translation()));
+    query(RuntimeBody, Position).each((ent) => {
+      const body = RuntimeBody[ent]!;
 
       setPosition(ent, fromSimulation(body.translation()));
     });
