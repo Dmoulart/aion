@@ -8,5 +8,5 @@ export function setPosition(ent: Entity, pos: Vector) {
 }
 
 export function positionOf(ent: Entity): Vector {
-  return new Vec(Position.x[ent]!, Position.y[ent]);
+  return new Vec(Position.x[ent], Position.y[ent]);
 }

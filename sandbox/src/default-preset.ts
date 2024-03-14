@@ -6,6 +6,8 @@ import {
   aionPreset,
   Rect,
   Position,
+  Body,
+  Collider,
 } from "aion-engine";
 import { getMouseX, getMouseY, click } from "aion-input";
 import { clear } from "aion-render";
@@ -15,7 +17,7 @@ const engine = defineEngine(() => {
 
   const { createRect, $physics, $ecs } = preset;
 
-  const { Body, Collider, RAPIER } = $physics;
+  const { RAPIER } = $physics;
 
   const cube = createRect({
     Rect: {
