@@ -7,9 +7,11 @@ import {
   Rect,
   Position,
   setPosition,
+  Collider,
+  once,
 } from "aion-engine";
 import { getMouseX, getMouseY, click } from "aion-input";
-import { clear } from "aion-render";
+import { bottomLeftOfWindow, clear, windowWidth } from "aion-render";
 
 const engine = defineEngine(() => {
   const preset = aionPreset();
@@ -36,13 +38,25 @@ const engine = defineEngine(() => {
   //   Fill: "black",
   //   Stroke: "white",
   // });
+  once("update", () => {
+    const floor = createCube({
+      Position: {
+        x: 100,
+        y: 500,
+      },
+      Rect: {
+        h: 10,
+        w: windowWidth(),
+      },
+      Fill: "blue",
+      Stroke: "red",
+      Collider: RAPIER.ColliderDesc.cuboid(5, 1),
+      Body: RAPIER.RigidBodyDesc.fixed(),
+    });
+  });
 
-  // Collider[floor] = RAPIER.ColliderDesc.cuboid(
-  //   windowWidth() / 2,
-  //   1
+  // Collider[floor] = RAPIER.ColliderDesc.cuboid(windowWidth() / 2, 1);
   // ).setTranslation(bottomLeftOfWindow().x, bottomLeftOfWindow().y);
-
-  // $ecs.attach(Collider, floor);
 
   defineLoop(() => {
     emit("update");

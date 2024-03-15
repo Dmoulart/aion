@@ -222,9 +222,9 @@ export function detach(
   archetype.entities.remove(eid);
   newArchetype.entities.insert(eid);
 
-  onExitArchetype(world, eid, archetype);
-
   world.entitiesArchetypes[eid] = newArchetype;
+
+  onExitArchetype(world, eid, archetype);
 }
 
 /**
