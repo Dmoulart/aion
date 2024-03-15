@@ -123,7 +123,6 @@ export function handleBombs(world: World) {
   query(Character).each((e) => {
     if (BombCommand.bomb[e]) {
       const created = Date.now();
-      debugger;
       const bomb = createBomb({
         BombComponent: {
           created: created,

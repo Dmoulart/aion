@@ -5,8 +5,13 @@ import {
   type Component,
   type ComponentsGroup,
   getComponentID,
+  onEnterArchetype,
 } from "./component.js";
-import { isSingleTypeSchema, type InferSchema, type Instance } from "./schemas.js";
+import {
+  isSingleTypeSchema,
+  type InferSchema,
+  type Instance,
+} from "./schemas.js";
 // @todo: This produces a nested array but we're only interested in the second level. Get rid of this level
 export type PrefabOptions<Components extends Component[]> = Map<
   Components,
@@ -63,6 +68,9 @@ export const prefab = <Definition extends PrefabDefinition>(
     if (!options) return eid;
 
     assign(eid, definition, options);
+
+    // @todo : ?
+    onEnterArchetype(world, eid, archetype);
 
     return eid;
   };

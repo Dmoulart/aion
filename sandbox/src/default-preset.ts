@@ -6,16 +6,15 @@ import {
   aionPreset,
   Rect,
   Position,
-  Body,
-  Collider,
+  setPosition,
 } from "aion-engine";
 import { getMouseX, getMouseY, click } from "aion-input";
-import { bottomLeftOfWindow, clear, windowWidth } from "aion-render";
+import { clear } from "aion-render";
 
 const engine = defineEngine(() => {
   const preset = aionPreset();
 
-  const { createRect, $physics, $ecs } = preset;
+  const { createRect, createCube, $physics, $ecs } = preset;
 
   const { RAPIER } = $physics;
 
@@ -56,11 +55,10 @@ const engine = defineEngine(() => {
     const x = getMouseX() - Rect.w[cube] / 2;
     const y = getMouseY() - Rect.h[cube] / 2;
 
-    Position.x[cube] = x;
-    Position.y[cube] = y;
+    setPosition(cube, { x, y });
 
     if (click()) {
-      const ent = createRect({
+      createCube({
         Position: {
           x,
           y,
@@ -69,15 +67,11 @@ const engine = defineEngine(() => {
           h: Rect.h[cube],
           w: Rect.w[cube],
         },
-        Fill: "green", // shared state
+        Fill: "green",
         Stroke: "white",
+        Body: RAPIER.RigidBodyDesc.dynamic(),
+        Collider: RAPIER.ColliderDesc.cuboid(1, 1),
       });
-
-      Body[ent] = RAPIER.RigidBodyDesc.dynamic();
-      Collider[ent] = RAPIER.ColliderDesc.cuboid(1, 1);
-
-      $ecs.attach(Body, ent);
-      $ecs.attach(Collider, ent);
     }
   });
 

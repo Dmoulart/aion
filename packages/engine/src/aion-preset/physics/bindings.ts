@@ -21,6 +21,7 @@ export function initPhysicsSystems() {
     const onCreatedBody = onEnterQuery(query(Position, Body, not(RuntimeBody)));
 
     onCreatedBody((ent) => {
+      console.log("on create body");
       const bodyDesc = Body[ent]!;
       const parent = world.createRigidBody(bodyDesc!);
 
@@ -31,11 +32,13 @@ export function initPhysicsSystems() {
     });
 
     const onCreatedCollider = onEnterQuery(
-      query(Position, Collider, not(RuntimeCollider))
+      query(Position, Collider, RuntimeBody, not(RuntimeCollider))
     );
 
     onCreatedCollider((ent) => {
+      console.log("on create collider");
       const parent = RuntimeBody[ent];
+
       const collider = world.createCollider(Collider[ent]!, parent);
 
       collider.setTranslation(toSimulation(positionOf(ent)));
@@ -43,6 +46,27 @@ export function initPhysicsSystems() {
       RuntimeCollider[ent] = collider;
       attach(RuntimeCollider, ent);
     });
+
+    // const onCreatedColliderAndBody = onEnterQuery(
+    //   query(Position, Collider, Body)
+    // );
+
+    // onCreatedColliderAndBody((ent) => {
+    //   const bodyDesc = Body[ent]!;
+    //   const parent = world.createRigidBody(bodyDesc!);
+
+    //   parent.setTranslation(toSimulation(positionOf(ent)), false);
+
+    //   RuntimeBody[ent] = parent;
+    //   attach(RuntimeBody, ent);
+
+    //   const collider = world.createCollider(Collider[ent]!, parent);
+
+    //   collider.setTranslation(toSimulation(positionOf(ent)));
+
+    //   RuntimeCollider[ent] = collider;
+    //   attach(RuntimeCollider, ent);
+    // });
   });
 
   on("update", () => {

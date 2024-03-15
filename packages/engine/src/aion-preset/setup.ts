@@ -11,7 +11,7 @@ import {
 } from "aion-render";
 import { Circle, Fill, Position, Rect, Stroke, on } from "../index.js";
 import { initInputListener } from "aion-input";
-import { initPhysics } from "./physics/index.js";
+import { Body, Collider, initPhysics } from "./physics/index.js";
 
 export function aionPreset() {
   initWindow();
@@ -24,6 +24,15 @@ export function aionPreset() {
   const { has, query } = $ecs;
 
   const createRect = $ecs.prefab({ Position, Rect, Stroke, Fill });
+
+  const createCube = $ecs.prefab({
+    Position,
+    Rect,
+    Stroke,
+    Fill,
+    Body,
+    Collider,
+  });
 
   const createCircle = $ecs.prefab({ Position, Circle, Stroke, Fill });
 
@@ -57,5 +66,12 @@ export function aionPreset() {
     });
   });
 
-  return { $ecs, $physics, ...components, createRect, createCircle };
+  return {
+    $ecs,
+    $physics,
+    ...components,
+    createRect,
+    createCube,
+    createCircle,
+  };
 }
