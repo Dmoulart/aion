@@ -1,4 +1,4 @@
-import { onEnterQuery, all, none, not } from "aion-ecs";
+import { onEnterQuery, all, none, not, type Entity } from "aion-ecs";
 import {
   Body,
   Collider,
@@ -8,9 +8,10 @@ import {
 } from "./index.js";
 import { once, on } from "../../lifecycle.js";
 import { positionOf, setPosition } from "../basics/index.js";
-import { Position } from "../components.js";
+import { Circle, Position, Rect } from "../components.js";
 import { useECS } from "../ecs.js";
 import { Vec, type Vector } from "aion-core";
+import type RAPIER from "@dimforge/rapier2d";
 
 export function initPhysicsSystems() {
   //@todo use init callback
@@ -28,6 +29,7 @@ export function initPhysicsSystems() {
       parent.setTranslation(toSimulation(positionOf(ent)), false);
 
       RuntimeBody[ent] = parent;
+
       attach(RuntimeBody, ent);
     });
 
@@ -39,11 +41,19 @@ export function initPhysicsSystems() {
       console.log("on create collider");
       const parent = RuntimeBody[ent];
 
-      const collider = world.createCollider(Collider[ent]!, parent);
+      const auto = Collider.auto[ent];
+      if (!auto) {
+        throw new Error("not implemented");
+      }
 
-      collider.setTranslation(toSimulation(positionOf(ent)));
+      const collidersDesc = createColliderDescFromShape(ent);
+
+      const colliderDesc = collidersDesc[0]!;
+
+      const collider = world.createCollider(colliderDesc, parent);
 
       RuntimeCollider[ent] = collider;
+
       attach(RuntimeCollider, ent);
     });
 
@@ -80,10 +90,37 @@ export function initPhysicsSystems() {
   });
 }
 
-function fromSimulation(vec: Vector, factor = 50) {
+function createColliderDescFromShape(ent: Entity): RAPIER.ColliderDesc[] {
+  const { has } = useECS();
+  const { RAPIER } = usePhysics();
+
+  const colliders: RAPIER.ColliderDesc[] = [];
+
+  if (has(Circle, ent)) {
+    const radius = Circle.r[ent]!;
+    const collider = RAPIER.ColliderDesc.ball((radius / SCALE_FACTOR) | 0);
+    colliders.push(collider);
+  }
+
+  if (has(Rect, ent)) {
+    const w = Rect.w[ent]!;
+    const h = Rect.h[ent]!;
+    const collider = RAPIER.ColliderDesc.cuboid(
+      w / 2 / SCALE_FACTOR,
+      h / 2 / SCALE_FACTOR
+    );
+    colliders.push(collider);
+  }
+
+  return colliders;
+}
+
+export const SCALE_FACTOR = 50;
+
+function fromSimulation(vec: Vector, factor = SCALE_FACTOR) {
   return new Vec(vec.x * factor, vec.y * factor);
 }
 
-function toSimulation(vec: Vector, factor = 50) {
+function toSimulation(vec: Vector, factor = SCALE_FACTOR) {
   return new Vec(vec.x / factor, vec.y / factor);
 }

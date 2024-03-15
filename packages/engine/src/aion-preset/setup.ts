@@ -34,6 +34,15 @@ export function aionPreset() {
     Collider,
   });
 
+  const createBall = $ecs.prefab({
+    Position,
+    Circle,
+    Stroke,
+    Fill,
+    Body,
+    Collider,
+  });
+
   const createCircle = $ecs.prefab({ Position, Circle, Stroke, Fill });
 
   on("draw", () => {
@@ -73,5 +82,6 @@ export function aionPreset() {
     createRect,
     createCube,
     createCircle,
+    createBall,
   };
 }
