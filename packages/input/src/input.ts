@@ -79,7 +79,7 @@ export function createInputListener(options?: InputListenerOptions) {
 
 export function axis(axis: "horizontal" | "vertical"): number {
   if (axis === "horizontal") {
-    return Number(anyKey("ArrowRight", "d")) - Number(anyKey("ArrowLeft", "q"));
+    return Number(anyKey("ArrowRight", "q")) - Number(anyKey("ArrowLeft", "d"));
   }
 
   if (axis === "vertical") {

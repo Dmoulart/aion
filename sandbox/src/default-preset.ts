@@ -6,6 +6,8 @@ import {
   createTransform,
   Rect,
   translate,
+  screenToWorldPosition,
+  zoom,
 } from "aion-preset";
 import { Colors, clear, windowCenterX, windowWidth } from "aion-render";
 
@@ -58,17 +60,20 @@ const engine = defineEngine(() => {
     translate($camera, direction().scale(10));
 
     if (key("a")) {
-      zoom($camera, -0.0001);
+      zoom(-0.01);
     }
 
     if (key("e")) {
-      zoom($camera, +0.0001);
+      zoom(+0.01);
     }
   });
 
   on("update", () => {
-    const x = getMouseX() - Rect.w[cube] / 2;
-    const y = getMouseY() - Rect.h[cube] / 2;
+    const localX = getMouseX() - Rect.w[cube] / 2;
+    const localY = getMouseY() - Rect.h[cube] / 2;
+
+    const { x, y } = screenToWorldPosition({ x: localX, y: localY });
+    console.log({ x, y });
 
     setPosition(cube, { x, y });
 

@@ -2,8 +2,7 @@ import { beginPath, getContext2D, lineTo, stroke } from "aion-render";
 import { SCALE_FACTOR } from "./bindings.js";
 import { usePhysics } from "./init.js";
 import type { Entity } from "aion-ecs";
-import { Transform } from "../components.js";
-import { postDraw, preDraw } from "../index.js";
+import { getProjectionMatrix, postDraw, preDraw } from "../index.js";
 
 export function debugRender(camera: Entity) {
   const { world } = usePhysics();
@@ -11,7 +10,9 @@ export function debugRender(camera: Entity) {
 
   const ctx = getContext2D();
 
-  preDraw(ctx, Transform[camera]!);
+  const matrix = getProjectionMatrix(camera);
+
+  preDraw(ctx, matrix);
 
   for (let i = 0; i < buffers.vertices.length; i += 4) {
     beginPath();

@@ -11,6 +11,7 @@ import {
 import { useECS } from "../ecs.js";
 import { Rect, Stroke, Fill, Circle, Transform } from "../components.js";
 import type { Entity } from "aion-ecs";
+import { getProjectionMatrix } from "./camera.js";
 
 export function render(camera: Entity) {
   const { query, any, has } = useECS();
@@ -19,7 +20,9 @@ export function render(camera: Entity) {
 
   const ctx = getContext2D();
 
-  preDraw(ctx, Transform[camera]!);
+  const projectionMatrix = getProjectionMatrix(camera);
+
+  preDraw(ctx, projectionMatrix);
 
   beginFrame();
 
