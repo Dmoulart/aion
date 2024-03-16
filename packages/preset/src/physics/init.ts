@@ -1,27 +1,14 @@
-import { defineComponent } from "aion-ecs";
 import RAPIER from "@dimforge/rapier2d-compat";
-import { on } from "../../lifecycle.js";
 import { useAion } from "../ctx.js";
 import { initPhysicsSystems } from "./bindings.js";
+import { on } from "aion-engine";
 
 await RAPIER.init();
 
 export type PhysicsOptions = { gravity: { x: number; y: number } };
 
-/**
- * An enum describing the different body types.
- * Uses string to facilitate debugging.
- */
-export enum RapierBodyType {
-  Fixed = "Fixed",
-  Dynamic = "Dynamic",
-  Kinematic = "Kinematic", // Same as Kinematic position based
-  KinematicPositionBased = "KinematicPositionBased",
-  KinematicVelocityBased = "KinematicVelocityBased",
-}
-
 export function initPhysics(
-  options: PhysicsOptions = { gravity: { x: 0.0, y: 9.81 } }
+  options: PhysicsOptions = { gravity: { x: 0.0, y: 9.81 } },
 ) {
   initPhysicsSystems();
 

@@ -6,12 +6,12 @@ import {
   RuntimeCollider,
   usePhysics,
 } from "./index.js";
-import { once, on } from "../../lifecycle.js";
 import { positionOf, setPosition } from "../basics/index.js";
 import { Circle, Position, Rect } from "../components.js";
 import { useECS } from "../ecs.js";
 import { Vec, type Vector } from "aion-core";
 import type RAPIER from "@dimforge/rapier2d";
+import { once, on } from "aion-engine";
 
 export function initPhysicsSystems() {
   //@todo use init callback
@@ -34,7 +34,7 @@ export function initPhysicsSystems() {
     });
 
     const onCreatedCollider = onEnterQuery(
-      query(Position, Collider, RuntimeBody, not(RuntimeCollider))
+      query(Position, Collider, RuntimeBody, not(RuntimeCollider)),
     );
 
     onCreatedCollider((ent) => {
@@ -107,7 +107,7 @@ function createColliderDescFromShape(ent: Entity): RAPIER.ColliderDesc[] {
     const h = Rect.h[ent]!;
     const collider = RAPIER.ColliderDesc.cuboid(
       w / 2 / SCALE_FACTOR,
-      h / 2 / SCALE_FACTOR
+      h / 2 / SCALE_FACTOR,
     );
     colliders.push(collider);
   }

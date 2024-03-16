@@ -9,9 +9,10 @@ import {
   beginFrame,
   beginPath,
 } from "aion-render";
-import { Circle, Fill, Position, Rect, Stroke, on } from "../index.js";
 import { initInputListener } from "aion-input";
 import { Body, Collider, initPhysics } from "./physics/index.js";
+import { Circle, Fill, Position, Stroke, on } from "aion-engine";
+import { Rect } from "./components.js";
 
 export function aionPreset() {
   initWindow();
