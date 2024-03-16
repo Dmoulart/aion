@@ -1,10 +1,18 @@
-import { beginFrame, beginPath, rect, circle, closePath, stroke, fill } from "aion-render";
+import {
+  beginFrame,
+  beginPath,
+  rect,
+  circle,
+  closePath,
+  stroke,
+  fill,
+} from "aion-render";
 import { useECS } from "../ecs.js";
 import { Rect, Stroke, Fill, Circle, Transform } from "../components.js";
 import { getX, getY } from "../index.js";
 
 export function render() {
-  const { query, any, has } = useECS()
+  const { query, any, has } = useECS();
   const { w, h } = Rect;
   const { r } = Circle;
 
@@ -13,8 +21,8 @@ export function render() {
   query(Transform, any(Stroke, Fill), any(Rect, Circle)).each((ent) => {
     beginPath();
 
-    const x = getX(ent)
-    const y = getY(ent)
+    const x = getX(ent);
+    const y = getY(ent);
 
     if (has(Rect, ent)) {
       const width = w[ent]!;
@@ -42,4 +50,5 @@ export function render() {
     if (has(Fill, ent)) {
       fill(Fill[ent]!);
     }
-  }
+  });
+}

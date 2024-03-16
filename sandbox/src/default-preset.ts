@@ -37,6 +37,7 @@ const engine = defineEngine(() => {
 
   once("update", () => {
     const floor = createCube({
+      Transform: createTransform(windowCenterX(), 800),
       Rect: {
         h: 10,
         w: windowWidth(),
@@ -87,10 +88,7 @@ const engine = defineEngine(() => {
       const ball = Math.random() > 0.5;
       if (ball) {
         createBall({
-          Position: {
-            x,
-            y,
-          },
+          Transform: createTransform(x, y),
           Circle: {
             r: 100,
           },
@@ -103,10 +101,7 @@ const engine = defineEngine(() => {
         });
       } else {
         createCube({
-          Position: {
-            x,
-            y,
-          },
+          Transform: createTransform(x, y),
           Rect: {
             h: Rect.h[cube],
             w: Rect.w[cube],

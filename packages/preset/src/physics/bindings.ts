@@ -7,7 +7,7 @@ import {
   usePhysics,
 } from "./index.js";
 import { positionOf, setPosition } from "../basics/index.js";
-import { Circle, Position, Rect } from "../components.js";
+import { Circle, Rect, Transform } from "../components.js";
 import { useECS } from "../ecs.js";
 import { Vec, type Vector } from "aion-core";
 import type RAPIER from "@dimforge/rapier2d";
@@ -19,7 +19,9 @@ export function initPhysicsSystems() {
     const { world } = usePhysics();
     const { query, attach } = useECS();
 
-    const onCreatedBody = onEnterQuery(query(Position, Body, not(RuntimeBody)));
+    const onCreatedBody = onEnterQuery(
+      query(Transform, Body, not(RuntimeBody)),
+    );
 
     onCreatedBody((ent) => {
       console.log("on create body");
@@ -34,7 +36,7 @@ export function initPhysicsSystems() {
     });
 
     const onCreatedCollider = onEnterQuery(
-      query(Position, Collider, RuntimeBody, not(RuntimeCollider)),
+      query(Transform, Collider, RuntimeBody, not(RuntimeCollider)),
     );
 
     onCreatedCollider((ent) => {
@@ -82,7 +84,7 @@ export function initPhysicsSystems() {
   on("update", () => {
     const { query } = useECS();
 
-    query(RuntimeBody, Position).each((ent) => {
+    query(RuntimeBody, Transform).each((ent) => {
       const body = RuntimeBody[ent]!;
 
       setPosition(ent, fromSimulation(body.translation()));
