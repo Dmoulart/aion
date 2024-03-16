@@ -323,6 +323,10 @@ export function moveToCenter() {
   return instance;
 }
 
+export function getContext2D() {
+  return instance.ctx;
+}
+
 export function createRenderLoop(cb: () => void) {
   return function renderLoop() {
     beginDraw();

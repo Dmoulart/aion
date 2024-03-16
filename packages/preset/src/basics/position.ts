@@ -3,10 +3,26 @@ import { Transform } from "../components.js";
 import { Vec, type Vector } from "aion-core";
 import { mat } from "../index.js";
 
-// @todo: used when creating transform with prefab. Not optimized.
+// @todo:perf used when creating transform with prefab. Not optimized.
 // we should be able to create a transform without instanciating a new array in prefabs.
 export function createTransform(x: number, y: number): Float32Array {
   return mat.fromTranslation(mat.create(), [x, y]) as Float32Array;
+}
+
+export function setRotation(ent: Entity, rad: number) {
+  const transform = Transform[ent]!;
+
+  //@todo:perf directly set the rotation ? is this even possible ?
+  const tx = transform[4]!;
+  const ty = transform[5]!;
+
+  mat.identity(transform);
+
+  mat.rotate(transform, transform, rad);
+
+  // Restore translation components
+  transform[4] = tx;
+  transform[5] = ty;
 }
 
 export function setPosition(ent: Entity, pos: Vector) {

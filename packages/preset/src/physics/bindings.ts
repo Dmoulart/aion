@@ -6,7 +6,7 @@ import {
   RuntimeCollider,
   usePhysics,
 } from "./index.js";
-import { positionOf, setPosition } from "../basics/index.js";
+import { positionOf, setPosition, setRotation } from "../basics/index.js";
 import { Circle, Rect, Transform } from "../components.js";
 import { useECS } from "../ecs.js";
 import { Vec, type Vector } from "aion-core";
@@ -88,6 +88,8 @@ export function initPhysicsSystems() {
       const body = RuntimeBody[ent]!;
 
       setPosition(ent, fromSimulation(body.translation()));
+
+      setRotation(ent, body.rotation());
     });
   });
 }
