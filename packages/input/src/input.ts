@@ -79,17 +79,17 @@ export function createInputListener(options?: InputListenerOptions) {
 
 export function axis(axis: "horizontal" | "vertical"): number {
   if (axis === "horizontal") {
-    return Number(anyKey("ArrowRight", "q")) - Number(anyKey("ArrowLeft", "d"));
+    return Number(anyKey("ArrowRight", "d")) - Number(anyKey("ArrowLeft", "q"));
   }
 
   if (axis === "vertical") {
-    return Number(anyKey("ArrowDown", "z")) - Number(anyKey("ArrowUp", "s"));
+    return Number(anyKey("ArrowDown", "s")) - Number(anyKey("ArrowUp", "z"));
   }
 
   throw new Error("Unknown axis");
 }
 
-export function getMousePosition() {
+export function getMouse() {
   return listener.mouse;
 }
 

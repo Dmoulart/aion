@@ -18,7 +18,15 @@ export function useCamera() {
   return useAion().$camera;
 }
 
-export function zoom(zoom: number, camera: Entity = useCamera()) {
+export function getZoom() {
+  return Camera.zoom[useCamera()]!;
+}
+
+export function setZoom(zoom: number) {
+  Camera.zoom[useCamera()]! = zoom;
+}
+
+export function zoomBy(zoom: number, camera: Entity = useCamera()) {
   Camera.zoom[camera]! += zoom;
 }
 
@@ -52,3 +60,18 @@ export function screenToWorldPosition(point: Vector) {
 
   return applyInverse(matrix, point);
 }
+
+// export function screenToWorldPosition(point: Vector) {
+//   const camera = useCamera();
+
+//   const matrix = getProjectionMatrix(camera);
+//   mat.invert(matrix, matrix);
+
+//   const result = glMatrix.vec2.transformMat2d(
+//     [0, 0],
+//     [point.x, point.y],
+//     matrix,
+//   );
+
+//   return new Vec(result[0], result[1]);
+// }
