@@ -1,16 +1,12 @@
+import { defineEngine, once, defineLoop, emit, on } from "aion-engine";
+import { getMouseX, getMouseY, click } from "aion-input";
 import {
-  defineEngine,
-  defineLoop,
-  emit,
-  on,
   aionPreset,
-  Rect,
-  setPosition,
-  once,
   usePhysics,
   SCALE_FACTOR,
-} from "aion-engine";
-import { getMouseX, getMouseY, click } from "aion-input";
+  Rect,
+  setPosition,
+} from "aion-preset";
 import {
   Colors,
   beginPath,

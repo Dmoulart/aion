@@ -11,8 +11,8 @@ import {
 } from "aion-render";
 import { initInputListener } from "aion-input";
 import { Body, Collider, initPhysics } from "./physics/index.js";
-import { Circle, Fill, Position, Stroke, on } from "aion-engine";
-import { Rect } from "./components.js";
+import { Circle, Fill, Position, Rect, Stroke } from "./components.js";
+import { on } from "aion-engine";
 
 export function aionPreset() {
   initWindow();

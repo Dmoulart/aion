@@ -1,4 +1,4 @@
-import { onEnterQuery, all, none, not, type Entity } from "aion-ecs";
+import { onEnterQuery, not, type Entity } from "aion-ecs";
 import {
   Body,
   Collider,
