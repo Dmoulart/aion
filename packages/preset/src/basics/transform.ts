@@ -54,3 +54,7 @@ export function setRotation(ent: Entity, rad: number) {
 export function rotate(ent: Entity, rad: number) {
   mat.rotate(Transform[ent]!, Transform[ent]!, rad);
 }
+
+export function scale(ent: Entity, by: number) {
+  mat.scale(Transform[ent]!, Transform[ent]!, [by, by]);
+}

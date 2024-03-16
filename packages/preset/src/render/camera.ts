@@ -1,6 +1,6 @@
-import { bool, defineComponent, f32 } from "aion-ecs";
+import { bool, defineComponent, f32, type Entity, i32 } from "aion-ecs";
 
 export const Camera = defineComponent({
-  zoom: f32,
   default: bool,
+  zoom: i32,
 });

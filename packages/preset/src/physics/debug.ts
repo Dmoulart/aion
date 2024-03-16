@@ -15,14 +15,17 @@ export function debugRender(camera: Entity) {
 
   for (let i = 0; i < buffers.vertices.length; i += 4) {
     beginPath();
+
     const x1 = buffers.vertices[i]!;
     const y1 = buffers.vertices[i + 1]!;
+
     lineTo(x1 * SCALE_FACTOR, y1 * SCALE_FACTOR);
 
     const x2 = buffers.vertices[i + 2]!;
     const y2 = buffers.vertices[i + 3]!;
 
     lineTo(x2 * SCALE_FACTOR, y2 * SCALE_FACTOR);
+
     stroke("pink");
   }
 

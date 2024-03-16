@@ -1,5 +1,5 @@
 import { defineEngine, once, defineLoop, emit, on } from "aion-engine";
-import { getMouseX, getMouseY, click, direction } from "aion-input";
+import { getMouseX, getMouseY, click, direction, key } from "aion-input";
 import {
   aionPreset,
   setPosition,
@@ -55,7 +55,15 @@ const engine = defineEngine(() => {
   });
 
   on("update", () => {
-    translate($camera, direction());
+    translate($camera, direction().scale(10));
+
+    if (key("a")) {
+      zoom($camera, -0.0001);
+    }
+
+    if (key("e")) {
+      zoom($camera, +0.0001);
+    }
   });
 
   on("update", () => {

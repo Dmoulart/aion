@@ -12,8 +12,8 @@ import { Vec, type Vector } from "aion-core";
 import type RAPIER from "@dimforge/rapier2d";
 import { once, on } from "aion-engine";
 import { positionOf, setPosition, setRotation } from "../basics/transform.js";
-import { beginPath, lineTo, stroke } from "aion-render";
 
+//@todo proper options handling
 export type InitPhysicsSystemOptions = {
   renderDebug?: boolean;
 };

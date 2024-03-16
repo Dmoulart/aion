@@ -1,3 +1,4 @@
+import { vec, type Vector } from "aion-core";
 import type { KeyboardEventKey } from "./keys.js";
 
 let listener: ReturnType<typeof createInputListener>;
@@ -82,7 +83,7 @@ export function axis(axis: "horizontal" | "vertical"): number {
   }
 
   if (axis === "vertical") {
-    return Number(anyKey("ArrowDown", "s")) - Number(anyKey("ArrowUp", "z"));
+    return Number(anyKey("ArrowDown", "z")) - Number(anyKey("ArrowUp", "s"));
   }
 
   throw new Error("Unknown axis");
@@ -121,8 +122,5 @@ export function click() {
 }
 
 export function direction() {
-  return {
-    x: axis("horizontal"),
-    y: axis("vertical"),
-  };
+  return vec(axis("horizontal"), axis("vertical"));
 }
