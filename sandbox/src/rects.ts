@@ -1,5 +1,5 @@
 import "./style.css";
-import { aion, f32, defineComponent, i32, u16, u8 } from "aion-ecs";
+import { createECS, f32, defineComponent, i32, u16, u8 } from "aion-ecs";
 
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d")!;
@@ -26,7 +26,7 @@ const Graphics = defineComponent({
 
 const MovingShape = { Position, Velocity, Graphics };
 
-const { prefab, query, remove } = aion();
+const { prefab, query, remove } = createECS();
 
 const rect = 0;
 const circle = 1;

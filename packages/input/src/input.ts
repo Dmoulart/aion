@@ -26,7 +26,7 @@ export function createInputListener(options?: InputListenerOptions) {
 
     if (!el) {
       console.error(
-        `Cannot find input root element ${options.el} - will fallback to body`
+        `Cannot find input root element ${options.el} - will fallback to body`,
       );
     } else {
       root = el;
@@ -38,6 +38,7 @@ export function createInputListener(options?: InputListenerOptions) {
   root ??= document.body;
 
   const pressedKeys = new Set<KeyboardEventKey>();
+
   const mouse = { x: 0, y: 0 };
 
   document.addEventListener("keydown", (ev) => {
@@ -61,6 +62,7 @@ export function createInputListener(options?: InputListenerOptions) {
   root.addEventListener("mouseup", () => (_isClicking = false));
 
   return {
+    root,
     get isClicking() {
       return _isClicking;
     },
@@ -106,6 +108,10 @@ export function anyKey(...keys: KeyboardEventKey[]) {
   return keys.some((key) => listener.pressedKeys.has(key));
 }
 
+// export function onKeyPressed(fn: ()){
+
+// }
+
 export function click() {
   if (listener.isClicking) {
     listener.isClicking = false;
@@ -116,7 +122,7 @@ export function click() {
 
 export function direction() {
   return {
-    x: Number(key("d")) - Number(key("q")),
-    y: Number(key("s")) - Number(key("z")),
+    x: axis("horizontal"),
+    y: axis("vertical"),
   };
 }

@@ -3,7 +3,10 @@ export interface Vector {
   y: number;
 }
 export class Vec implements Vector {
-  constructor(public x = 0, public y = x) {}
+  constructor(
+    public x = 0,
+    public y = x,
+  ) {}
 
   /**
    * Multiply the two axes of a vector by a given number.
@@ -202,7 +205,7 @@ export class Vec implements Vector {
   dist(vector: Vector): number {
     return Math.sqrt(
       (vector.x - this.x) * (vector.x - this.x) +
-        (vector.y - this.y) * (vector.y - this.y)
+        (vector.y - this.y) * (vector.y - this.y),
     );
   }
 

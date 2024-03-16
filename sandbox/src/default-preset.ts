@@ -1,28 +1,20 @@
 import { defineEngine, once, defineLoop, emit, on } from "aion-engine";
-import { getMouseX, getMouseY, click } from "aion-input";
+import { getMouseX, getMouseY, click, direction } from "aion-input";
 import {
   aionPreset,
-  usePhysics,
-  SCALE_FACTOR,
-  Rect,
   setPosition,
-  mat,
   createTransform,
+  Rect,
+  translate,
 } from "aion-preset";
-import {
-  Colors,
-  beginPath,
-  clear,
-  lineTo,
-  stroke,
-  windowCenterX,
-  windowWidth,
-} from "aion-render";
+import { Colors, clear, windowCenterX, windowWidth } from "aion-render";
 
 const engine = defineEngine(() => {
-  const preset = aionPreset();
+  const preset = aionPreset({
+    renderDebug: true,
+  });
 
-  const { createRect, createCube, createBall, $physics } = preset;
+  const { createRect, createCube, createBall, $physics, $camera } = preset;
 
   const { RAPIER } = $physics;
 
@@ -58,24 +50,12 @@ const engine = defineEngine(() => {
     emit("update");
 
     clear();
+
     emit("draw");
   });
 
-  on("draw", () => {
-    const { world } = usePhysics();
-    const buffers = world.debugRender();
-    for (let i = 0; i < buffers.vertices.length; i += 4) {
-      beginPath();
-      const x1 = buffers.vertices[i];
-      const y1 = buffers.vertices[i + 1];
-      lineTo(x1 * SCALE_FACTOR, y1 * SCALE_FACTOR);
-
-      const x2 = buffers.vertices[i + 2];
-      const y2 = buffers.vertices[i + 3];
-
-      lineTo(x2 * SCALE_FACTOR, y2 * SCALE_FACTOR);
-      stroke("pink");
-    }
+  on("update", () => {
+    translate($camera, direction());
   });
 
   on("update", () => {

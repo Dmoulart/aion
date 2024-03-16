@@ -1,4 +1,4 @@
-import { aion, defineComponent, i32 } from "aion-ecs";
+import { createECS, defineComponent, i32 } from "aion-ecs";
 import { defineEngine, defineLoop, emit, on, aionPreset } from "aion-engine";
 import { axis, getMouseX, getMouseY, initInputListener } from "aion-input";
 import { initWindow, rect } from "aion-render";
@@ -8,7 +8,7 @@ const engine = defineEngine(() => {
   initWindow();
   initInputListener();
 
-  const { prefab } = aion();
+  const { prefab } = createECS();
 
   const Position = defineComponent({
     x: i32,

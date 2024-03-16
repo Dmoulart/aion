@@ -10,24 +10,25 @@ import {
 } from "aion-render";
 import { useECS } from "../ecs.js";
 import { Rect, Stroke, Fill, Circle, Transform } from "../components.js";
-import { getX, getY } from "../index.js";
+import type { Entity } from "aion-ecs";
 
-export function render() {
+export function render(camera: Entity) {
   const { query, any, has } = useECS();
   const { w, h } = Rect;
   const { r } = Circle;
 
+  const ctx = getContext2D();
+
+  preDraw(ctx, Transform[camera]!);
+
   beginFrame();
 
   query(Transform, any(Stroke, Fill), any(Rect, Circle)).each((ent) => {
-    preDraw(getContext2D(), Transform[ent]!);
+    preDraw(ctx, Transform[ent]!);
 
     beginPath();
 
     if (has(Rect, ent)) {
-      const x = getX(ent);
-      const y = getY(ent);
-
       const width = w[ent]!;
       const height = h[ent]!;
 
@@ -51,8 +52,10 @@ export function render() {
       fill(Fill[ent]!);
     }
 
-    postDraw(getContext2D());
+    postDraw(ctx);
   });
+
+  postDraw(ctx);
 }
 
 export function preDraw(

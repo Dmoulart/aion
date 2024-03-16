@@ -6,14 +6,19 @@ import {
   RuntimeCollider,
   usePhysics,
 } from "./index.js";
-import { positionOf, setPosition, setRotation } from "../basics/index.js";
 import { Circle, Rect, Transform } from "../components.js";
 import { useECS } from "../ecs.js";
 import { Vec, type Vector } from "aion-core";
 import type RAPIER from "@dimforge/rapier2d";
 import { once, on } from "aion-engine";
+import { positionOf, setPosition, setRotation } from "../basics/transform.js";
+import { beginPath, lineTo, stroke } from "aion-render";
 
-export function initPhysicsSystems() {
+export type InitPhysicsSystemOptions = {
+  renderDebug?: boolean;
+};
+
+export function initPhysicsSystems(options: InitPhysicsSystemOptions = {}) {
   //@todo use init callback
   once("update", () => {
     const { world } = usePhysics();
@@ -24,7 +29,6 @@ export function initPhysicsSystems() {
     );
 
     onCreatedBody((ent) => {
-      console.log("on create body");
       const bodyDesc = Body[ent]!;
       const parent = world.createRigidBody(bodyDesc!);
 
@@ -40,7 +44,6 @@ export function initPhysicsSystems() {
     );
 
     onCreatedCollider((ent) => {
-      console.log("on create collider");
       const parent = RuntimeBody[ent];
 
       const auto = Collider.auto[ent];
@@ -58,27 +61,6 @@ export function initPhysicsSystems() {
 
       attach(RuntimeCollider, ent);
     });
-
-    // const onCreatedColliderAndBody = onEnterQuery(
-    //   query(Position, Collider, Body)
-    // );
-
-    // onCreatedColliderAndBody((ent) => {
-    //   const bodyDesc = Body[ent]!;
-    //   const parent = world.createRigidBody(bodyDesc!);
-
-    //   parent.setTranslation(toSimulation(positionOf(ent)), false);
-
-    //   RuntimeBody[ent] = parent;
-    //   attach(RuntimeBody, ent);
-
-    //   const collider = world.createCollider(Collider[ent]!, parent);
-
-    //   collider.setTranslation(toSimulation(positionOf(ent)));
-
-    //   RuntimeCollider[ent] = collider;
-    //   attach(RuntimeCollider, ent);
-    // });
   });
 
   on("update", () => {

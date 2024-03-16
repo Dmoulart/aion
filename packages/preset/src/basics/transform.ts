@@ -1,7 +1,7 @@
-import type { Entity } from "aion-ecs";
 import { Transform } from "../components.js";
 import { Vec, type Vector } from "aion-core";
 import { mat } from "../index.js";
+import type { Entity } from "aion-ecs";
 
 // @todo:perf used when creating transform with prefab. Not optimized.
 // we should be able to create a transform without instanciating a new array in prefabs.

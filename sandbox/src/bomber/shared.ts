@@ -1,5 +1,5 @@
 import {
-  aion,
+  createECS,
   defineComponent,
   f32,
   i32,
@@ -20,7 +20,7 @@ import tile from "./assets/tile.png";
 export const blockAsset = block;
 export const tileAsset = tile;
 export let bombi = () => {
-  const w = aion();
+  const w = createECS();
   bombi = () => w;
   return w;
 };
