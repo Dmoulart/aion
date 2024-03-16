@@ -1,4 +1,4 @@
-import { aion, any, components, query } from "aion-ecs";
+import { createECS, any, components, query } from "aion-ecs";
 import {
   rect,
   fill,
@@ -13,6 +13,7 @@ import { initInputListener } from "aion-input";
 import { Body, Collider, initPhysics } from "./physics/index.js";
 import { Circle, Fill, Position, Rect, Stroke } from "./components.js";
 import { on } from "aion-engine";
+import { render } from "./index.js";
 
 export function aionPreset() {
   initWindow();
@@ -20,7 +21,7 @@ export function aionPreset() {
 
   const $physics = initPhysics();
 
-  const $ecs = aion();
+  const $ecs = createECS();
 
   const { has, query } = $ecs;
 
@@ -46,41 +47,7 @@ export function aionPreset() {
 
   const createCircle = $ecs.prefab({ Position, Circle, Stroke, Fill });
 
-  on("draw", () => {
-    const { x, y } = Position;
-    const { w, h } = Rect;
-    const { r } = Circle;
-
-    beginFrame();
-
-    query(Position, any(Stroke, Fill), any(Rect, Circle)).each((ent) => {
-      beginPath();
-
-      if (has(Rect, ent)) {
-        const width = w[ent]!;
-        const height = h[ent]!;
-        const halfWidth = width / 2;
-        const halfHeight = height / 2;
-        const posX = x[ent]! - halfWidth;
-        const posY = y[ent]! - halfHeight;
-        rect(posX, posY, width, height);
-      }
-
-      if (has(Circle, ent)) {
-        circle(x[ent]!, y[ent]!, r[ent]!);
-      }
-
-      closePath();
-
-      if (has(Stroke, ent)) {
-        stroke(Stroke[ent]!);
-      }
-
-      if (has(Fill, ent)) {
-        fill(Fill[ent]!);
-      }
-    });
-  });
+  on("draw", render);
 
   return {
     $ecs,
