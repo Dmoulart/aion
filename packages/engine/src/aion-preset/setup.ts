@@ -56,7 +56,13 @@ export function aionPreset() {
       beginPath();
 
       if (has(Rect, ent)) {
-        rect(x[ent]!, y[ent]!, w[ent]!, h[ent]!);
+        const width = w[ent]!;
+        const height = h[ent]!;
+        const halfWidth = width / 2;
+        const halfHeight = height / 2;
+        const posX = x[ent]! - halfWidth;
+        const posY = y[ent]! - halfHeight;
+        rect(posX, posY, width, height);
       }
 
       if (has(Circle, ent)) {

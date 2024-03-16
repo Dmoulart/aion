@@ -5,9 +5,7 @@ import {
   on,
   aionPreset,
   Rect,
-  Position,
   setPosition,
-  Collider,
   once,
   usePhysics,
   SCALE_FACTOR,
@@ -16,12 +14,10 @@ import { getMouseX, getMouseY, click } from "aion-input";
 import {
   Colors,
   beginPath,
-  bottomLeftOfWindow,
   clear,
-  closePath,
-  fill,
   lineTo,
   stroke,
+  windowCenterX,
   windowWidth,
 } from "aion-render";
 
@@ -37,31 +33,22 @@ const engine = defineEngine(() => {
       h: 100,
       w: 100,
     },
-    Fill: "red",
+    Fill: Colors["shamrock:900"],
     Stroke: "white",
   });
 
-  // const floor = createRect({
-  //   Position: bottomLeftOfWindow(),
-  //   Rect: {
-  //     h: 1,
-  //     w: windowWidth(),
-  //   },
-  //   Fill: "black",
-  //   Stroke: "white",
-  // });
   once("update", () => {
     const floor = createCube({
       Position: {
-        x: 0,
+        x: windowCenterX(),
         y: 800,
       },
       Rect: {
         h: 10,
         w: windowWidth(),
       },
-      Fill: "blue",
-      Stroke: "red",
+      Fill: Colors["acapulco:400"],
+      Stroke: "white",
       Collider: {
         auto: 1,
       },
@@ -80,7 +67,7 @@ const engine = defineEngine(() => {
   });
 
   on("draw", () => {
-    const { RAPIER, world } = usePhysics();
+    const { world } = usePhysics();
     const buffers = world.debugRender();
     for (let i = 0; i < buffers.vertices.length; i += 4) {
       beginPath();
@@ -113,7 +100,7 @@ const engine = defineEngine(() => {
           Circle: {
             r: 100,
           },
-          Fill: "green",
+          Fill: Colors["cornflower:600"],
           Stroke: "white",
           Body: RAPIER.RigidBodyDesc.dynamic(),
           Collider: {
@@ -130,7 +117,7 @@ const engine = defineEngine(() => {
             h: Rect.h[cube],
             w: Rect.w[cube],
           },
-          Fill: "green",
+          Fill: Colors["cornflower:600"],
           Stroke: "white",
           Body: RAPIER.RigidBodyDesc.dynamic(),
           Collider: {

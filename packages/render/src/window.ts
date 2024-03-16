@@ -32,7 +32,7 @@ export function createWindow(options?: CreateWindowOptions) {
 
     if (!el) {
       console.error(
-        "Cannot find window parent element - will fallback to body"
+        "Cannot find window parent element - will fallback to body",
       );
     } else {
       parent = el;
@@ -150,7 +150,7 @@ export function transform(
   c: number,
   d: number,
   e: number,
-  f: number
+  f: number,
 ) {
   instance.ctx.transform(a, b, c, d, e, f);
 
@@ -205,7 +205,7 @@ export function arc(
   radius: number,
   startAngle: number,
   endAngle: number,
-  counterclockwise?: boolean | undefined
+  counterclockwise?: boolean | undefined,
 ) {
   instance.ctx.arc(x, y, radius, startAngle, endAngle, counterclockwise);
 
@@ -220,7 +220,7 @@ export function ellipse(
   rotation: number,
   startAngle: number,
   endAngle: number,
-  counterclockwise?: boolean | undefined
+  counterclockwise?: boolean | undefined,
 ) {
   instance.ctx.ellipse(
     x,
@@ -230,7 +230,7 @@ export function ellipse(
     rotation,
     startAngle,
     endAngle,
-    counterclockwise
+    counterclockwise,
   );
 
   return instance;
@@ -265,7 +265,7 @@ export function strokeText(
   x: number,
   y: number,
   color?: string,
-  maxWidth?: number | undefined
+  maxWidth?: number | undefined,
 ) {
   if (color) {
     instance.ctx.strokeStyle = color;
@@ -281,7 +281,7 @@ export function fillText(
   x: number,
   y: number,
   color?: string,
-  maxWidth?: number | undefined
+  maxWidth?: number | undefined,
 ) {
   if (color) {
     instance.ctx.strokeStyle = color;
@@ -310,7 +310,7 @@ export function drawImageResized(
   dx: number,
   dy: number,
   dw: number,
-  dh: number
+  dh: number,
 ) {
   instance.ctx.drawImage(image, dx, dy, dw, dh);
 
@@ -318,7 +318,7 @@ export function drawImageResized(
 }
 
 export function moveToCenter() {
-  const { x, y } = centerOfWindow();
+  const { x, y } = windowCenter();
   instance.ctx.moveTo(x, y);
   return instance;
 }
@@ -336,39 +336,47 @@ export function startRenderLoop(cb: () => void) {
   startRender();
 }
 
-export function centerOfWindow() {
+export function windowCenter() {
   return {
     x: instance.ctx.canvas.width / 2,
     y: instance.ctx.canvas.height / 2,
   };
 }
 
-export function bottomLeftOfWindow() {
+export function windowBottomLeft() {
   return {
     x: 0,
     y: instance.ctx.canvas.height,
   };
 }
 
-export function bottomRightOfWindow() {
+export function windowBottomRight() {
   return {
     x: instance.ctx.canvas.width,
     y: instance.ctx.canvas.height,
   };
 }
 
-export function upperRightOfWindow() {
+export function windowTopRight() {
   return {
     x: instance.ctx.canvas.width,
     y: 0,
   };
 }
 
-export function upperLeftOfWindow() {
+export function windowTopLeft() {
   return {
     x: 0,
     y: 0,
   };
+}
+
+export function windowCenterX() {
+  return instance.ctx.canvas.width / 2;
+}
+
+export function windowCenterY() {
+  return instance.ctx.canvas.height / 2;
 }
 
 export function windowWidth() {
