@@ -6,6 +6,8 @@ import {
   SCALE_FACTOR,
   Rect,
   setPosition,
+  mat,
+  createTransform,
 } from "aion-preset";
 import {
   Colors,
@@ -20,7 +22,7 @@ import {
 const engine = defineEngine(() => {
   const preset = aionPreset();
 
-  const { createRect, createCube, createBall, $physics, $ecs } = preset;
+  const { createRect, createCube, createBall, $physics } = preset;
 
   const { RAPIER } = $physics;
 
@@ -35,10 +37,6 @@ const engine = defineEngine(() => {
 
   once("update", () => {
     const floor = createCube({
-      Position: {
-        x: windowCenterX(),
-        y: 800,
-      },
       Rect: {
         h: 10,
         w: windowWidth(),

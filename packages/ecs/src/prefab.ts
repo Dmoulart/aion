@@ -35,8 +35,8 @@ export type PrefabDefinition = ComponentsGroup;
  * The prefab instance options is describing the possible parameters for the given prefab definition.
  */
 export type PrefabInstanceOptions<Options extends PrefabDefinition> = {
-  [ComponentName in keyof Options]?: Partial<
-    Instance<InferSchema<Options[ComponentName]>>
+  [ComponentName in keyof Options]?: Instance<
+    InferSchema<Options[ComponentName]>
   >;
 };
 
@@ -53,7 +53,7 @@ export type PrefabInstanceOptions<Options extends PrefabDefinition> = {
 export const prefab = <Definition extends PrefabDefinition>(
   world: World,
   definition: Definition,
-  defaultProps?: PrefabInstanceOptions<Definition>
+  defaultProps?: PrefabInstanceOptions<Definition>,
 ) => {
   const components = Object.values(definition);
   const archetype = buildArchetype(components.map(getComponentID), world);
@@ -78,7 +78,7 @@ export const prefab = <Definition extends PrefabDefinition>(
 
 export const compilePrefabWithDefaults = <Definition extends PrefabDefinition>(
   definition: Record<string, Component<any>>,
-  defaultProps: PrefabInstanceOptions<Definition>
+  defaultProps: PrefabInstanceOptions<Definition>,
 ) => {
   const defaultComponentIdentifiers = Object.keys(defaultProps)
     .map((componentName) => {
@@ -125,7 +125,7 @@ export const compilePrefabWithDefaults = <Definition extends PrefabDefinition>(
     "definition",
     `
       ${unrolledDefaultLoop}
-  `
+  `,
   );
 };
 
@@ -177,6 +177,6 @@ const compilePrefab = (definition: Record<string, Component<any>>) => {
     "options",
     `
       ${unrolledInstanceLoop}
-  `
+  `,
   );
 };

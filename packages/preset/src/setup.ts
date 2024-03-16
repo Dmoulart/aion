@@ -1,17 +1,8 @@
-import { createECS, any, components, query } from "aion-ecs";
-import {
-  rect,
-  fill,
-  circle,
-  initWindow,
-  stroke,
-  closePath,
-  beginFrame,
-  beginPath,
-} from "aion-render";
+import { createECS, components } from "aion-ecs";
+import { initWindow } from "aion-render";
 import { initInputListener } from "aion-input";
 import { Body, Collider, initPhysics } from "./physics/index.js";
-import { Circle, Fill, Position, Rect, Stroke } from "./components.js";
+import { Circle, Fill, Rect, Stroke, Transform } from "./components.js";
 import { on } from "aion-engine";
 import { render } from "./index.js";
 
@@ -23,12 +14,10 @@ export function aionPreset() {
 
   const $ecs = createECS();
 
-  const { has, query } = $ecs;
-
-  const createRect = $ecs.prefab({ Position, Rect, Stroke, Fill });
+  const createRect = $ecs.prefab({ Transform, Rect, Stroke, Fill });
 
   const createCube = $ecs.prefab({
-    Position,
+    Transform,
     Rect,
     Stroke,
     Fill,
@@ -37,7 +26,7 @@ export function aionPreset() {
   });
 
   const createBall = $ecs.prefab({
-    Position,
+    Transform,
     Circle,
     Stroke,
     Fill,
@@ -45,7 +34,7 @@ export function aionPreset() {
     Collider,
   });
 
-  const createCircle = $ecs.prefab({ Position, Circle, Stroke, Fill });
+  const createCircle = $ecs.prefab({ Transform, Circle, Stroke, Fill });
 
   on("draw", render);
 

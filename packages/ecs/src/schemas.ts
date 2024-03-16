@@ -1,4 +1,4 @@
-import type { Component, Value } from "./component.js";
+import { type Component, type Value } from "./component.js";
 import type { ID } from "./entity.js";
 import {
   isTypedArray,
@@ -18,9 +18,8 @@ export type MultipleTypesSchema = Readonly<{
 export type SingleTypeSchema = Type;
 
 // Get the component definition from a component type.
-export type InferSchema<C extends Component> = C extends Component<infer Schema>
-  ? Schema
-  : never;
+export type InferSchema<C extends Component> =
+  C extends Component<infer Schema> ? Schema : never;
 
 export type Instance<S extends Schema> = S extends MultipleTypesSchema
   ? {
@@ -28,15 +27,15 @@ export type Instance<S extends Schema> = S extends MultipleTypesSchema
         ? T extends PrimitiveType
           ? Value<T>
           : T extends ArrayType
-          ? Value<T>[0]
-          : T extends CustomType
-          ? Partial<Value<T>>
-          : never
+            ? Value<T>
+            : T extends CustomType
+              ? Partial<Value<T>>
+              : never
         : never;
     }
   : S extends SingleTypeSchema
-  ? Value<S>
-  : never;
+    ? Value<S>
+    : never;
 
 /**
  * All the schemas mapped to their ID
@@ -62,7 +61,7 @@ export function getSchema(id: ID) {
 }
 
 export const isSingleTypeSchema = (
-  schema: Schema
+  schema: Schema,
 ): schema is SingleTypeSchema => isField(schema);
 
 export const isField = (field: object): field is Type =>

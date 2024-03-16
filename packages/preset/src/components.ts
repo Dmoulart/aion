@@ -1,10 +1,6 @@
-import { defineComponent, f64, i32 } from "aion-ecs";
+import { defineComponent, f32, i32 } from "aion-ecs";
 
-export const Position = defineComponent({ x: i32, y: i32 });
-
-export const Transform = defineComponent([f64, 9]);
-
-export const Velocity = defineComponent({ x: i32, y: i32 });
+export const Transform = defineComponent([f32, 6]);
 
 export const Rect = defineComponent({ w: i32, h: i32 });
 
