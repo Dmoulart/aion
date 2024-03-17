@@ -4,6 +4,10 @@ import { type Entity, type ID } from "./entity.js";
 import { BitSet, SparseSet } from "./collections/index.js";
 import { matchQuery, registerQueryHandlersForArchetype } from "./query.js";
 
+// preheat ?
+const ARCHETYPES_COMPONENTS: Array<SparseSet> = [];
+
+//@todo make this a class for better perfs ?
 export type Archetype = {
   /**
    * The archetype id.
@@ -14,13 +18,17 @@ export type Archetype = {
    */
   entities: SparseSet;
   /**
-   * The adjacent archertypes in the archetype graph
+   * The adjacent archetypes in the archetype graph
    */
   edge: (Archetype | undefined)[];
   /**
    * The archetype mask based on the components ids
    */
   mask: BitSet;
+  /**
+   * The components ids posessed by the archetype
+   */
+  components: Array<ID>;
 };
 
 // The next archetype id.
@@ -32,11 +40,14 @@ let nextAid = 0;
  * @returns new archetype
  */
 export const createArchetype = (mask = new BitSet(2)): Archetype => {
+  const id = ++nextAid;
+
   return {
-    id: ++nextAid,
+    id,
     entities: new SparseSet(),
     edge: [],
     mask,
+    components: [],
   };
 };
 
@@ -93,6 +104,10 @@ export const deriveArchetype = (
   base.edge[id] = archetype;
   archetype.edge[id] = base;
 
+  const archComponents = ARCHETYPES_COMPONENTS[base.id]!.clone();
+  archComponents.insert(id);
+  ARCHETYPES_COMPONENTS[archetype.id] = archComponents;
+
   world.archetypes.push(archetype);
   // @todo is queries.values fast ?
   for (const query of world.queries.values()) {
@@ -111,4 +126,9 @@ export function getArchetype(world: World, entity: Entity) {
 
 export function archetypeHasID(arch: Archetype, id: ID) {
   return arch.mask.has(id);
+}
+
+export function getEntityComponents(world: World, entity: Entity) {
+  const arch = world.entitiesArchetypes[entity]!;
+  return ARCHETYPES_COMPONENTS[arch.id]!.dense;
 }

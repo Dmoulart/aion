@@ -1,3 +1,4 @@
+import { getEntityComponents } from "aion-ecs/dist/archetype";
 import { defineEngine, once, defineLoop, emit, on } from "aion-engine";
 import { click, direction, key, getMouse } from "aion-input";
 import {
@@ -124,6 +125,7 @@ const engine = defineEngine(() => {
     setPosition(cube, { x, y });
 
     if (click()) {
+      console.log(getEntityComponents($ecs.world, cube));
       const ball = Math.random() > 0.5;
       if (ball) {
         createBall({

@@ -37,6 +37,13 @@ export class SparseSet {
     this.sparse[last] = i;
   }
 
+  clone() {
+    const cloned = new SparseSet();
+    cloned.dense = [...this.dense];
+    cloned.sparse = [...this.sparse];
+    return cloned;
+  }
+
   /**
    * Get the number of elements in the set.
    * @returns number of elements in the set
