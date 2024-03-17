@@ -2,6 +2,7 @@ export interface Vector {
   x: number;
   y: number;
 }
+
 export class Vec implements Vector {
   constructor(
     public x = 0,
