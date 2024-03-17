@@ -14,14 +14,14 @@ const relations = new Map<ID, Component | ID>();
 
 export function defineRelation<S extends Schema>(
   schema?: S,
-  size: number = DEFAULT_WORLD_CAPACITY
+  size: number = DEFAULT_WORLD_CAPACITY,
 ) {
   const baseID = nextID();
 
   const instances: Array<ComponentId | ID> = [];
 
   return function <T extends Entity | "*">(
-    entityOrWildcard: T
+    entityOrWildcard: T,
   ): T extends "*" ? Array<ComponentId | ID>[] : Component<S> {
     if (isWildcard(entityOrWildcard)) {
       //@todo proper typings
@@ -29,6 +29,7 @@ export function defineRelation<S extends Schema>(
         ? Array<ComponentId | ID>[]
         : Component<S>;
     }
+    debugger;
 
     const entity = entityOrWildcard as Entity;
     // @todo number limit ?

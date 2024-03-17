@@ -388,7 +388,7 @@ export function windowWidth() {
 }
 
 export function windowHeight() {
-  return instance.ctx.canvas.width;
+  return instance.ctx.canvas.height;
 }
 
 export function beginDraw() {

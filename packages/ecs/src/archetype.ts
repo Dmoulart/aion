@@ -1,6 +1,6 @@
 import type { ComponentId } from "./component.js";
 import { type World } from "./world.js";
-import { type ID } from "./entity.js";
+import { type Entity, type ID } from "./entity.js";
 import { BitSet, SparseSet } from "./collections/index.js";
 import { matchQuery, registerQueryHandlersForArchetype } from "./query.js";
 
@@ -48,7 +48,7 @@ export const createArchetype = (mask = new BitSet(2)): Archetype => {
  */
 export const buildArchetype = (
   components: ComponentId<any>[],
-  world: World
+  world: World,
 ) => {
   let archetype = world.rootArchetype;
   for (const component of components) {
@@ -74,7 +74,7 @@ export const buildArchetype = (
 export const deriveArchetype = (
   base: Archetype,
   id: ID,
-  world: World
+  world: World,
 ): Archetype => {
   const adjacent = base.edge[id];
 
@@ -107,3 +107,11 @@ export const deriveArchetype = (
 
   return archetype;
 };
+
+export function getArchetype(world: World, entity: Entity) {
+  return world.entitiesArchetypes[entity];
+}
+
+export function archetypeHasID(arch: Archetype, id: ID) {
+  return arch.mask.has(id);
+}

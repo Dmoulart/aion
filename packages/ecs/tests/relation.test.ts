@@ -81,9 +81,9 @@ describe("Relation", () => {
 
     const Car = createEntity(world);
 
-    const e = createEntity(world);
+    const ent = createEntity(world);
 
-    attach(world, Vehicle(Car), e);
+    attach(world, Vehicle(Car), ent);
 
     const carsA = Vehicle(Car);
     const carsB = Vehicle(Car);

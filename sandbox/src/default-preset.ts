@@ -9,15 +9,25 @@ import {
   screenToWorldPosition,
   zoomBy,
   centerCameraOnEntity,
+  addChildTo,
+  getFirstChildOf,
+  foreachChildOf,
 } from "aion-preset";
-import { Colors, clear, windowCenterX, windowWidth } from "aion-render";
+import {
+  Colors,
+  clear,
+  windowCenterX,
+  windowCenterY,
+  windowWidth,
+} from "aion-render";
 
 const engine = defineEngine(() => {
   const preset = aionPreset({
     renderDebug: true,
   });
 
-  const { createRect, createCube, createBall, $physics, $camera } = preset;
+  const { createRect, createCube, createBall, $physics, $camera, $ecs } =
+    preset;
 
   const { RAPIER } = $physics;
 
@@ -31,8 +41,22 @@ const engine = defineEngine(() => {
   });
 
   once("update", () => {
+    const child = $ecs.create();
+    console.log("child", child);
+
+    addChildTo(cube, child);
+
+    foreachChildOf(cube, (e) => {
+      debugger;
+      console.log("hello child", e);
+    });
+
+    // console.log("first child of cube", getFirstChildOf(cube));
+  });
+
+  once("update", () => {
     const floor = createCube({
-      Transform: createTransform(windowCenterX(), 800),
+      Transform: createTransform(windowCenterX(), windowCenterY()),
       Rect: {
         h: 10,
         w: windowWidth(),

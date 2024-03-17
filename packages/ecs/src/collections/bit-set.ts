@@ -3,14 +3,12 @@
  * It allows to make bitwise operations without the size limitations of a 32 integer.
  */
 export class BitSet {
-  mask!: Uint32Array;
+  bits!: Uint32Array;
   size!: number;
-
-  private static GROW_FACTOR = 5;
 
   constructor(size: number = 10) {
     this.size = size;
-    this.mask = new Uint32Array(size);
+    this.bits = new Uint32Array(size);
   }
 
   /**
@@ -26,7 +24,7 @@ export class BitSet {
       return false;
     }
 
-    return Boolean(this.mask[index]! & (1 << (val & 31)));
+    return Boolean(this.bits[index]! & (1 << (val & 31)));
   }
 
   /**
@@ -41,7 +39,7 @@ export class BitSet {
       this.growTo(index + 1);
     }
 
-    this.mask[index] |= 1 << (val & 31);
+    this.bits[index] |= 1 << (val & 31);
   }
 
   /**
@@ -56,7 +54,7 @@ export class BitSet {
       this.growTo(index + 1);
     }
 
-    this.mask[index] ^= 1 << (val & 31);
+    this.bits[index] ^= 1 << (val & 31);
   }
 
   /**
@@ -65,10 +63,10 @@ export class BitSet {
    * @returns
    */
   contains(other: BitSet) {
-    const len = Math.min(this.mask.length, other.mask.length);
+    const len = Math.min(this.bits.length, other.bits.length);
     for (let i = 0; i < len; i++) {
-      const a = this.mask[i]!;
-      const b = other.mask[i]!;
+      const a = this.bits[i]!;
+      const b = other.bits[i]!;
       if ((a & b) !== b) {
         return false;
       }
@@ -82,10 +80,10 @@ export class BitSet {
    * @returns
    */
   intersects(other: BitSet) {
-    const len = Math.min(this.mask.length, other.mask.length);
+    const len = Math.min(this.bits.length, other.bits.length);
     for (let i = 0; i < len; i++) {
-      const a = this.mask[i]!;
-      const b = other.mask[i]!;
+      const a = this.bits[i]!;
+      const b = other.bits[i]!;
       if ((a & b) > 0) {
         return true;
       }
@@ -99,7 +97,7 @@ export class BitSet {
    */
   clone() {
     const clone = new BitSet(this.size);
-    clone.mask.set(this.mask);
+    clone.bits.set(this.bits);
     return clone;
   }
 
@@ -108,14 +106,14 @@ export class BitSet {
    * @returns string representation
    */
   toString() {
-    return this.mask.join("");
+    return this.bits.join("");
   }
 
   private growTo(to: number) {
     const diff = to - this.size;
     this.size += diff;
     const newMask = new Uint32Array(this.size);
-    newMask.set(this.mask);
-    this.mask = newMask;
+    newMask.set(this.bits);
+    this.bits = newMask;
   }
 }

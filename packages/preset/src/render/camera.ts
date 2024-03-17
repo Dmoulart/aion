@@ -34,14 +34,7 @@ export function setCameraPosition(pos: Vector, camera = useCamera()) {
   setPosition(camera, pos);
 }
 
-//@todo: it lacks something. Does not work right with zoom
 export function centerCameraOn(point: Vector, camera = useCamera()) {
-  // const zoom = getZoom(camera);
-
-  // Get the width and height of the viewport based on the zoom level
-  // const viewWidth = windowWidth() / zoom;
-  // const viewHeight = windowHeight() / zoom;
-
   setPosition(camera, point);
 }
 

@@ -1,17 +1,24 @@
+export function assert(condition: boolean, msg = "Failed assertion") {
+  if (!condition) {
+    throw new FailedAssertion(msg);
+  }
+}
+
 export function assertDefined<T>(
   value: T,
-  msg = `${value} is not defined`
+  msg = `${value} is not defined`,
 ): asserts value is NonNullable<T> {
   if (value === undefined || value === null) {
-    throw new Error(msg);
+    throw new FailedAssertion(msg);
   }
 }
 
 export function assertEmpty(
   value: unknown,
-  msg = `${value} is defined`
+  msg = `${value} is defined`,
 ): asserts value is undefined {
   if (value !== undefined && value !== null) {
-    throw new Error(msg);
+    throw new FailedAssertion(msg);
   }
 }
+export class FailedAssertion extends Error {}
