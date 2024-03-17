@@ -21,18 +21,18 @@ import {
   isSingleTypeSchema,
 } from "./schemas.js";
 
-export type ComponentId<S extends Schema = Schema> = ID & { __brand: S };
+export type ComponentID<S extends Schema = Schema> = ID & { __brand: S };
 
 export const $cid: unique symbol = Symbol("$cid");
 
-export type InferSchemaFromID<ID extends ComponentId> =
-  ID extends ComponentId<infer Schema> ? Schema : never;
+export type InferSchemaFromID<ID extends ComponentID> =
+  ID extends ComponentID<infer Schema> ? Schema : never;
 
 export type Component<S extends Schema = Schema> = {
-  [$cid]: ComponentId<S>;
+  [$cid]: ComponentID<S>;
 } & Columns<S>;
 
-export type ComponentFromID<ID extends ComponentId> = Component<
+export type ComponentFromID<ID extends ComponentID> = Component<
   InferSchemaFromID<ID>
 >;
 
@@ -126,7 +126,7 @@ export const defineComponent = <S extends Schema>(
   size = 10_000,
   id?: number,
 ): Component<S> => {
-  const componentID = (id ?? nextID()) as ComponentId<S>;
+  const componentID = (id ?? nextID()) as ComponentID<S>;
 
   setSchema(componentID, schema);
 
@@ -144,7 +144,7 @@ export const defineComponent = <S extends Schema>(
 export const isComponent = (obj: object): obj is Component => $cid in obj;
 
 export const getComponentID = (component: Component) => component[$cid];
-export const getComponentByID = (id: ComponentId) => components[id];
+export const getComponentByID = (id: ComponentID) => components[id];
 
 /**
  * Add a component to the given entity.
@@ -155,7 +155,7 @@ export const getComponentByID = (id: ComponentId) => components[id];
  * @returns nothing
  */
 export function attach(world: World, id: Entity, eid: Entity): void;
-export function attach(world: World, id: ComponentId, eid: Entity): void;
+export function attach(world: World, id: ComponentID, eid: Entity): void;
 export function attach(world: World, component: Component, eid: Entity): void;
 export function attach(
   world: World,
@@ -194,7 +194,7 @@ export function attach(
  * @returns nothing
  */
 export function detach(world: World, id: Entity, eid: Entity): void;
-export function detach(world: World, id: ComponentId, eid: Entity): void;
+export function detach(world: World, id: ComponentID, eid: Entity): void;
 export function detach(world: World, component: Component, eid: Entity): void;
 export function detach(
   world: World,
@@ -235,7 +235,7 @@ export function detach(
 export function hasComponent(world: World, id: Entity, eid: Entity): boolean;
 export function hasComponent(
   world: World,
-  id: ComponentId,
+  id: ComponentID,
   eid: Entity,
 ): boolean;
 export function hasComponent(
@@ -245,7 +245,7 @@ export function hasComponent(
 ): boolean;
 export function hasComponent(
   world: World,
-  idOrComponent: ID | ComponentId | Component,
+  idOrComponent: ID | ComponentID | Component,
   eid: Entity,
 ): boolean {
   const archetype = world.entitiesArchetypes[eid];

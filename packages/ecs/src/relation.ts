@@ -1,7 +1,7 @@
 import {
   type Component,
   defineComponent,
-  type ComponentId,
+  type ComponentID,
 } from "./component.js";
 import { lo, type Entity, pair, type ID } from "./entity.js";
 import { nextID } from "./id.js";
@@ -14,19 +14,19 @@ const relations = new Map<ID, Component | ID>();
 
 export function defineRelation<S extends Schema>(
   schema?: S,
-  size: number = DEFAULT_WORLD_CAPACITY
+  size: number = DEFAULT_WORLD_CAPACITY,
 ) {
   const baseID = nextID();
 
-  const instances: Array<ComponentId | ID> = [];
+  const instances: Array<ComponentID | ID> = [];
 
   return function <T extends Entity | "*">(
-    entityOrWildcard: T
-  ): T extends "*" ? Array<ComponentId | ID>[] : Component<S> {
+    entityOrWildcard: T,
+  ): T extends "*" ? Array<ComponentID | ID>[] : Component<S> {
     if (isWildcard(entityOrWildcard)) {
       //@todo proper typings
       return instances as T extends "*"
-        ? Array<ComponentId | ID>[]
+        ? Array<ComponentID | ID>[]
         : Component<S>;
     }
 
@@ -38,7 +38,7 @@ export function defineRelation<S extends Schema>(
       const componentOrID = relations.get(id);
       //@todo: proper typing
       return componentOrID as T extends "*"
-        ? Array<ComponentId | ID>[]
+        ? Array<ComponentID | ID>[]
         : Component<S>;
     }
     let ret: Component | ID;
@@ -53,6 +53,6 @@ export function defineRelation<S extends Schema>(
 
     instances.push(id);
     relations.set(id, ret);
-    return ret as T extends "*" ? Array<ComponentId | ID>[] : Component<S>;
+    return ret as T extends "*" ? Array<ComponentID | ID>[] : Component<S>;
   };
 }

@@ -1,4 +1,4 @@
-import type { ComponentId } from "./component.js";
+import type { ComponentID } from "./component.js";
 import { type World } from "./world.js";
 import { type Entity, type ID } from "./entity.js";
 import { BitSet, SparseSet } from "./collections/index.js";
@@ -27,7 +27,7 @@ export type Archetype = {
 let nextAid = 0;
 
 /**
- * Creates a new archetype with the specified list of components.
+ * Creates a new archetype with the specified bitmask.
  * @param mask
  * @returns new archetype
  */
@@ -46,10 +46,7 @@ export const createArchetype = (mask = new BitSet(2)): Archetype => {
  * @param components
  * @param world
  */
-export const buildArchetype = (
-  components: ComponentId<any>[],
-  world: World,
-) => {
+export const buildArchetype = (components: ComponentID[], world: World) => {
   let archetype = world.rootArchetype;
   for (const component of components) {
     if (archetype.edge[component]) {

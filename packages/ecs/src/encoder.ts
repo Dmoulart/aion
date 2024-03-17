@@ -3,7 +3,7 @@ import { Chunk } from "./chunk.js";
 import {
   type Component,
   getComponentByID,
-  type ComponentId,
+  type ComponentID,
   getComponentID,
 } from "./component.js";
 import { insertEntity, type Entity } from "./entity.js";
@@ -38,7 +38,7 @@ function replace(world: World, eid: Entity, archetype: Archetype) {
  */
 export function defineEncoder(
   components: Component[],
-  { decodingStrategy } = DEFAULT_ENCODER_CONFIG
+  { decodingStrategy } = DEFAULT_ENCODER_CONFIG,
 ) {
   for (const comp of components) {
     const schema = getSchema(getComponentID(comp))!;
@@ -50,7 +50,7 @@ export function defineEncoder(
 
   const componentsInstanceSize = components.reduce(
     (prev, curr) => prev + getComponentByteSize(curr),
-    0
+    0,
   );
 
   const entitySize = 4;
@@ -112,7 +112,7 @@ export function defineEncoder(
           }
 
           const comp = getComponentByID(
-            id as ComponentId
+            id as ComponentID,
           )! as Component<MultipleTypesSchema>;
 
           const value = chunk[getters[type.name]!]();
