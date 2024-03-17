@@ -12,7 +12,7 @@ import { useECS } from "../ecs.js";
 import { Rect, Stroke, Fill, Circle, Transform } from "../components.js";
 import { not, type Entity } from "aion-ecs";
 import { getProjectionMatrix } from "./camera.js";
-import { Parent } from "../index.js";
+import { Parent, forEachChildOf } from "../index.js";
 
 export function render(camera: Entity) {
   const { query, any, has } = useECS();
@@ -29,35 +29,7 @@ export function render(camera: Entity) {
 
   query(Transform, any(Stroke, Fill), any(Rect, Circle), not(Parent)).each(
     (ent) => {
-      preDraw(ctx, Transform[ent]!);
-
-      beginPath();
-
-      if (has(Rect, ent)) {
-        const width = w[ent]!;
-        const height = h[ent]!;
-
-        const halfWidth = width / 2;
-        const halfHeight = height / 2;
-
-        rect(-halfWidth, -halfHeight, width, height);
-      }
-
-      if (has(Circle, ent)) {
-        circle(0, 0, r[ent]!);
-      }
-
-      closePath();
-
-      if (has(Stroke, ent)) {
-        stroke(Stroke[ent]!);
-      }
-
-      if (has(Fill, ent)) {
-        fill(Fill[ent]!);
-      }
-
-      postDraw(ctx);
+      draw(ctx, ent);
     },
   );
 
@@ -80,40 +52,43 @@ export function preDraw(
   );
 }
 
-// export function draw(ctx: CanvasRenderingContext2D, ent: Entity) {
-//   const { w, h } = Rect;
-//   const { r } = Circle;
+export function draw(ctx: CanvasRenderingContext2D, ent: Entity) {
+  const { has } = useECS();
+  const { w, h } = Rect;
+  const { r } = Circle;
 
-//   preDraw(ctx, Transform[ent]!);
+  preDraw(ctx, Transform[ent]!);
 
-//   beginPath();
+  forEachChildOf(ent, (child) => draw(ctx, child));
 
-//   if (has(Rect, ent)) {
-//     const width = w[ent]!;
-//     const height = h[ent]!;
+  beginPath();
 
-//     const halfWidth = width / 2;
-//     const halfHeight = height / 2;
+  if (has(Rect, ent)) {
+    const width = w[ent]!;
+    const height = h[ent]!;
 
-//     rect(-halfWidth, -halfHeight, width, height);
-//   }
+    const halfWidth = width / 2;
+    const halfHeight = height / 2;
 
-//   if (has(Circle, ent)) {
-//     circle(0, 0, r[ent]!);
-//   }
+    rect(-halfWidth, -halfHeight, width, height);
+  }
 
-//   closePath();
+  if (has(Circle, ent)) {
+    circle(0, 0, r[ent]!);
+  }
 
-//   if (has(Stroke, ent)) {
-//     stroke(Stroke[ent]!);
-//   }
+  closePath();
 
-//   if (has(Fill, ent)) {
-//     fill(Fill[ent]!);
-//   }
+  if (has(Stroke, ent)) {
+    stroke(Stroke[ent]!);
+  }
 
-//   postDraw(ctx);
-// }
+  if (has(Fill, ent)) {
+    fill(Fill[ent]!);
+  }
+
+  postDraw(ctx);
+}
 
 export function postDraw(ctx: CanvasRenderingContext2D) {
   ctx.restore();
