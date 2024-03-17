@@ -129,9 +129,9 @@ const engine = defineEngine(() => {
         createBall({
           Transform: createTransform(x, y),
           Circle: {
-            r: 100,
+            r: 50,
           },
-          Fill: Colors["cornflower:600"],
+          Fill: Colors["shamrock:950"],
           Stroke: "white",
           Body: RAPIER.RigidBodyDesc.dynamic(),
           Collider: {
