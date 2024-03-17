@@ -1,12 +1,20 @@
 import { bool, defineComponent, f32, type Entity } from "aion-ecs";
 import {
   applyInverse,
+  getTranslation,
   getWorldPosition,
   getWorldRotation,
   mat,
+  positionOf,
+  setPosition,
   useAion,
 } from "../index.js";
-import { windowHeight, windowWidth } from "aion-render";
+import {
+  windowCenterX,
+  windowCenterY,
+  windowHeight,
+  windowWidth,
+} from "aion-render";
 import type { Vector } from "aion-core";
 
 export const Camera = defineComponent({
@@ -18,16 +26,43 @@ export function useCamera() {
   return useAion().$camera;
 }
 
-export function getZoom() {
-  return Camera.zoom[useCamera()]!;
+export function getCameraPosition(camera = useCamera()) {
+  return positionOf(camera);
 }
 
-export function setZoom(zoom: number) {
-  Camera.zoom[useCamera()]! = zoom;
+export function setCameraPosition(pos: Vector, camera = useCamera()) {
+  setPosition(camera, pos);
+}
+
+//@todo: it lacks something. Does not work right with zoom
+export function centerCameraOn(point: Vector, camera = useCamera()) {
+  // const zoom = getZoom(camera);
+
+  // Get the width and height of the viewport based on the zoom level
+  // const viewWidth = windowWidth() / zoom;
+  // const viewHeight = windowHeight() / zoom;
+
+  setPosition(camera, point);
+}
+
+export function centerCameraOnEntity(ent: Entity, camera = useCamera()) {
+  centerCameraOn(positionOf(ent), camera);
+}
+
+export function getZoom(camera = useCamera()) {
+  return Camera.zoom[camera]!;
 }
 
 export function zoomBy(zoom: number, camera: Entity = useCamera()) {
   Camera.zoom[camera]! += zoom;
+}
+
+export function setZoom(zoom: number, camera = useCamera()) {
+  Camera.zoom[camera]! = zoom;
+}
+
+export function getCameraRotation(camera = useCamera()) {
+  return getWorldRotation(camera);
 }
 
 export function getProjectionMatrix(camera: Entity) {
@@ -56,22 +91,5 @@ export function getProjectionMatrix(camera: Entity) {
 export function screenToWorldPosition(point: Vector) {
   const camera = useCamera();
 
-  const matrix = getProjectionMatrix(camera);
-
-  return applyInverse(matrix, point);
+  return applyInverse(getProjectionMatrix(camera), point);
 }
-
-// export function screenToWorldPosition(point: Vector) {
-//   const camera = useCamera();
-
-//   const matrix = getProjectionMatrix(camera);
-//   mat.invert(matrix, matrix);
-
-//   const result = glMatrix.vec2.transformMat2d(
-//     [0, 0],
-//     [point.x, point.y],
-//     matrix,
-//   );
-
-//   return new Vec(result[0], result[1]);
-// }

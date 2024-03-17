@@ -1,5 +1,5 @@
 import { defineEngine, once, defineLoop, emit, on } from "aion-engine";
-import { getMouseX, getMouseY, click, direction, key } from "aion-input";
+import { click, direction, key, getMouse } from "aion-input";
 import {
   aionPreset,
   setPosition,
@@ -8,7 +8,7 @@ import {
   translate,
   screenToWorldPosition,
   zoomBy,
-  getZoom,
+  centerCameraOnEntity,
 } from "aion-preset";
 import { Colors, clear, windowCenterX, windowWidth } from "aion-render";
 
@@ -44,10 +44,9 @@ const engine = defineEngine(() => {
       },
       Body: RAPIER.RigidBodyDesc.fixed(),
     });
-  });
 
-  // Collider[floor] = RAPIER.ColliderDesc.cuboid(windowWidth() / 2, 1);
-  // ).setTranslation(bottomLeftOfWindow().x, bottomLeftOfWindow().y);
+    centerCameraOnEntity(floor);
+  });
 
   defineLoop(() => {
     emit("update");
@@ -70,12 +69,7 @@ const engine = defineEngine(() => {
   });
 
   on("update", () => {
-    const localX = getMouseX();
-    const localY = getMouseY();
-
-    const { x, y } = screenToWorldPosition({ x: localX, y: localY });
-    console.log({ x, y });
-    console.log({ zoom: getZoom() });
+    const { x, y } = screenToWorldPosition(getMouse());
 
     setPosition(cube, { x, y });
 

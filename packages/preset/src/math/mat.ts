@@ -1,4 +1,4 @@
-import type { Vector } from "aion-core";
+import { Vec, type Vector } from "aion-core";
 import * as glMatrix from "gl-matrix";
 
 export const mat = glMatrix.mat2d;
@@ -23,6 +23,10 @@ export function applyInverse(
   output.y = a * id * y + -b * id * x + (-ty * a + tx * b) * id;
 
   return output;
+}
+
+export function getTranslation(matrix: Matrix) {
+  return new Vec(matrix[4], matrix[5]);
 }
 
 export function getScaleX(matrix: Matrix) {
