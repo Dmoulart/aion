@@ -15,9 +15,7 @@ import { getProjectionMatrix } from "./camera.js";
 import { Parent, forEachChildOf } from "../index.js";
 
 export function render(camera: Entity) {
-  const { query, any, has } = useECS();
-  const { w, h } = Rect;
-  const { r } = Circle;
+  const { query, any } = useECS();
 
   const ctx = getContext2D();
 
@@ -41,6 +39,7 @@ export function preDraw(
   matrix: ArrayLike<number>,
 ) {
   // Save the transformation matrix to restore it after drawing
+  // @todo: perf
   ctx.save();
   ctx.transform(
     matrix[0]!,
