@@ -13,12 +13,7 @@ import type RAPIER from "@dimforge/rapier2d";
 import { once, on } from "aion-engine";
 import { positionOf, setPosition, setRotation } from "../basics/transform.js";
 
-//@todo proper options handling
-export type InitPhysicsSystemOptions = {
-  renderDebug?: boolean;
-};
-
-export function initPhysicsSystems(options: InitPhysicsSystemOptions = {}) {
+export function initPhysicsSystems() {
   //@todo use init callback
   once("update", () => {
     const { world } = usePhysics();
@@ -44,7 +39,7 @@ export function initPhysicsSystems(options: InitPhysicsSystemOptions = {}) {
     );
 
     onCreatedCollider((ent) => {
-      const parent = RuntimeBody[ent];
+      let body = RuntimeBody[ent];
 
       const auto = Collider.auto[ent];
       if (!auto) {
@@ -55,7 +50,7 @@ export function initPhysicsSystems(options: InitPhysicsSystemOptions = {}) {
 
       const colliderDesc = collidersDesc[0]!;
 
-      const collider = world.createCollider(colliderDesc, parent);
+      const collider = world.createCollider(colliderDesc, body);
 
       RuntimeCollider[ent] = collider;
 

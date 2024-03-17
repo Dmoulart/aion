@@ -1,21 +1,19 @@
 import RAPIER from "@dimforge/rapier2d-compat";
 import { useAion } from "../ctx.js";
-import {
-  initPhysicsSystems,
-  type InitPhysicsSystemOptions,
-} from "./bindings.js";
+import { initPhysicsSystems } from "./bindings.js";
 import { on } from "aion-engine";
 
 await RAPIER.init();
 
 export type InitPhysicsOptions = {
   gravity?: { x: number; y: number };
-} & InitPhysicsSystemOptions;
+  renderDebug?: boolean;
+};
 
 const DEFAULT_GRAVITY = { x: 0.0, y: 9.81 };
 
 export function initPhysics(options?: InitPhysicsOptions) {
-  initPhysicsSystems(options);
+  initPhysicsSystems();
 
   const gravity = options?.gravity ?? DEFAULT_GRAVITY;
   // Use the RAPIER module here.

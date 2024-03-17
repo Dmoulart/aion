@@ -8,6 +8,7 @@ import {
   positionOf,
   setPosition,
   useAion,
+  type Matrix,
 } from "../index.js";
 import {
   windowCenterX,
@@ -58,7 +59,7 @@ export function getCameraRotation(camera = useCamera()) {
   return getWorldRotation(camera);
 }
 
-export function getProjectionMatrix(camera: Entity) {
+export function getProjectionMatrix(camera: Entity): Matrix {
   const zoom = Camera.zoom[camera]!;
 
   const pos = getWorldPosition(camera);
@@ -78,7 +79,7 @@ export function getProjectionMatrix(camera: Entity) {
     -pos.y + viewHeight / 2,
   ]);
 
-  return matrix;
+  return matrix as Matrix;
 }
 
 export function screenToWorldPosition(point: Vector) {
