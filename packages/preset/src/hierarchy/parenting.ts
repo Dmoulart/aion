@@ -18,6 +18,12 @@ export function hasParent(entity: Entity) {
   return hasComponent(world, Parent, entity);
 }
 
+export function hasChildren(entity: Entity) {
+  const { has } = useECS();
+
+  return has(Children, entity);
+}
+
 export function getParentOf(child: Entity) {
   return Parent[child];
 }
@@ -42,9 +48,11 @@ export function getFirstChildOf(parent: Entity) {
 }
 
 export function forEachChildOf(parent: Entity, cb: (ent: Entity) => void) {
-  for (const child of Children.list[parent]!) {
-    if (child > 0) {
-      cb(child);
+  if (hasChildren(parent)) {
+    for (const child of Children.list[parent]!) {
+      if (child > 0) {
+        cb(child);
+      }
     }
   }
 }

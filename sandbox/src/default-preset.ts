@@ -10,7 +10,6 @@ import {
   zoomBy,
   centerCameraOnEntity,
   addChildTo,
-  forEachChildOf,
 } from "aion-preset";
 import {
   Colors,
@@ -111,11 +110,11 @@ const engine = defineEngine(() => {
     translate($camera, direction().scale(10));
 
     if (key("a")) {
-      zoomBy(-0.01);
+      zoomBy(-0.04);
     }
 
     if (key("e")) {
-      zoomBy(+0.01);
+      zoomBy(+0.04);
     }
   });
 
