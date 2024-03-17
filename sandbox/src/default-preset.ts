@@ -1,4 +1,4 @@
-import { getEntityComponents } from "aion-ecs/dist/archetype";
+import { getEntityComponents } from "aion-ecs";
 import { defineEngine, once, defineLoop, emit, on } from "aion-engine";
 import { click, direction, key, getMouse } from "aion-input";
 import {

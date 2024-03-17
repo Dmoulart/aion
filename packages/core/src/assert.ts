@@ -4,7 +4,7 @@ export function assert(condition: boolean, msg = "Failed assertion") {
   }
 }
 
-export function assertDefined<T>(
+export function <T>(
   value: T,
   msg = `${value} is not defined`,
 ): asserts value is NonNullable<T> {
@@ -21,4 +21,4 @@ export function assertEmpty(
     throw new FailedAssertion(msg);
   }
 }
-export class FailedAssertion extends Error {}
+export class FailedAssertion extends Error { }

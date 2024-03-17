@@ -8,8 +8,6 @@ import {
   type Type,
 } from "./types.js";
 
-// The component schema.
-// It describes the object passed into the Component factory function.
 export type Schema = SingleTypeSchema | MultipleTypesSchema;
 
 export type MultipleTypesSchema = Readonly<{
@@ -43,7 +41,7 @@ export type Instance<S extends Schema> = S extends MultipleTypesSchema
 const __SCHEMAS: Record<ID, Schema> = {};
 
 /**
- * Register a specific schema.
+ * Register a component schema.
  * @param id
  * @param schema
  */
@@ -52,7 +50,7 @@ export function setSchema(id: ID, schema: Schema) {
 }
 
 /**
- * Get a specific schema
+ * Get a component schema by component ID.
  * @param id
  * @returns schema
  */

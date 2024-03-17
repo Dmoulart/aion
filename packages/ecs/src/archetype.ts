@@ -4,15 +4,12 @@ import { type Entity, type ID } from "./entity.js";
 import { BitSet, SparseSet } from "./collections/index.js";
 import { matchQuery, registerQueryHandlersForArchetype } from "./query.js";
 
-// preheat ?
-const ARCHETYPES_COMPONENTS: Array<SparseSet> = [];
-
 //@todo make this a class for better perfs ?
 export type Archetype = {
   /**
    * The archetype id.
    */
-  id: number;
+  id: Readonly<ID>;
   /**
    * The set of entities belonging to this archetype
    */
@@ -28,7 +25,7 @@ export type Archetype = {
   /**
    * The components ids posessed by the archetype
    */
-  components: Array<ID>;
+  components: Readonly<ID[]>;
 };
 
 // The next archetype id.
@@ -98,15 +95,16 @@ export const deriveArchetype = (
     entities: new SparseSet(),
     edge: [],
     mask,
+    components: [...base.components, id],
   };
 
   // Register in archetype graph
   base.edge[id] = archetype;
   archetype.edge[id] = base;
 
-  const archComponents = ARCHETYPES_COMPONENTS[base.id]!.clone();
-  archComponents.insert(id);
-  ARCHETYPES_COMPONENTS[archetype.id] = archComponents;
+  // const archComponents = ARCHETYPES_COMPONENTS[base.id]!.clone();
+  // archComponents.insert(id);
+  // ARCHETYPES_COMPONENTS[archetype.id] = archComponents;
 
   world.archetypes.push(archetype);
   // @todo is queries.values fast ?
@@ -120,15 +118,42 @@ export const deriveArchetype = (
   return archetype;
 };
 
-export function getArchetype(world: World, entity: Entity) {
-  return world.entitiesArchetypes[entity];
+/**
+ * Call the handlers of a specific archetype on the given entity.
+ * @param world
+ * @param eid
+ * @param archetype
+ */
+export function onEnterArchetype(
+  world: World,
+  eid: Entity,
+  archetype: Archetype,
+) {
+  const handlers = world.handlers.enter[archetype.id];
+  //@todo handlers for exiting old arch ?
+  if (handlers) {
+    for (const fn of handlers) {
+      fn(eid);
+    }
+  }
 }
 
-export function archetypeHasID(arch: Archetype, id: ID) {
-  return arch.mask.has(id);
-}
-
-export function getEntityComponents(world: World, entity: Entity) {
-  const arch = world.entitiesArchetypes[entity]!;
-  return ARCHETYPES_COMPONENTS[arch.id]!.dense;
+/**
+ * Call the handlers of a specific archetype on the given entity.
+ * @param world
+ * @param eid
+ * @param archetype
+ */
+export function onExitArchetype(
+  world: World,
+  eid: Entity,
+  archetype: Archetype,
+) {
+  //@todo handlers for entering new arch ?
+  const handlers = world.handlers.exit[archetype.id];
+  if (handlers) {
+    for (const fn of handlers) {
+      fn(eid);
+    }
+  }
 }

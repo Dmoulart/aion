@@ -7,7 +7,12 @@ import {
 } from "./types.js";
 import type { World } from "./world.js";
 import { type ID, NonExistantEntity } from "./entity.js";
-import { deriveArchetype, type Archetype } from "./archetype.js";
+import {
+  deriveArchetype,
+  type Archetype,
+  onEnterArchetype,
+  onExitArchetype,
+} from "./archetype.js";
 import { type Entity } from "./entity.js";
 import { nextID } from "./id.js";
 import {
@@ -20,6 +25,7 @@ import {
   isPrimitiveType,
   isSingleTypeSchema,
 } from "./schemas.js";
+import { assertDefined } from "aion-core";
 
 export type ComponentID<S extends Schema = Schema> = ID & { __brand: S };
 
@@ -262,42 +268,13 @@ export function hasComponent(
   return archetype.mask.has(id);
 }
 
-/**
- * Call the handlers of a specific archetype on the given entity.
- * @param world
- * @param eid
- * @param archetype
- */
-export function onEnterArchetype(
-  world: World,
-  eid: Entity,
-  archetype: Archetype,
-) {
-  const handlers = world.handlers.enter[archetype.id];
-  //@todo handlers for exiting old arch ?
-  if (handlers) {
-    for (const fn of handlers) {
-      fn(eid);
-    }
-  }
-}
+export function getEntityComponents(world: World, entity: Entity): ID[] {
+  const archetype = world.entitiesArchetypes[entity];
 
-/**
- * Call the handlers of a specific archetype on the given entity.
- * @param world
- * @param eid
- * @param archetype
- */
-export function onExitArchetype(
-  world: World,
-  eid: Entity,
-  archetype: Archetype,
-) {
-  //@todo handlers for entering new arch ?
-  const handlers = world.handlers.exit[archetype.id];
-  if (handlers) {
-    for (const fn of handlers) {
-      fn(eid);
-    }
-  }
+  assertDefined(
+    archetype,
+    `Trying to get entity components from a non existant entity : ${entity}`,
+  );
+
+  return archetype.components as ID[];
 }

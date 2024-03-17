@@ -1,9 +1,9 @@
 import {
   type Entity,
   createEntity,
+  lo,
   entityExists,
   removeEntity,
-  lo,
 } from "./entity.js";
 import { type Archetype, createArchetype } from "./archetype.js";
 import {

@@ -1,4 +1,4 @@
-import { onEnterArchetype } from "./component.js";
+import { onEnterArchetype } from "./archetype.js";
 import { nextID } from "./id.js";
 import type { World } from "./world.js";
 
@@ -15,10 +15,10 @@ export type Entity = ID;
  * @throws {ExceededWorldCapacity}
  * @returns new entity's id
  */
-export const createEntity = (
+export function createEntity(
   world: World,
-  archetype = world.rootArchetype
-): Entity => {
+  archetype = world.rootArchetype,
+): Entity {
   const eid = world.deletedEntities.length
     ? world.deletedEntities.shift()!
     : nextID();
@@ -27,7 +27,7 @@ export const createEntity = (
   if (eid > world.size) {
     // todo: resize world automatically ?
     throw new ExceededWorldCapacity(
-      `World maximum capacity of ${world.size} exceeded`
+      `World maximum capacity of ${world.size} exceeded`,
     );
   }
 
@@ -35,7 +35,7 @@ export const createEntity = (
   world.entitiesArchetypes[eid] = archetype;
 
   return eid;
-};
+}
 
 /**
  * Insert a specific entity. If the entity already exist it will do nothing.
@@ -46,16 +46,16 @@ export const createEntity = (
  * @param archetype
  * @throws {ExceededWorldCapacity}
  */
-export const insertEntity = (
+export function insertEntity(
   world: World,
   eid: Entity,
-  archetype = world.rootArchetype
-): Entity => {
+  archetype = world.rootArchetype,
+): Entity {
   // We start creating entities id from 1
   if (eid > world.size) {
     // todo: resize world automatically ?
     throw new ExceededWorldCapacity(
-      `World maximum capacity of ${world.size} exceeded`
+      `World maximum capacity of ${world.size} exceeded`,
     );
   }
 
@@ -66,7 +66,7 @@ export const insertEntity = (
   archetype.entities.insert(eid);
   world.entitiesArchetypes[eid] = archetype;
   return eid;
-};
+}
 
 /**
  * Remove an entity from the given world.
@@ -75,27 +75,51 @@ export const insertEntity = (
  * @throws {NonExistantEntity}
  * @returns nothing
  */
-export const removeEntity = (world: World, eid: Entity) => {
+export function removeEntity(world: World, eid: Entity) {
   const archetype = world.entitiesArchetypes[eid];
   if (!archetype) {
     throw new NonExistantEntity(
-      `Trying to remove a non existant entity with id : ${eid}`
+      `Trying to remove a non existant entity with id : ${eid}`,
     );
   }
   archetype.entities.remove(eid);
   world.entitiesArchetypes[eid] = undefined;
   world.deletedEntities.push(eid);
-};
+}
 
 /**
  * Returns true if the world has the given entity.
  * @todo generation number in id to check if it has been recycled ?
- * @param eid
  * @param world
- * @returns world has the given entity
+   @param eid
+ * @returns true if world contains the given entity
  */
-export const entityExists = (world: World, eid: Entity) =>
-  Boolean(world.entitiesArchetypes[eid]);
+export function entityExists(world: World, eid: Entity): boolean {
+  return Boolean(world.entitiesArchetypes[eid]);
+}
+
+//@todo meta
+// /**
+//  * Clone the given entity with all its components values.
+//  * @param world
+//  * @param eid
+//  * @returns cloned entity
+//  */
+// export function cloneEntity(world: World, eid: Entity) {
+//   const components = getEntityComponents(world, eid);
+//   const clone = createEntity(world)
+//   //@todo:perf code generation
+//   for (const component of components) {
+//     const storage = getComponentByID(component as ComponentID)!;
+//     const schema = getSchema(component)!;
+//     if(isSingleTypeSchema(schema)){
+//       (storage as any)[clone] = (storage as any)[eid]
+//     }
+//     else{
+//       for
+//     }
+//   }
+// }
 
 export class NonExistantEntity extends Error {}
 export class ExceededWorldCapacity extends Error {}

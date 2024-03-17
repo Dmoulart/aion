@@ -1,11 +1,10 @@
 import type { World } from "./world.js";
-import { buildArchetype } from "./archetype.js";
+import { buildArchetype, onEnterArchetype } from "./archetype.js";
 import { createEntity } from "./entity.js";
 import {
   type Component,
   type ComponentsGroup,
   getComponentID,
-  onEnterArchetype,
 } from "./component.js";
 import {
   isSingleTypeSchema,
