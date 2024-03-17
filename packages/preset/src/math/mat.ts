@@ -3,7 +3,7 @@ import * as glMatrix from "gl-matrix";
 
 export const mat = glMatrix.mat2d;
 
-export type Matrix = ArrayLike<number>;
+export type Matrix = Float32Array;
 
 export function applyInverse(
   matrix: Matrix,
@@ -25,7 +25,7 @@ export function applyInverse(
   return output;
 }
 
-export function getTranslation(matrix: Matrix) {
+export function getTranslation(matrix: Matrix): Vector {
   return new Vec(matrix[4], matrix[5]);
 }
 

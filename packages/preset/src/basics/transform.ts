@@ -1,6 +1,14 @@
 import { Transform } from "../components.js";
 import { Vec, type Vector } from "aion-core";
-import { getScaleX, getScaleY, mat } from "../index.js";
+import {
+  getParentOf,
+  getScaleX,
+  getScaleY,
+  getTranslation,
+  hasParent,
+  mat,
+  type Matrix,
+} from "../index.js";
 import type { Entity } from "aion-ecs";
 
 // @todo:perf used when creating transform with prefab. Not optimized.
@@ -27,9 +35,24 @@ export function positionOf(ent: Entity): Vector {
   return new Vec(transform[4], transform[5]);
 }
 
+export const getLocalPosition = positionOf;
+
 export function getWorldPosition(ent: Entity) {
-  //@todo
-  return positionOf(ent);
+  let parent = getParentOf(ent);
+
+  if (parent) {
+    const childMatrix = mat.clone(getLocalMatrix(ent)!) as Float32Array;
+
+    while (parent) {
+      let parentMatrix = getLocalMatrix(parent)!;
+      mat.multiply(childMatrix, childMatrix, parentMatrix);
+      parent = getParentOf(parent);
+    }
+
+    return getTranslation(childMatrix);
+  }
+
+  return getLocalPosition(ent);
 }
 
 export function getX(ent: Entity) {
@@ -38,6 +61,10 @@ export function getX(ent: Entity) {
 
 export function getY(ent: Entity) {
   return Transform[ent]![5]!;
+}
+
+export function getLocalMatrix(ent: Entity): Matrix | undefined {
+  return Transform[ent];
 }
 
 export function setRotation(ent: Entity, rad: number) {

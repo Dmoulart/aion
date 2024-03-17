@@ -1,9 +1,26 @@
 import { assert } from "aion-core";
-import { defineComponent, eid, hasComponent, type Entity } from "aion-ecs";
+import {
+  defineComponent,
+  eid,
+  hasComponent,
+  type Entity,
+  i32,
+  u32,
+} from "aion-ecs";
 import { useECS } from "../ecs.js";
 
-const Children = defineComponent([eid, 3]);
-const Parent = defineComponent(eid);
+export const Children = defineComponent({ list: [eid, 3], length: u32 });
+export const Parent = defineComponent(eid);
+
+export function hasParent(entity: Entity) {
+  const { world } = useECS();
+
+  return hasComponent(world, Parent, entity);
+}
+
+export function getParentOf(child: Entity) {
+  return Parent[child];
+}
 
 export function addChildTo(parent: Entity, child: Entity) {
   const { attach, world } = useECS();
@@ -14,15 +31,16 @@ export function addChildTo(parent: Entity, child: Entity) {
   Parent[child] = parent;
 
   attach(Children, parent);
-  Children[parent]![0] = child;
+  const childIndex = Children.length[parent]++;
+  Children.list[parent]![childIndex] = child;
 }
 
 export function getFirstChildOf(parent: Entity) {
-  return Children[parent]![0];
+  return Children.list[parent]![0];
 }
 
-export function foreachChildOf(parent: Entity, cb: (ent: Entity) => void) {
-  for (const child of Children[parent]!) {
+export function forEachChildOf(parent: Entity, cb: (ent: Entity) => void) {
+  for (const child of Children.list[parent]!) {
     if (child > 0) {
       cb(child);
     }

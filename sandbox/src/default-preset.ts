@@ -10,8 +10,7 @@ import {
   zoomBy,
   centerCameraOnEntity,
   addChildTo,
-  getFirstChildOf,
-  foreachChildOf,
+  forEachChildOf,
 } from "aion-preset";
 import {
   Colors,
@@ -32,11 +31,12 @@ const engine = defineEngine(() => {
   const { RAPIER } = $physics;
 
   const cube = createRect({
+    Transform: createTransform(0, 0),
     Rect: {
       h: 100,
       w: 100,
     },
-    Fill: Colors["shamrock:900"],
+    Fill: "white",
     Stroke: "white",
   });
 
@@ -44,14 +44,22 @@ const engine = defineEngine(() => {
     const child = $ecs.create();
     console.log("child", child);
 
-    addChildTo(cube, child);
+    addChildTo(
+      cube,
+      createRect({
+        Transform: createTransform(100, 100),
+        Rect: {
+          h: 10,
+          w: 10,
+        },
+        Fill: "pink",
+        Stroke: "white",
+      }),
+    );
 
-    foreachChildOf(cube, (e) => {
-      debugger;
+    forEachChildOf(cube, (e) => {
       console.log("hello child", e);
     });
-
-    // console.log("first child of cube", getFirstChildOf(cube));
   });
 
   once("update", () => {
