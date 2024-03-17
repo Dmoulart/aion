@@ -109,8 +109,8 @@ export class BitSet {
     return this.bits.join("");
   }
 
-  private growTo(to: number) {
-    const diff = to - this.size;
+  private growTo(newSize: number) {
+    const diff = newSize - this.size;
     this.size += diff;
     const newMask = new Uint32Array(this.size);
     newMask.set(this.bits);

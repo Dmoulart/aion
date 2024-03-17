@@ -1,4 +1,4 @@
-import { getEntityComponents } from "aion-ecs";
+import { onEnterQuery, onExitQuery } from "aion-ecs";
 import { defineEngine, once, defineLoop, emit, on } from "aion-engine";
 import { click, direction, key, getMouse } from "aion-input";
 import {
@@ -11,6 +11,9 @@ import {
   zoomBy,
   centerCameraOnEntity,
   addChildTo,
+  Collision,
+  Stroke,
+  Fill,
 } from "aion-preset";
 import {
   Colors,
@@ -28,6 +31,8 @@ const engine = defineEngine(() => {
   const { createRect, createCube, createBall, $physics, $camera, $ecs } =
     preset;
 
+  const { query } = $ecs;
+
   const { RAPIER } = $physics;
 
   const cube = createRect({
@@ -38,6 +43,19 @@ const engine = defineEngine(() => {
     },
     Fill: "white",
     Stroke: "white",
+  });
+
+  once("update", () => {
+    const onCollision = onEnterQuery(query(Collision));
+    const onCollisionEnd = onExitQuery(query(Collision));
+
+    onCollision((entity) => {
+      Fill[entity] = "blue";
+    });
+
+    onCollisionEnd((entity) => {
+      Fill[entity] = "red";
+    });
   });
 
   once("update", () => {
@@ -125,7 +143,6 @@ const engine = defineEngine(() => {
     setPosition(cube, { x, y });
 
     if (click()) {
-      console.log(getEntityComponents($ecs.world, cube));
       const ball = Math.random() > 0.5;
       if (ball) {
         createBall({

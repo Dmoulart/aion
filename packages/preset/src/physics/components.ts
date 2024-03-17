@@ -11,3 +11,5 @@ export const RuntimeCollider = defineComponent(
 
 export const Body = defineComponent(() => new Array<RAPIER.RigidBodyDesc>());
 export const RuntimeBody = defineComponent(() => new Array<RAPIER.RigidBody>());
+
+export const Collision = defineComponent({});

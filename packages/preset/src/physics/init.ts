@@ -2,6 +2,8 @@ import RAPIER from "@dimforge/rapier2d-compat";
 import { useAion } from "../ctx.js";
 import { initPhysicsSystems } from "./bindings.js";
 import { on } from "aion-engine";
+import { useECS } from "../ecs.js";
+import { Collision } from "./components.js";
 
 await RAPIER.init();
 
@@ -19,9 +21,41 @@ export function initPhysics(options?: InitPhysicsOptions) {
   // Use the RAPIER module here.
   const world = new RAPIER.World(gravity);
 
+  const eventQueue = new RAPIER.EventQueue(true);
+
   on("update", () => {
+    const { attach, detach } = useECS();
+
     // Step the simulation forward.
-    world.step();
+    world.step(eventQueue);
+
+    eventQueue.drainCollisionEvents((handle1, handle2, started) => {
+      const colliderA = world.getCollider(handle1);
+      const colliderB = world.getCollider(handle2);
+
+      const bodyA = colliderA.parent();
+      const bodyB = colliderB.parent();
+
+      if (bodyA) {
+        const entityA = bodyA.userData;
+
+        if (entityA) {
+          started
+            ? attach(Collision, entityA as number)
+            : detach(Collision, entityA as number);
+        }
+      }
+
+      if (bodyB) {
+        const entityB = bodyB.userData;
+
+        if (entityB) {
+          started
+            ? attach(Collision, entityB as number)
+            : detach(Collision, entityB as number);
+        }
+      }
+    });
   });
 
   return { RAPIER, world };

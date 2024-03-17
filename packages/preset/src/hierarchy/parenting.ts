@@ -40,6 +40,9 @@ export function addChildTo(parent: Entity, child: Entity) {
   attach(Children, parent);
 
   const childIndex = Children.length[parent]++;
+
+  assert(childIndex < 3, "Children limit overflow");
+
   Children.list[parent]![childIndex] = child;
 }
 

@@ -16,7 +16,7 @@ import { positionOf, setPosition, setRotation } from "../basics/transform.js";
 export function initPhysicsSystems() {
   //@todo use init callback
   once("update", () => {
-    const { world } = usePhysics();
+    const { world, RAPIER } = usePhysics();
     const { query, attach } = useECS();
 
     const onCreatedBody = onEnterQuery(
@@ -25,11 +25,13 @@ export function initPhysicsSystems() {
 
     onCreatedBody((ent) => {
       const bodyDesc = Body[ent]!;
-      const parent = world.createRigidBody(bodyDesc!);
+      const body = world.createRigidBody(bodyDesc!);
 
-      parent.setTranslation(toSimulation(positionOf(ent)), false);
+      body.setTranslation(toSimulation(positionOf(ent)), false);
 
-      RuntimeBody[ent] = parent;
+      body.userData = ent;
+
+      RuntimeBody[ent] = body;
 
       attach(RuntimeBody, ent);
     });
@@ -51,6 +53,8 @@ export function initPhysicsSystems() {
       const colliderDesc = collidersDesc[0]!;
 
       const collider = world.createCollider(colliderDesc, body);
+
+      collider.setActiveEvents(RAPIER.ActiveEvents.COLLISION_EVENTS);
 
       RuntimeCollider[ent] = collider;
 

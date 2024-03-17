@@ -1,5 +1,6 @@
 export * from "./components.js";
 export * from "./ctx.js";
+export * from "./ecs.js";
 export * from "./init.js";
 export * from "./render/index.js";
 export * from "./physics/index.js";
