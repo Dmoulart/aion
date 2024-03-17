@@ -58,8 +58,6 @@ export function draw(ctx: CanvasRenderingContext2D, ent: Entity) {
 
   preDraw(ctx, Transform[ent]!);
 
-  forEachChildOf(ent, (child) => draw(ctx, child));
-
   beginPath();
 
   if (has(Rect, ent)) {
@@ -85,6 +83,8 @@ export function draw(ctx: CanvasRenderingContext2D, ent: Entity) {
   if (has(Fill, ent)) {
     fill(Fill[ent]!);
   }
+
+  forEachChildOf(ent, (child) => draw(ctx, child));
 
   postDraw(ctx);
 }

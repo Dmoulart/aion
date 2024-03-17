@@ -41,25 +41,44 @@ const engine = defineEngine(() => {
   });
 
   once("update", () => {
-    const child = $ecs.create();
-    console.log("child", child);
-
     addChildTo(
       cube,
       createRect({
-        Transform: createTransform(100, 100),
+        Transform: createTransform(-20, -15),
         Rect: {
           h: 10,
           w: 10,
         },
-        Fill: "pink",
+        Fill: "black",
         Stroke: "white",
       }),
     );
 
-    forEachChildOf(cube, (e) => {
-      console.log("hello child", e);
-    });
+    addChildTo(
+      cube,
+      createRect({
+        Transform: createTransform(20, -15),
+        Rect: {
+          h: 10,
+          w: 10,
+        },
+        Fill: "black",
+        Stroke: "white",
+      }),
+    );
+
+    addChildTo(
+      cube,
+      createRect({
+        Transform: createTransform(0, 25),
+        Rect: {
+          h: 10,
+          w: 40,
+        },
+        Fill: "black",
+        Stroke: "white",
+      }),
+    );
   });
 
   once("update", () => {

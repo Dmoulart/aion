@@ -28,9 +28,11 @@ export function addChildTo(parent: Entity, child: Entity) {
   assert(!hasComponent(world, Parent, child), "Child already has a parent");
 
   attach(Parent, child);
+
   Parent[child] = parent;
 
   attach(Children, parent);
+
   const childIndex = Children.length[parent]++;
   Children.list[parent]![childIndex] = child;
 }

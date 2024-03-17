@@ -52,7 +52,7 @@ export function aionPreset(options?: AionPresetOptions) {
   const $camera = createCamera({
     Camera: {
       default: 1,
-      zoom: 0.5,
+      zoom: 1,
     },
     Transform: createTransform(0, 0),
   });
