@@ -13,14 +13,9 @@ import {
   addChildTo,
   Collision,
   Fill,
+  createCollider,
 } from "aion-preset";
-import {
-  Colors,
-  clear,
-  windowCenterX,
-  windowCenterY,
-  windowWidth,
-} from "aion-render";
+import { Colors, windowCenterX, windowCenterY, windowWidth } from "aion-render";
 
 const engine = defineEngine(() => {
   const preset = aionPreset({
@@ -107,9 +102,9 @@ const engine = defineEngine(() => {
       },
       Fill: Colors["acapulco:400"],
       Stroke: "white",
-      Collider: {
+      Collider: createCollider({
         auto: 1,
-      },
+      }),
       Body: RAPIER.RigidBodyDesc.fixed(),
     });
 
@@ -118,8 +113,6 @@ const engine = defineEngine(() => {
 
   defineLoop(() => {
     emit("update");
-
-    clear();
 
     emit("draw");
   });
@@ -140,7 +133,6 @@ const engine = defineEngine(() => {
     const { x, y } = screenToWorldPosition(getMouse());
 
     setPosition(cube, { x, y });
-
     if (click()) {
       const ball = Math.random() > 0.5;
       if (ball) {
@@ -152,9 +144,9 @@ const engine = defineEngine(() => {
           Fill: Colors["shamrock:950"],
           Stroke: "white",
           Body: RAPIER.RigidBodyDesc.dynamic(),
-          Collider: {
+          Collider: createCollider({
             auto: 1,
-          },
+          }),
         });
       } else {
         createCube({
@@ -166,9 +158,9 @@ const engine = defineEngine(() => {
           Fill: Colors["cornflower:600"],
           Stroke: "white",
           Body: RAPIER.RigidBodyDesc.dynamic(),
-          Collider: {
+          Collider: createCollider({
             auto: 1,
-          },
+          }),
         });
       }
     }

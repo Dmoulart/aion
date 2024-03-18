@@ -7,6 +7,7 @@ import {
   stroke,
   fill,
   getContext2D,
+  clear,
 } from "aion-render";
 import { useECS } from "../ecs.js";
 import { Rect, Stroke, Fill, Circle, Transform } from "../components.js";
@@ -20,6 +21,8 @@ export function render(camera: Entity) {
   const ctx = getContext2D();
 
   const projectionMatrix = getProjectionMatrix(camera);
+
+  clear();
 
   preDraw(ctx, projectionMatrix);
 

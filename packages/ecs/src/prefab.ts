@@ -34,8 +34,8 @@ export type PrefabDefinition = ComponentsGroup;
  * The prefab instance options is describing the possible parameters for the given prefab definition.
  */
 export type PrefabInstanceOptions<Options extends PrefabDefinition> = {
-  [ComponentName in keyof Options]?: Instance<
-    InferSchema<Options[ComponentName]>
+  [ComponentName in keyof Options]?: Partial<
+    Instance<InferSchema<Options[ComponentName]>>
   >;
 };
 

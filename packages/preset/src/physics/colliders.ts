@@ -1,0 +1,41 @@
+import type { PrefabInstanceOptions } from "aion-ecs";
+import { Collider } from "./components.js";
+import RAPIER from "@dimforge/rapier2d-compat";
+
+// @todo: these seems to be the defaults of RAPIER but it does not work.
+// Collider init is not ideal
+const DEFAULT_COLLIDER_OPTIONS: PrefabInstanceOptions<{
+  Collider: typeof Collider;
+}>["Collider"] = {
+  enabled: Number(true),
+  massPropsMode: RAPIER.MassPropsMode.Density,
+  density: 1.0,
+  friction: 0.5,
+  restitution: 0.0,
+  rotation: RAPIER.RotationOps.identity(),
+  isSensor: Number(false),
+  collisionGroups: 0xffff_ffff,
+  solverGroups: 0xffff_ffff,
+  frictionCombineRule: RAPIER.CoefficientCombineRule.Average,
+  restitutionCombineRule: RAPIER.CoefficientCombineRule.Average,
+  activeCollisionTypes: RAPIER.ActiveCollisionTypes.DEFAULT,
+  activeEvents: RAPIER.ActiveEvents.NONE,
+  activeHooks: RAPIER.ActiveHooks.NONE,
+  mass: 1.0,
+  centerOfMassX: 0.0,
+  centerOfMassY: 0.0,
+  contactForceEventThreshold: 0.0,
+  principalAngularInertiaX: 0.0,
+  principalAngularInertiaY: 0.0,
+  angularInertiaLocalFrame: RAPIER.RotationOps.identity(),
+  // #endif
+};
+
+export function createCollider(
+  options: PrefabInstanceOptions<{ Collider: typeof Collider }>["Collider"],
+) {
+  return {
+    ...DEFAULT_COLLIDER_OPTIONS,
+    ...options,
+  };
+}

@@ -44,13 +44,17 @@ export function initPhysicsSystems() {
       let body = RuntimeBody[ent];
 
       const auto = Collider.auto[ent];
+
+      console.log(Collider);
       if (!auto) {
         throw new Error("not implemented");
       }
 
-      const collidersDesc = createColliderDescFromShape(ent);
+      const collidersDesc = createColliderDesc(ent);
 
       const colliderDesc = collidersDesc[0]!;
+
+      setColliderOptions(colliderDesc, ent);
 
       const collider = world.createCollider(colliderDesc, body);
 
@@ -75,7 +79,7 @@ export function initPhysicsSystems() {
   });
 }
 
-function createColliderDescFromShape(ent: Entity): RAPIER.ColliderDesc[] {
+function createColliderDesc(ent: Entity): RAPIER.ColliderDesc[] {
   const { has } = useECS();
   const { RAPIER } = usePhysics();
 
@@ -101,6 +105,32 @@ function createColliderDescFromShape(ent: Entity): RAPIER.ColliderDesc[] {
 }
 
 export const SCALE_FACTOR = 50;
+
+function setColliderOptions(colliderDesc: RAPIER.ColliderDesc, entity: Entity) {
+  colliderDesc.setActiveEvents(Collider.activeEvents[entity]!);
+  colliderDesc.setActiveCollisionTypes(Collider.activeCollisionTypes[entity]!);
+  // colliderDesc.setCollisionGroups(Collider.collisionGroups[entity]!); !!!
+  //
+  colliderDesc.setActiveHooks(Collider.activeHooks[entity]!);
+  colliderDesc.setContactForceEventThreshold(
+    Collider.contactForceEventThreshold[entity]!,
+  );
+  colliderDesc.setDensity(Collider.density[entity]!);
+  colliderDesc.setFriction(Collider.friction[entity]!);
+  colliderDesc.setSensor(Boolean(Collider.isSensor[entity]!));
+  colliderDesc.setMass(Collider.mass[entity]!);
+  // colliderDesc.setMassProperties(
+  //   Collider.mass[entity]!,
+  //   {
+  //     x: Collider.centerOfMassX[entity]!,
+  //     y: Collider.centerOfMassY[entity]!,
+  //   },
+  //   Collider.principalAngularInertia[entity]!,
+  // );
+  colliderDesc.setRestitution(Collider.restitution[entity]!);
+  // colliderDesc.setSolverGroups(Collider.solverGroups[entity]!); !!!
+  colliderDesc.setFrictionCombineRule(Collider.frictionCombineRule[entity]!);
+}
 
 function fromSimulation(vec: Vector, factor = SCALE_FACTOR) {
   return new Vec(vec.x * factor, vec.y * factor);
