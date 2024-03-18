@@ -44,11 +44,11 @@ const engine = defineEngine(() => {
     const onCollisionEnd = onExitQuery(query(Collision));
 
     onCollisionStart((entity) => {
-      Fill[entity] = "blue";
+      Fill[entity] = Colors["rhino:700"];
     });
 
     onCollisionEnd((entity) => {
-      Fill[entity] = "red";
+      Fill[entity] = Colors["chestnut-rose:900"];
     });
   });
 
@@ -146,6 +146,7 @@ const engine = defineEngine(() => {
           Body: RAPIER.RigidBodyDesc.dynamic(),
           Collider: createCollider({
             auto: 1,
+            rotationsEnabled: 0,
           }),
         });
       } else {

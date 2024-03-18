@@ -4,6 +4,7 @@ import {
   Collider,
   RuntimeBody,
   RuntimeCollider,
+  setColliderOptions,
   usePhysics,
 } from "./index.js";
 import { Circle, Rect, Transform } from "../components.js";
@@ -58,8 +59,6 @@ export function initPhysicsSystems() {
 
       const collider = world.createCollider(colliderDesc, body);
 
-      collider.setActiveEvents(RAPIER.ActiveEvents.COLLISION_EVENTS);
-
       RuntimeCollider[ent] = collider;
 
       attach(RuntimeCollider, ent);
@@ -105,32 +104,6 @@ function createColliderDesc(ent: Entity): RAPIER.ColliderDesc[] {
 }
 
 export const SCALE_FACTOR = 50;
-
-function setColliderOptions(colliderDesc: RAPIER.ColliderDesc, entity: Entity) {
-  colliderDesc.setActiveEvents(Collider.activeEvents[entity]!);
-  colliderDesc.setActiveCollisionTypes(Collider.activeCollisionTypes[entity]!);
-  // colliderDesc.setCollisionGroups(Collider.collisionGroups[entity]!); !!!
-  //
-  colliderDesc.setActiveHooks(Collider.activeHooks[entity]!);
-  colliderDesc.setContactForceEventThreshold(
-    Collider.contactForceEventThreshold[entity]!,
-  );
-  colliderDesc.setDensity(Collider.density[entity]!);
-  colliderDesc.setFriction(Collider.friction[entity]!);
-  colliderDesc.setSensor(Boolean(Collider.isSensor[entity]!));
-  colliderDesc.setMass(Collider.mass[entity]!);
-  // colliderDesc.setMassProperties(
-  //   Collider.mass[entity]!,
-  //   {
-  //     x: Collider.centerOfMassX[entity]!,
-  //     y: Collider.centerOfMassY[entity]!,
-  //   },
-  //   Collider.principalAngularInertia[entity]!,
-  // );
-  colliderDesc.setRestitution(Collider.restitution[entity]!);
-  // colliderDesc.setSolverGroups(Collider.solverGroups[entity]!); !!!
-  colliderDesc.setFrictionCombineRule(Collider.frictionCombineRule[entity]!);
-}
 
 function fromSimulation(vec: Vector, factor = SCALE_FACTOR) {
   return new Vec(vec.x * factor, vec.y * factor);

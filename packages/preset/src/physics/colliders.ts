@@ -1,4 +1,4 @@
-import type { PrefabInstanceOptions } from "aion-ecs";
+import type { Entity, PrefabInstanceOptions } from "aion-ecs";
 import { Collider } from "./components.js";
 import RAPIER from "@dimforge/rapier2d-compat";
 
@@ -19,7 +19,7 @@ const DEFAULT_COLLIDER_OPTIONS: PrefabInstanceOptions<{
   frictionCombineRule: RAPIER.CoefficientCombineRule.Average,
   restitutionCombineRule: RAPIER.CoefficientCombineRule.Average,
   activeCollisionTypes: RAPIER.ActiveCollisionTypes.DEFAULT,
-  activeEvents: RAPIER.ActiveEvents.NONE,
+  activeEvents: RAPIER.ActiveEvents.COLLISION_EVENTS,
   activeHooks: RAPIER.ActiveHooks.NONE,
   mass: 1.0,
   centerOfMassX: 0.0,
@@ -38,4 +38,34 @@ export function createCollider(
     ...DEFAULT_COLLIDER_OPTIONS,
     ...options,
   };
+}
+
+export function setColliderOptions(
+  colliderDesc: RAPIER.ColliderDesc,
+  entity: Entity,
+) {
+  colliderDesc.setActiveEvents(Collider.activeEvents[entity]!);
+  colliderDesc.setActiveCollisionTypes(Collider.activeCollisionTypes[entity]!);
+  // colliderDesc.setCollisionGroups(Collider.collisionGroups[entity]!); !!!
+  //
+  colliderDesc.setActiveHooks(Collider.activeHooks[entity]!);
+  colliderDesc.setContactForceEventThreshold(
+    Collider.contactForceEventThreshold[entity]!,
+  );
+  colliderDesc.setDensity(Collider.density[entity]!);
+  colliderDesc.setFriction(Collider.friction[entity]!);
+  colliderDesc.setSensor(Boolean(Collider.isSensor[entity]!));
+  colliderDesc.setMass(Collider.mass[entity]!);
+  // colliderDesc.setMassProperties(
+  //   Collider.mass[entity]!,
+  //   {
+  //     x: Collider.centerOfMassX[entity]!,
+  //     y: Collider.centerOfMassY[entity]!,
+  //   },
+  //   Collider.principalAngularInertia[entity]!,
+  // );
+  colliderDesc.setRestitution(Collider.restitution[entity]!);
+  // colliderDesc.setSolverGroups(Collider.solverGroups[entity]!); !!!
+  colliderDesc.setFrictionCombineRule(Collider.frictionCombineRule[entity]!);
+  colliderDesc.rotationsEnabled = Boolean(Collider.rotationsEnabled[entity]!);
 }
