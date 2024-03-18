@@ -9,7 +9,6 @@ import type { World } from "./world.js";
 import { type ID, NonExistantEntity } from "./entity.js";
 import {
   deriveArchetype,
-  type Archetype,
   onEnterArchetype,
   onExitArchetype,
 } from "./archetype.js";
@@ -271,10 +270,11 @@ export function hasComponent(
 export function getEntityComponents(world: World, entity: Entity): ID[] {
   const archetype = world.entitiesArchetypes[entity];
 
-  assertDefined(
-    archetype,
-    `Trying to get entity components from a non existant entity : ${entity}`,
-  );
+  if (!archetype) {
+    throw new NonExistantEntity(
+      `Trying to get entity components from a non existant entity : ${entity}`,
+    );
+  }
 
   return archetype.components as ID[];
 }

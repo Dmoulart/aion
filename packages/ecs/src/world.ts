@@ -1,7 +1,6 @@
 import {
   type Entity,
   createEntity,
-  lo,
   entityExists,
   removeEntity,
 } from "./entity.js";
@@ -29,6 +28,7 @@ import {
   type PrefabInstanceOptions,
   prefab,
 } from "./prefab.js";
+import { lo } from "./id.js";
 //@todo: remove capacity ?
 export const DEFAULT_WORLD_CAPACITY = 100_000;
 

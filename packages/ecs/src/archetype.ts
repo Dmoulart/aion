@@ -102,10 +102,6 @@ export const deriveArchetype = (
   base.edge[id] = archetype;
   archetype.edge[id] = base;
 
-  // const archComponents = ARCHETYPES_COMPONENTS[base.id]!.clone();
-  // archComponents.insert(id);
-  // ARCHETYPES_COMPONENTS[archetype.id] = archComponents;
-
   world.archetypes.push(archetype);
   // @todo is queries.values fast ?
   for (const query of world.queries.values()) {

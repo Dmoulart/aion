@@ -12,7 +12,6 @@ import {
   centerCameraOnEntity,
   addChildTo,
   Collision,
-  Stroke,
   Fill,
 } from "aion-preset";
 import {
@@ -46,10 +45,10 @@ const engine = defineEngine(() => {
   });
 
   once("update", () => {
-    const onCollision = onEnterQuery(query(Collision));
+    const onCollisionStart = onEnterQuery(query(Collision));
     const onCollisionEnd = onExitQuery(query(Collision));
 
-    onCollision((entity) => {
+    onCollisionStart((entity) => {
       Fill[entity] = "blue";
     });
 

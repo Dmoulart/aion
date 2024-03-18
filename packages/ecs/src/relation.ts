@@ -3,8 +3,8 @@ import {
   defineComponent,
   type ComponentID,
 } from "./component.js";
-import { lo, type Entity, pair, type ID } from "./entity.js";
-import { nextID } from "./id.js";
+import { type Entity, type ID } from "./entity.js";
+import { nextID, pair } from "./id.js";
 import type { Schema } from "./schemas.js";
 import { DEFAULT_WORLD_CAPACITY } from "./world.js";
 
