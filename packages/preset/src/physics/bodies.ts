@@ -1,12 +1,12 @@
 import type { Entity, PrefabInstanceOptions } from "aion-ecs";
-import { Collider } from "./components.js";
+import { Body } from "./components.js";
 import RAPIER from "@dimforge/rapier2d-compat";
 
 // @todo: these seems to be the defaults of RAPIER but it does not work.
 // Collider init is not ideal
-const DEFAULT_COLLIDER_OPTIONS: PrefabInstanceOptions<{
-  Collider: typeof Collider;
-}>["Collider"] = {
+const DEFAULT_BODIES_OPTIONS: PrefabInstanceOptions<{
+  Body: typeof Body;
+}>["Body"] = {
   enabled: Number(true),
   massPropsMode: RAPIER.MassPropsMode.Density,
   density: 1.0,

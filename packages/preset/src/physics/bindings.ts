@@ -46,7 +46,6 @@ export function initPhysicsSystems() {
 
       const auto = Collider.auto[ent];
 
-      console.log(Collider);
       if (!auto) {
         throw new Error("not implemented");
       }
