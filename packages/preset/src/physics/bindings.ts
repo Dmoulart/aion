@@ -25,7 +25,10 @@ export function initPhysicsSystems() {
     );
 
     onCreatedBody((ent) => {
-      const bodyDesc = Body[ent]!;
+      const bodyDesc = new RigidBodyDesc(Body.type[ent]);
+
+      setBodyOptions(bodyDesc, ent);
+
       const body = world.createRigidBody(bodyDesc!);
 
       body.setTranslation(toSimulation(positionOf(ent)), false);
