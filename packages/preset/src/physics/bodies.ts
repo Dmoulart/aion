@@ -1,70 +1,62 @@
 import type { Entity, PrefabInstanceOptions } from "aion-ecs";
 import { Body } from "./components.js";
-import RAPIER from "@dimforge/rapier2d-compat";
-
-// @todo: these seems to be the defaults of RAPIER but it does not work.
-// Collider init is not ideal
+import type RAPIER from "@dimforge/rapier2d-compat";
+// @todo type crap
 const DEFAULT_BODIES_OPTIONS: PrefabInstanceOptions<{
   Body: typeof Body;
 }>["Body"] = {
   enabled: Number(true),
-  massPropsMode: RAPIER.MassPropsMode.Density,
-  density: 1.0,
-  friction: 0.5,
-  restitution: 0.0,
-  rotation: RAPIER.RotationOps.identity(),
-  isSensor: Number(false),
-  collisionGroups: 0xffff_ffff,
-  solverGroups: 0xffff_ffff,
-  frictionCombineRule: RAPIER.CoefficientCombineRule.Average,
-  restitutionCombineRule: RAPIER.CoefficientCombineRule.Average,
-  activeCollisionTypes: RAPIER.ActiveCollisionTypes.DEFAULT,
-  activeEvents: RAPIER.ActiveEvents.COLLISION_EVENTS,
-  activeHooks: RAPIER.ActiveHooks.NONE,
-  mass: 1.0,
-  centerOfMassX: 0.0,
-  centerOfMassY: 0.0,
-  contactForceEventThreshold: 0.0,
-  principalAngularInertiaX: 0.0,
-  principalAngularInertiaY: 0.0,
-  angularInertiaLocalFrame: RAPIER.RotationOps.identity(),
+  type: 0, // dynamic
+  translationX: 0,
+  translationY: 0,
+  rotation: 0,
+  gravityScale: 1.0,
+  linvelX: 0,
+  linvelY: 0,
+  mass: 0.0,
+  massOnly: Number(false),
+  centerOfMassX: 0,
+  centerOfMassY: 0,
+  translationsEnabledX: Number(true),
+  translationsEnabledY: Number(true),
+  angvel: 0.0,
+  principalAngularInertia: 0.0,
+  rotationsEnabled: Number(true),
+  linearDamping: 0.0,
+  angularDamping: 0.0,
+  canSleep: Number(true),
+  sleeping: Number(false),
+  ccdEnabled: Number(false),
+  dominanceGroup: 0,
+  additionalSolverIterations: 0,
 };
 
-export function createCollider(
-  options: PrefabInstanceOptions<{ Collider: typeof Collider }>["Collider"],
+export function createBody(
+  options: PrefabInstanceOptions<{ Body: typeof Body }>["Body"],
 ) {
   return {
-    ...DEFAULT_COLLIDER_OPTIONS,
+    ...DEFAULT_BODIES_OPTIONS,
     ...options,
   };
 }
 
-export function setColliderOptions(
-  colliderDesc: RAPIER.ColliderDesc,
-  entity: Entity,
-) {
-  colliderDesc.setActiveEvents(Collider.activeEvents[entity]!);
-  colliderDesc.setActiveCollisionTypes(Collider.activeCollisionTypes[entity]!);
-  // colliderDesc.setCollisionGroups(Collider.collisionGroups[entity]!); !!!
-  //
-  colliderDesc.setActiveHooks(Collider.activeHooks[entity]!);
-  colliderDesc.setContactForceEventThreshold(
-    Collider.contactForceEventThreshold[entity]!,
+export function setBodyOptions(bodyDesc: RAPIER.RigidBodyDesc, entity: Entity) {
+  bodyDesc.setEnabled(Boolean(Body.enabled[entity])!);
+  bodyDesc.setLinvel(Body.linvelX[entity]!, Body.linvelY[entity]!);
+  bodyDesc.setAngvel(Body.angvel[entity]!);
+  bodyDesc.setAdditionalSolverIterations(
+    Body.additionalSolverIterations[entity]!,
   );
-  colliderDesc.setDensity(Collider.density[entity]!);
-  colliderDesc.setFriction(Collider.friction[entity]!);
-  colliderDesc.setSensor(Boolean(Collider.isSensor[entity]!));
-  colliderDesc.setMass(Collider.mass[entity]!);
-  // colliderDesc.setMassProperties(
-  //   Collider.mass[entity]!,
-  //   {
-  //     x: Collider.centerOfMassX[entity]!,
-  //     y: Collider.centerOfMassY[entity]!,
-  //   },
-  //   Collider.principalAngularInertia[entity]!,
-  // );
-  colliderDesc.setRestitution(Collider.restitution[entity]!);
-  // colliderDesc.setSolverGroups(Collider.solverGroups[entity]!); !!!
-  colliderDesc.setFrictionCombineRule(Collider.frictionCombineRule[entity]!);
-  colliderDesc.rotationsEnabled = Boolean(Collider.rotationsEnabled[entity]!);
+  bodyDesc.setCanSleep(Boolean(Body.canSleep[entity]!));
+  bodyDesc.setRotation(Body.rotation[entity]!);
+  bodyDesc.setSleeping(Boolean(Body.sleeping[entity]!));
+  bodyDesc.setCcdEnabled(Boolean(Body.ccdEnabled[entity]!));
+  bodyDesc.setTranslation(
+    Body.translationX[entity]!,
+    Body.translationY[entity]!,
+  );
+  bodyDesc.setGravityScale(Body.gravityScale[entity]!);
+  bodyDesc.setLinearDamping(Body.linearDamping[entity]!);
+  // bodyDesc.setAdditionalMass(Body.linearDamping[entity]!); ??
+  bodyDesc.setDominanceGroup(Body.dominanceGroup[entity]!);
 }
