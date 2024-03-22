@@ -15,12 +15,14 @@ import {
   screenToWorldPosition,
   setPosition,
   useAion,
+  createBody,
 } from "aion-preset";
 import { Colors } from "aion-render";
-
-const Resistance = defineComponent(u16);
+import { getFloorBounds } from "../castle-defense";
 
 export function createScenes() {
+  const Resistance = defineComponent(u16);
+
   const { $ecs } = useAion();
 
   const Wall = $ecs.prefab({
@@ -34,6 +36,15 @@ export function createScenes() {
   });
 
   const Treasure = $ecs.prefab({
+    Transform,
+    Rect,
+    Fill,
+    Stroke,
+    Collider,
+    Body,
+  });
+
+  const Enemy = $ecs.prefab({
     Transform,
     Rect,
     Fill,
@@ -134,5 +145,31 @@ export function createScenes() {
     });
 
     return cleanup;
+  });
+
+  defineScene("invasion", () => {
+    const ENEMY_NUMBER = 10;
+    // debugger;
+    // const { left, top } = getFloorBounds();
+
+    for (let i = 0; i < ENEMY_NUMBER; i++) {
+      Enemy({
+        Transform: createTransform(left + i * 10, top),
+        Rect: {
+          h: 10,
+          w: 10,
+        },
+        Fill: "blue",
+        Stroke: "white",
+        Collider: createCollider({
+          auto: 1,
+        }),
+        Body: createBody({
+          type: 0,
+        }),
+      });
+    }
+
+    return () => {};
   });
 }

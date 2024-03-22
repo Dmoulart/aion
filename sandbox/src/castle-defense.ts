@@ -12,6 +12,8 @@ import {
   useAion,
   startScene,
   onSceneExit,
+  useECS,
+  getRectBounds,
 } from "aion-preset";
 import {
   Colors,
@@ -21,9 +23,12 @@ import {
   windowWidth,
 } from "aion-render";
 import { createScenes } from "./castle-defense/scenes";
+import { defineComponent } from "aion-ecs";
+
+export const Floor = defineComponent({});
 
 const engine = defineEngine(plugins, () => {
-  const { $physics, createCube, $camera } = useAion();
+  const { $physics, $ecs, createCube, $camera } = useAion();
 
   const { RAPIER } = $physics;
 
@@ -51,6 +56,8 @@ const engine = defineEngine(plugins, () => {
     }),
   });
 
+  $ecs.attach(Floor, floor);
+
   setZoom(0.7);
   centerCameraOnEntity(floor);
 
@@ -69,6 +76,7 @@ const engine = defineEngine(plugins, () => {
   createScenes();
 
   onSceneExit("build-castle", () => startScene("place-treasure"));
+  onSceneExit("place-treasure", () => startScene("invasion"));
 
   startScene("build-castle");
 });
@@ -81,4 +89,18 @@ function plugins() {
   return aionPreset({
     renderDebug: false,
   });
+}
+
+export let getFloor = () => {
+  const { query } = useECS();
+
+  const floor = query(Floor).archetypes[0].entities.dense[0];
+
+  getFloor = () => floor;
+
+  return floor;
+};
+
+export function getFloorBounds() {
+  return getRectBounds(getFloor());
 }
