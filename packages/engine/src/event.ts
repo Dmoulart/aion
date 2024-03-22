@@ -1,11 +1,11 @@
 type Events = Record<string, any>;
 
-type Hook<T extends Events> = keyof T;
+type Hook<T extends Events> = keyof T | (string & {}); // little hack to allow untyped string to be passed
 
 type HandlerParams<T extends Events, H extends Hook<T>> = T[H];
 
 type Handler<T extends Events, H extends Hook<T>> = (
-  params: HandlerParams<T, H>
+  params: HandlerParams<T, H>,
 ) => void;
 
 type Handlers<T extends Events> = {

@@ -1,3 +1,4 @@
+import { emit, on } from "aion-engine";
 import { useAion, type Scene } from "../index.js";
 
 const CURRENT_SCENE_ID = "__current-scene__";
@@ -13,11 +14,27 @@ export function defineScene(id: string, start: () => SceneCleanup) {
 export function exitCurrentScene() {
   const { $scenes } = useAion();
 
+  const currentScene = getCurrentScene();
+
+  if (!$scenes.has(CURRENT_SCENE_ID)) {
+    throw new SceneNotFound("No current scene to exit");
+  }
+
   $scenes.delete(CURRENT_SCENE_ID);
 
   const engine = useAion();
 
   engine.currentSceneCleanup();
+
+  emit("scene-exit", currentScene?.id);
+}
+
+export function onSceneExit(sceneID: string, cb: () => void) {
+  on("scene-exit", (id) => {
+    if (id === sceneID) {
+      cb();
+    }
+  });
 }
 
 export function getCurrentScene() {
@@ -49,7 +66,7 @@ export function addScene(scene: Scene) {
 
 export function removeScene(scene: Scene) {
   const { $scenes } = useAion();
-  $scenes.delete(scene.id);
+  return $scenes.delete(scene.id);
 }
 
 export function getScene(scene: Scene) {

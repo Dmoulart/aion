@@ -62,3 +62,5 @@ export const Body = defineComponent({
 export const RuntimeBody = defineComponent(() => new Array<RAPIER.RigidBody>());
 
 export const Collision = defineComponent({});
+
+export const Contact = defineComponent({});
