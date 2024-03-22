@@ -9,7 +9,7 @@ import {
 } from "./physics/index.js";
 import { Circle, Fill, Rect, Stroke, Transform } from "./components.js";
 import { on } from "aion-engine";
-import { Camera, createTransform, render } from "./index.js";
+import { Camera, createTransform, initScenes, render } from "./index.js";
 import { debugRender } from "./physics/debug.js";
 
 export type AionPresetOptions = InitPhysicsOptions;
@@ -17,6 +17,8 @@ export type AionPresetOptions = InitPhysicsOptions;
 export function aionPreset(options?: AionPresetOptions) {
   initWindow();
   initInputListener();
+
+  const { $scenes, currentSceneCleanup } = initScenes();
 
   const $physics = initPhysics(options);
 
@@ -67,6 +69,8 @@ export function aionPreset(options?: AionPresetOptions) {
     $ecs,
     $physics,
     $camera,
+    $scenes,
+    currentSceneCleanup,
     ...components,
     createRect,
     createCube,

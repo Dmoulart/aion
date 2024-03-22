@@ -389,6 +389,10 @@ export function windowHeight() {
   return instance.ctx.canvas.height;
 }
 
+export function setBackgroundColor(color: string) {
+  instance.canvas.style.backgroundColor = color;
+}
+
 export function beginDraw() {
   return closePath().clear().beginPath();
 }

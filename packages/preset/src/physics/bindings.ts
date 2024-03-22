@@ -11,71 +11,67 @@ import { Circle, Rect, Transform } from "../components.js";
 import { useECS } from "../ecs.js";
 import { Vec, type Vector } from "aion-core";
 import type RAPIER from "@dimforge/rapier2d";
-import { once, on, beforeStart } from "aion-engine";
+import { on } from "aion-engine";
 import { positionOf, setPosition, setRotation } from "../basics/transform.js";
 import { setBodyOptions } from "./bodies.js";
 
 export function initPhysicsSystems() {
-  beforeStart(() => {
-    const { world, RAPIER } = usePhysics();
-    const { query, attach } = useECS();
+  const { world, RAPIER } = usePhysics();
+  const { query, attach } = useECS();
 
-    const onCreatedBody = onEnterQuery(
-      query(Transform, Body, not(RuntimeBody)),
-    );
+  const onCreatedBody = onEnterQuery(query(Transform, Body, not(RuntimeBody)));
 
-    onCreatedBody((ent) => {
-      const bodyDesc = new RAPIER.RigidBodyDesc(Body.type[ent]!);
+  onCreatedBody((ent) => {
+    const bodyDesc = new RAPIER.RigidBodyDesc(Body.type[ent]!);
 
-      setBodyOptions(bodyDesc, ent);
+    setBodyOptions(bodyDesc, ent);
 
-      const body = world.createRigidBody(bodyDesc!);
+    const body = world.createRigidBody(bodyDesc!);
 
-      body.setTranslation(toSimulation(positionOf(ent)), false);
+    body.setTranslation(toSimulation(positionOf(ent)), false);
 
-      body.userData = ent;
+    body.userData = ent;
 
-      RuntimeBody[ent] = body;
+    RuntimeBody[ent] = body;
 
-      attach(RuntimeBody, ent);
-    });
+    attach(RuntimeBody, ent);
+  });
 
-    const onCreatedCollider = onEnterQuery(
-      query(Transform, Collider, RuntimeBody, not(RuntimeCollider)),
-    );
+  const onCreatedCollider = onEnterQuery(
+    query(Transform, Collider, RuntimeBody, not(RuntimeCollider)),
+  );
 
-    onCreatedCollider((ent) => {
-      let body = RuntimeBody[ent];
+  onCreatedCollider((ent) => {
+    let body = RuntimeBody[ent];
 
-      const auto = Collider.auto[ent];
+    const auto = Collider.auto[ent];
 
-      if (!auto) {
-        throw new Error("not implemented");
-      }
+    if (!auto) {
+      throw new Error("not implemented");
+    }
 
-      const collidersDesc = createColliderDesc(ent);
+    const collidersDesc = createColliderDesc(ent);
 
-      const colliderDesc = collidersDesc[0]!;
+    const colliderDesc = collidersDesc[0]!;
 
-      setColliderOptions(colliderDesc, ent);
+    setColliderOptions(colliderDesc, ent);
 
-      const collider = world.createCollider(colliderDesc, body);
+    const collider = world.createCollider(colliderDesc, body);
 
-      RuntimeCollider[ent] = collider;
+    RuntimeCollider[ent] = collider;
 
-      attach(RuntimeCollider, ent);
-    });
+    attach(RuntimeCollider, ent);
+  });
 
-    on("update", () => {
-      const { query } = useECS();
+  on("update", () => {
+    const { query } = useECS();
 
-      query(RuntimeBody, Transform).each((ent) => {
-        const body = RuntimeBody[ent]!;
+    query(RuntimeBody, Transform).each((ent) => {
+      const body = RuntimeBody[ent]!;
 
-        setPosition(ent, fromSimulation(body.translation()));
+      setPosition(ent, fromSimulation(body.translation()));
 
-        setRotation(ent, body.rotation());
-      });
+      setRotation(ent, body.rotation());
     });
   });
 }

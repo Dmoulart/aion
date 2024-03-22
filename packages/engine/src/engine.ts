@@ -24,7 +24,7 @@ export type Engine<T = BaseEngine> = BaseEngine & T & { use: () => Engine<T> };
 
 export function defineEngine<T>(
   init: (engine: BaseEngine) => T,
-  setup: (engine: T) => void,
+  setup: () => void,
   options?: DefineEngineOptions,
 ): Engine<T> {
   const config = { ...DEFAULT_OPTIONS, ...(options ?? {}) };
@@ -35,10 +35,6 @@ export function defineEngine<T>(
     events: createEventEmitter<BaseEvents>(),
     loop: () => baseEngine.events.emit("update"),
     run: () => {
-      ctx.call(engine, () =>
-        beforeStartCallbacks.forEach((cb) => cb(baseEngine)),
-      );
-
       (function loop() {
         step();
 
@@ -56,7 +52,9 @@ export function defineEngine<T>(
     use: ctx.use as () => Engine<T>,
   });
 
-  ctx.call(engine, () => setup(engine));
+  ctx.call(engine, () => beforeStartCallbacks.forEach((cb) => cb(baseEngine)));
+
+  ctx.call(engine, setup);
 
   function step() {
     ctx.call(engine, engine.loop);

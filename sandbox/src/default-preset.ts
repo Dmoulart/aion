@@ -15,18 +15,29 @@ import {
   Fill,
   createCollider,
   createBody,
+  useAion,
 } from "aion-preset";
-import { Colors, windowCenterX, windowCenterY, windowWidth } from "aion-render";
+import {
+  Colors,
+  setBackgroundColor,
+  windowCenterX,
+  windowCenterY,
+  windowWidth,
+} from "aion-render";
 
 const engine = defineEngine(
   () =>
     aionPreset({
       renderDebug: true,
     }),
-  ({ createRect, createCube, createBall, $physics, $camera, $ecs }) => {
+  () => {
+    const { $ecs, $physics, createBall, createCube, createRect, $camera } =
+      useAion();
     const { query } = $ecs;
 
     const { RAPIER } = $physics;
+
+    setBackgroundColor("black");
 
     const cube = createRect({
       Transform: createTransform(0, 0),

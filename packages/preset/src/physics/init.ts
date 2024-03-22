@@ -1,7 +1,7 @@
 import RAPIER from "@dimforge/rapier2d-compat";
 import { useAion } from "../ctx.js";
 import { initPhysicsSystems } from "./bindings.js";
-import { on, once } from "aion-engine";
+import { beforeStart, on, once } from "aion-engine";
 import { useECS } from "../ecs.js";
 import { Collision } from "./components.js";
 import { onEnterQuery, query, onExitQuery } from "aion-ecs";
@@ -16,7 +16,7 @@ export type InitPhysicsOptions = {
 const DEFAULT_GRAVITY = { x: 0.0, y: 9.81 };
 
 export function initPhysics(options?: InitPhysicsOptions) {
-  initPhysicsSystems();
+  beforeStart(initPhysicsSystems);
 
   const gravity = options?.gravity ?? DEFAULT_GRAVITY;
   // Use the RAPIER module here.

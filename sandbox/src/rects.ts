@@ -3,7 +3,7 @@ import { createECS, f32, defineComponent, i32, u16, u8 } from "aion-ecs";
 
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d")!;
-document.getElementById("playground")!.appendChild(canvas);
+document.body!.appendChild(canvas);
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
