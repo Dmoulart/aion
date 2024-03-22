@@ -14,6 +14,7 @@ import {
   Collision,
   Fill,
   createCollider,
+  createBody,
 } from "aion-preset";
 import { Colors, windowCenterX, windowCenterY, windowWidth } from "aion-render";
 
@@ -40,6 +41,8 @@ const engine = defineEngine(() => {
   });
 
   once("update", () => {
+    const b = RAPIER.RigidBodyDesc.fixed();
+    console.log({ b });
     const onCollisionStart = onEnterQuery(query(Collision));
     const onCollisionEnd = onExitQuery(query(Collision));
 
@@ -105,7 +108,9 @@ const engine = defineEngine(() => {
       Collider: createCollider({
         auto: 1,
       }),
-      Body: RAPIER.RigidBodyDesc.fixed(),
+      Body: createBody({
+        type: RAPIER.RigidBodyType.Fixed,
+      }),
     });
 
     centerCameraOnEntity(floor);
@@ -133,6 +138,7 @@ const engine = defineEngine(() => {
     const { x, y } = screenToWorldPosition(getMouse());
 
     setPosition(cube, { x, y });
+
     if (click()) {
       const ball = Math.random() > 0.5;
       if (ball) {
@@ -143,7 +149,9 @@ const engine = defineEngine(() => {
           },
           Fill: Colors["shamrock:950"],
           Stroke: "white",
-          Body: RAPIER.RigidBodyDesc.dynamic(),
+          Body: createBody({
+            type: 0,
+          }),
           Collider: createCollider({
             auto: 1,
             rotationsEnabled: 0,
@@ -158,7 +166,9 @@ const engine = defineEngine(() => {
           },
           Fill: Colors["cornflower:600"],
           Stroke: "white",
-          Body: RAPIER.RigidBodyDesc.dynamic(),
+          Body: createBody({
+            type: 0,
+          }),
           Collider: createCollider({
             auto: 1,
           }),

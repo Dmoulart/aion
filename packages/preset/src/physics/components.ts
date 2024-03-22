@@ -32,7 +32,32 @@ export const RuntimeCollider = defineComponent(
   () => new Array<RAPIER.Collider>(),
 );
 
-export const Body = defineComponent(() => new Array<RAPIER.RigidBodyDesc>());
+export const Body = defineComponent({
+  enabled: bool,
+  type: u8,
+  translationX: f32,
+  translationY: f32,
+  rotation: f32,
+  gravityScale: f32,
+  mass: f32,
+  massOnly: bool,
+  centerOfMassX: f32,
+  centerOfMassY: f32,
+  translationsEnabledX: bool,
+  translationsEnabledY: bool,
+  linvelX: f32,
+  linvelY: f32,
+  angvel: f32,
+  principalAngularInertia: f32,
+  rotationsEnabled: bool,
+  linearDamping: f32,
+  angularDamping: f32,
+  canSleep: bool,
+  sleeping: bool,
+  ccdEnabled: bool,
+  dominanceGroup: f32,
+  additionalSolverIterations: f32,
+});
 
 export const RuntimeBody = defineComponent(() => new Array<RAPIER.RigidBody>());
 

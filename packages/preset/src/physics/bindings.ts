@@ -13,6 +13,8 @@ import { Vec, type Vector } from "aion-core";
 import type RAPIER from "@dimforge/rapier2d";
 import { once, on } from "aion-engine";
 import { positionOf, setPosition, setRotation } from "../basics/transform.js";
+// import { RigidBodyDesc } from "@dimforge/rapier2d";
+import { setBodyOptions } from "./bodies.js";
 
 export function initPhysicsSystems() {
   //@todo use init callback
@@ -25,9 +27,9 @@ export function initPhysicsSystems() {
     );
 
     onCreatedBody((ent) => {
-      const bodyDesc = new RigidBodyDesc(Body.type[ent]);
-
+      const bodyDesc = new RAPIER.RigidBodyDesc(Body.type[ent]!);
       setBodyOptions(bodyDesc, ent);
+      console.log({ bodyDesc });
 
       const body = world.createRigidBody(bodyDesc!);
 

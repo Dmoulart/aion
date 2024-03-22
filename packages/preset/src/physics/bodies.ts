@@ -1,12 +1,12 @@
 import type { Entity, PrefabInstanceOptions } from "aion-ecs";
 import { Body } from "./components.js";
-import type RAPIER from "@dimforge/rapier2d-compat";
+import RAPIER from "@dimforge/rapier2d-compat";
 // @todo type crap
 const DEFAULT_BODIES_OPTIONS: PrefabInstanceOptions<{
   Body: typeof Body;
 }>["Body"] = {
   enabled: Number(true),
-  type: 0, // dynamic
+  type: RAPIER.RigidBodyType.Dynamic, // dynamic
   translationX: 0,
   translationY: 0,
   rotation: 0,
@@ -42,6 +42,7 @@ export function createBody(
 
 export function setBodyOptions(bodyDesc: RAPIER.RigidBodyDesc, entity: Entity) {
   bodyDesc.setEnabled(Boolean(Body.enabled[entity])!);
+
   bodyDesc.setLinvel(Body.linvelX[entity]!, Body.linvelY[entity]!);
   bodyDesc.setAngvel(Body.angvel[entity]!);
   bodyDesc.setAdditionalSolverIterations(
@@ -54,6 +55,10 @@ export function setBodyOptions(bodyDesc: RAPIER.RigidBodyDesc, entity: Entity) {
   bodyDesc.setTranslation(
     Body.translationX[entity]!,
     Body.translationY[entity]!,
+  );
+  bodyDesc.enabledTranslations(
+    Boolean(Body.translationsEnabledX[entity]!),
+    Boolean(Body.translationsEnabledY[entity]!),
   );
   bodyDesc.setGravityScale(Body.gravityScale[entity]!);
   bodyDesc.setLinearDamping(Body.linearDamping[entity]!);
