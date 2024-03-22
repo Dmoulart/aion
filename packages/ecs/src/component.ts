@@ -24,7 +24,6 @@ import {
   isPrimitiveType,
   isSingleTypeSchema,
 } from "./schemas.js";
-import { assertDefined } from "aion-core";
 
 export type ComponentID<S extends Schema = Schema> = ID & { __brand: S };
 
@@ -102,7 +101,7 @@ function createColumn(
     const [TypedArray, arraySize] = type;
 
     return new Array(size).fill(undefined).map(() => {
-      //@todo shared array buffer
+      //@todo shared array buffer ?
       return new TypedArray(arraySize);
     });
   }

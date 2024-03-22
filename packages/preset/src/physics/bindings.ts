@@ -11,14 +11,12 @@ import { Circle, Rect, Transform } from "../components.js";
 import { useECS } from "../ecs.js";
 import { Vec, type Vector } from "aion-core";
 import type RAPIER from "@dimforge/rapier2d";
-import { once, on } from "aion-engine";
+import { once, on, beforeStart } from "aion-engine";
 import { positionOf, setPosition, setRotation } from "../basics/transform.js";
-// import { RigidBodyDesc } from "@dimforge/rapier2d";
 import { setBodyOptions } from "./bodies.js";
 
 export function initPhysicsSystems() {
-  //@todo use init callback
-  once("update", () => {
+  beforeStart(() => {
     const { world, RAPIER } = usePhysics();
     const { query, attach } = useECS();
 
@@ -28,8 +26,8 @@ export function initPhysicsSystems() {
 
     onCreatedBody((ent) => {
       const bodyDesc = new RAPIER.RigidBodyDesc(Body.type[ent]!);
+
       setBodyOptions(bodyDesc, ent);
-      console.log({ bodyDesc });
 
       const body = world.createRigidBody(bodyDesc!);
 
@@ -67,17 +65,17 @@ export function initPhysicsSystems() {
 
       attach(RuntimeCollider, ent);
     });
-  });
 
-  on("update", () => {
-    const { query } = useECS();
+    on("update", () => {
+      const { query } = useECS();
 
-    query(RuntimeBody, Transform).each((ent) => {
-      const body = RuntimeBody[ent]!;
+      query(RuntimeBody, Transform).each((ent) => {
+        const body = RuntimeBody[ent]!;
 
-      setPosition(ent, fromSimulation(body.translation()));
+        setPosition(ent, fromSimulation(body.translation()));
 
-      setRotation(ent, body.rotation());
+        setRotation(ent, body.rotation());
+      });
     });
   });
 }
