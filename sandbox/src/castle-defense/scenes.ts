@@ -1,4 +1,5 @@
-import { defineComponent, u16 } from "aion-ecs";
+import { vec } from "aion-core";
+import { Entity, defineComponent, u16 } from "aion-ecs";
 import { on } from "aion-engine";
 import { getMouse, click } from "aion-input";
 import {
@@ -21,6 +22,9 @@ import {
   CharacterController,
   useECS,
   RuntimeCollider,
+  translate,
+  RuntimeBody,
+  getWorldPosition,
 } from "aion-preset";
 import { Colors } from "aion-render";
 // import { getFloorBounds } from "../castle-defense";
@@ -109,7 +113,7 @@ export function createScenes() {
       }
     });
   });
-
+  let treasure: Entity;
   defineScene("place-treasure", () => {
     const player = Treasure({
       Transform: createTransform(0, 0),
@@ -133,7 +137,7 @@ export function createScenes() {
       setPosition(player, { x, y });
 
       if (click()) {
-        Treasure({
+        treasure = Treasure({
           Transform: createTransform(x, y),
           Rect: {
             h: Rect.h[player],
@@ -158,12 +162,12 @@ export function createScenes() {
   });
 
   defineScene("invasion", () => {
-    const ENEMY_NUMBER = 10;
+    const ENEMY_NUMBER = 1;
     // const { left, top } = getFloorBounds();
 
     for (let i = 0; i < ENEMY_NUMBER; i++) {
       Enemy({
-        Transform: createTransform(i * 10, 0),
+        Transform: createTransform(i * 10, 100),
         Rect: {
           h: 50,
           w: 10,
@@ -185,13 +189,22 @@ export function createScenes() {
     return on("update", () => {
       const { query } = useECS();
 
-      query(RuntimeCollider, RuntimeCharacterController).each((entity) => {
-        const controller = RuntimeCharacterController[entity]!;
-        controller.computeColliderMovement(RuntimeCollider[entity]!, {
-          x: 1,
-          y: 0,
-        });
-      });
+      query(RuntimeCollider, RuntimeBody, RuntimeCharacterController).each(
+        (entity) => {
+          const controller = RuntimeCharacterController[entity]!;
+
+          controller.computeColliderMovement(RuntimeCollider[entity]!, {
+            x: 1,
+            y: 0,
+          });
+
+          const movement = vec(getWorldPosition(treasure))
+            .sub(getWorldPosition(entity))
+            .limit(2);
+
+          RuntimeBody[entity]!.setLinvel(movement, true);
+        },
+      );
     });
   });
 }

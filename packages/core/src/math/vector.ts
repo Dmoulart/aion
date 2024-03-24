@@ -368,8 +368,11 @@ export class Vec implements Vector {
  * @param y
  * @returns vector
  */
-export function vec(x = 0, y = x): Vec {
-  return new Vec(x, y);
+export function vec(xOrVec: number | Vector = 0, y = xOrVec): Vec {
+  if (typeof xOrVec === "object") {
+    return new Vec(xOrVec.x, xOrVec.y);
+  }
+  return new Vec(xOrVec, y as number);
 }
 
 /**

@@ -7,7 +7,6 @@ import {
   query,
   u32,
 } from "aion-ecs";
-import { beforeStart, on } from "aion-engine";
 import { usePhysics } from "./init.js";
 import { Transform } from "../components.js";
 import { Body, Collider, RuntimeBody, RuntimeCollider } from "./components.js";
@@ -47,12 +46,14 @@ export function initCharacterControllerSystem() {
 
     attach(RuntimeCharacterController, ent);
 
-    controller.enableSnapToGround(1);
+    controller.enableSnapToGround(0.1);
     controller.autostepEnabled();
+    controller.autostepIncludesDynamicBodies();
+    controller.setSlideEnabled(true);
   });
 
-  // onRemovedCharacterController((ent) => {
-  //   console.log("remove character controller", ent);
-  //   world.removeCharacterController(RuntimeCharacterController[ent]!);
-  // });
+  onRemovedCharacterController((ent) => {
+    console.log("remove character controller", ent);
+    world.removeCharacterController(RuntimeCharacterController[ent]!);
+  });
 }
