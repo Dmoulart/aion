@@ -1,4 +1,4 @@
-import { defineComponent, removeEntity, u16 } from "aion-ecs";
+import { defineComponent, u16 } from "aion-ecs";
 import { on } from "aion-engine";
 import { getMouse, click } from "aion-input";
 import {
@@ -16,14 +16,23 @@ import {
   setPosition,
   useAion,
   createBody,
+  usePhysics,
+  RuntimeCharacterController,
+  CharacterController,
+  useECS,
+  RuntimeCollider,
 } from "aion-preset";
 import { Colors } from "aion-render";
-import { getFloorBounds } from "../castle-defense";
+// import { getFloorBounds } from "../castle-defense";
 
 export function createScenes() {
   const Resistance = defineComponent(u16);
 
   const { $ecs } = useAion();
+  const { RAPIER } = usePhysics();
+
+  // const onCollisionStart = onEnterQuery($ecs.query(Collision));
+  // const onCollisionEnd = onExitQuery($ecs.query(Collision));
 
   const Wall = $ecs.prefab({
     Transform,
@@ -51,6 +60,7 @@ export function createScenes() {
     Stroke,
     Collider,
     Body,
+    CharacterController,
   });
 
   defineScene("build-castle", () => {
@@ -66,12 +76,11 @@ export function createScenes() {
       Stroke: "white",
       Collider: createCollider({
         auto: 1,
-        isSensor: 1,
       }),
       Resistance: 100,
     });
 
-    const cleanup = on("update", () => {
+    return on("update", () => {
       const { x, y } = screenToWorldPosition(getMouse());
 
       setPosition(player, { x, y });
@@ -87,7 +96,6 @@ export function createScenes() {
           Stroke: "white",
           Collider: createCollider({
             auto: 1,
-            isSensor: 1,
           }),
           Resistance: 10,
         });
@@ -100,8 +108,6 @@ export function createScenes() {
         exitCurrentScene();
       }
     });
-
-    return cleanup;
   });
 
   defineScene("place-treasure", () => {
@@ -115,7 +121,9 @@ export function createScenes() {
       Stroke: "white",
       Collider: createCollider({
         auto: 1,
-        isSensor: 1,
+      }),
+      Body: createBody({
+        type: RAPIER.RigidBodyType.Dynamic,
       }),
     });
 
@@ -135,7 +143,9 @@ export function createScenes() {
           Stroke: "white",
           Collider: createCollider({
             auto: 1,
-            isSensor: 1,
+          }),
+          Body: createBody({
+            type: RAPIER.RigidBodyType.Dynamic,
           }),
         });
 
@@ -154,9 +164,9 @@ export function createScenes() {
 
     for (let i = 0; i < ENEMY_NUMBER; i++) {
       Enemy({
-        Transform: createTransform(left + i * 10, top),
+        Transform: createTransform(i * 10, 0),
         Rect: {
-          h: 10,
+          h: 50,
           w: 10,
         },
         Fill: "blue",
@@ -167,9 +177,24 @@ export function createScenes() {
         Body: createBody({
           type: 0,
         }),
+        CharacterController: {
+          offset: 1,
+        },
       });
     }
 
-    return () => {};
+    return on("update", () => {
+      const { query } = useECS();
+
+      query(RuntimeCollider, RuntimeCharacterController).each((entity) => {
+        console.log("on update", entity);
+        debugger;
+        const controller = RuntimeCharacterController[entity]!;
+        controller.computeColliderMovement(RuntimeCollider[entity]!, {
+          x: 1,
+          y: 0,
+        });
+      });
+    });
   });
 }

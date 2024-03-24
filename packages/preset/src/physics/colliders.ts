@@ -1,6 +1,7 @@
 import type { Entity, PrefabInstanceOptions } from "aion-ecs";
-import { Collider } from "./components.js";
+import { Collider, RuntimeCollider } from "./components.js";
 import RAPIER from "@dimforge/rapier2d-compat";
+import { usePhysics } from "./init.js";
 
 // @todo: these seems to be the defaults of RAPIER but it does not work.
 // Collider init is not ideal
@@ -67,4 +68,16 @@ export function setColliderOptions(
   // colliderDesc.setSolverGroups(Collider.solverGroups[entity]!); !!!
   colliderDesc.setFrictionCombineRule(Collider.frictionCombineRule[entity]!);
   colliderDesc.rotationsEnabled = Boolean(Collider.rotationsEnabled[entity]!);
+}
+
+export function intersectingColliders(ent: Entity) {
+  const { world } = usePhysics();
+
+  const colliders: Array<RAPIER.Collider> = [];
+
+  world.intersectionPairsWith(RuntimeCollider[ent]!, (other) => {
+    colliders.push(other);
+  });
+
+  return colliders;
 }

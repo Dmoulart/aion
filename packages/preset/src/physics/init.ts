@@ -4,7 +4,8 @@ import { initPhysicsSystems } from "./bindings.js";
 import { beforeStart, on, once } from "aion-engine";
 import { useECS } from "../ecs.js";
 import { Collision } from "./components.js";
-import { onEnterQuery, query, onExitQuery } from "aion-ecs";
+import { onEnterQuery, query, onExitQuery, type QueryHandler } from "aion-ecs";
+import { initCharacterControllerSystem } from "./character-controller.js";
 
 await RAPIER.init();
 
@@ -16,6 +17,7 @@ export type InitPhysicsOptions = {
 const DEFAULT_GRAVITY = { x: 0.0, y: 9.81 };
 
 export function initPhysics(options?: InitPhysicsOptions) {
+  beforeStart(initCharacterControllerSystem);
   beforeStart(initPhysicsSystems);
 
   const gravity = options?.gravity ?? DEFAULT_GRAVITY;

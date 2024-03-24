@@ -113,7 +113,7 @@ describe("Query", () => {
 
     const query = defineQuery(
       any(TestComponent),
-      none(TestComponent2, TestComponent3)
+      none(TestComponent2, TestComponent3),
     );
     expect(query(world).archetypes.length).toStrictEqual(2);
   });
@@ -293,7 +293,7 @@ describe("Query", () => {
     expect(query.archetypes[0]!.entities.count() === 0);
     expect(removed).toStrictEqual(1);
   });
-  it("can cannot be registered to multiple worlds", () => {
+  it("cannot be registered to multiple worlds", () => {
     const worldA = createWorld();
     const worldB = createWorld();
 
@@ -308,7 +308,7 @@ describe("Query", () => {
     addQuery(worldA, query);
 
     expect(() => addQuery(worldB, query)).toThrowError(
-      AlreadyRegisteredQueryError
+      AlreadyRegisteredQueryError,
     );
   });
   it("can be removed", () => {
@@ -363,10 +363,10 @@ describe("Query", () => {
     const arch = world.entitiesArchetypes[eid]!;
 
     expect(
-      world.handlers.enter[arch.id]!.find((fn) => fn === enterHandler)
+      world.handlers.enter[arch.id]!.find((fn) => fn === enterHandler),
     ).toBeFalsy();
     expect(
-      world.handlers.exit[arch.id]!.find((fn) => fn === exitHandler)
+      world.handlers.exit[arch.id]!.find((fn) => fn === exitHandler),
     ).toBeFalsy();
   });
   // it("api", () => {
