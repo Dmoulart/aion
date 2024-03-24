@@ -25,6 +25,7 @@ import {
   translate,
   RuntimeBody,
   getWorldPosition,
+  getWorldDistance,
 } from "aion-preset";
 import { Colors } from "aion-render";
 // import { getFloorBounds } from "../castle-defense";
@@ -198,9 +199,7 @@ export function createScenes() {
             y: 0,
           });
 
-          const movement = vec(getWorldPosition(treasure))
-            .sub(getWorldPosition(entity))
-            .limit(2);
+          const movement = getWorldDistance(treasure, entity).limit(2);
 
           RuntimeBody[entity]!.setLinvel(movement, true);
         },
