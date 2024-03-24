@@ -1,4 +1,4 @@
-import { onEnterArchetype } from "./archetype.js";
+import { onArchetypeChange } from "./archetype.js";
 import { nextID } from "./id.js";
 import type { World } from "./world.js";
 
@@ -61,7 +61,7 @@ export function insertEntity(
 
   if (world.entitiesArchetypes[eid] === archetype) return eid;
 
-  onEnterArchetype(world, eid, archetype);
+  onArchetypeChange(world, eid, world.rootArchetype, archetype);
 
   archetype.entities.insert(eid);
   world.entitiesArchetypes[eid] = archetype;

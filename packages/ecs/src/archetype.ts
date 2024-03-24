@@ -2,7 +2,11 @@ import type { ComponentID } from "./component.js";
 import { type World } from "./world.js";
 import { type Entity, type ID } from "./entity.js";
 import { BitSet, SparseSet } from "./collections/index.js";
-import { matchQuery, registerQueryHandlersForArchetype } from "./query.js";
+import {
+  matchQuery,
+  registerQueryHandlersForArchetype,
+  type RegisteredQueryHandler,
+} from "./query.js";
 
 //@todo make this a class for better perfs ?
 export type Archetype = {
@@ -106,6 +110,7 @@ export const deriveArchetype = (
   // @todo is queries.values fast ?
   for (const query of world.queries.values()) {
     if (matchQuery(query, archetype)) {
+      query.archetypesSet.insert(archetype.id);
       query.archetypes.push(archetype);
       registerQueryHandlersForArchetype(archetype, query, world);
     }
@@ -115,41 +120,41 @@ export const deriveArchetype = (
 };
 
 /**
- * Call the handlers of a specific archetype on the given entity.
+ * Call the enter and exit handlers of the two given archetypes.
  * @param world
  * @param eid
  * @param archetype
  */
-export function onEnterArchetype(
+export function onArchetypeChange(
   world: World,
   eid: Entity,
-  archetype: Archetype,
+  oldArchetype: Archetype,
+  newArchetype: Archetype,
 ) {
-  const handlers = world.handlers.enter[archetype.id];
-  //@todo handlers for exiting old arch ?
-  if (handlers) {
-    for (const fn of handlers) {
-      fn(eid);
+  const exitHandlers = world.handlers.exit[oldArchetype.id];
+  const enterHandlers = world.handlers.enter[newArchetype.id];
+
+  if (exitHandlers) {
+    for (const fn of exitHandlers) {
+      const query = world.queries.get(
+        (fn as RegisteredQueryHandler).queryHash,
+      )!;
+      // avoid calling handlers when we're changing archertype but staying in the same query
+      if (!query.archetypesSet.has(newArchetype.id)) {
+        fn(eid);
+      }
     }
   }
-}
 
-/**
- * Call the handlers of a specific archetype on the given entity.
- * @param world
- * @param eid
- * @param archetype
- */
-export function onExitArchetype(
-  world: World,
-  eid: Entity,
-  archetype: Archetype,
-) {
-  //@todo handlers for entering new arch ?
-  const handlers = world.handlers.exit[archetype.id];
-  if (handlers) {
-    for (const fn of handlers) {
-      fn(eid);
+  if (enterHandlers) {
+    for (const fn of enterHandlers) {
+      const query = world.queries.get(
+        (fn as RegisteredQueryHandler).queryHash,
+      )!;
+      // avoid calling handlers when we're changing archetype but staying in the same query'
+      if (!query.archetypesSet.has(oldArchetype.id)) {
+        fn(eid);
+      }
     }
   }
 }

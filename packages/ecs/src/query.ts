@@ -7,7 +7,7 @@ import {
 import type { World } from "./world.js";
 import type { Archetype } from "./archetype.js";
 import type { Entity } from "./entity.js";
-import { BitSet } from "./collections/index.js";
+import { BitSet, SparseSet } from "./collections/index.js";
 
 /**
  * A matcher represents the conditional expression used for every query operators.
@@ -15,6 +15,10 @@ import { BitSet } from "./collections/index.js";
 export type Matcher = (archetype: Archetype) => boolean;
 
 export type QueryHandler = (entities: Entity) => void;
+export type RegisteredQueryHandler = {
+  (entities: Entity): void;
+  queryHash: number;
+};
 
 export type QueryTerm = { type: number; comps: Component[]; matcher: Matcher };
 
@@ -61,10 +65,16 @@ export type Query = {
    * The terms defining the query
    */
   hash: number;
+
   /**
    * The archetypes matching the query.
    */
   archetypes: Archetype[];
+
+  /**
+   * A set containing the matching archetypes ID.
+   */
+  archetypesSet: SparseSet;
 
   /**
    * The query matchers.
@@ -139,11 +149,11 @@ export function defineQuery(...terms: QueryTerm[]): (world: World) => Query {
 }
 
 export function createQuery(...terms: QueryTerm[]): Query {
-  const archetypes: Archetype[] = [];
   return {
     hash: hashQueryTerms(terms),
     matchers: terms.map((term) => term.matcher),
-    archetypes,
+    archetypesSet: new SparseSet(),
+    archetypes: [],
     world: undefined,
     handlers: { enter: [], exit: [] },
     each(fn: (eid: Entity, index: number) => void) {
@@ -185,7 +195,7 @@ export const query = <T extends Array<QueryElement>>(
     //component group
     else {
       freeFloatingComponents.push(
-        ...Object.values(termOrComponent as ComponentsGroup)
+        ...Object.values(termOrComponent as ComponentsGroup),
       );
     }
   }
@@ -213,7 +223,9 @@ export function runQuery(world: World, query: Query): Archetype[] {
     for (const match of query.matchers) {
       if (!match(archetype)) continue archloop;
     }
+    // could unify these two ops
     archetypes.push(archetype);
+    query.archetypesSet.insert(archetype.id);
   }
 
   return archetypes;
@@ -230,7 +242,7 @@ export const addQuery = (world: World, query: Query): Query => {
   // // Throw an error if query is already registered
   if (query.world) {
     throw new AlreadyRegisteredQueryError(
-      "Cannot register an already registered query."
+      "Cannot register an already registered query.",
     );
   }
   query.world = world;
@@ -242,12 +254,12 @@ export const addQuery = (world: World, query: Query): Query => {
   // Register the handlers
   if (query.handlers.enter.length > 0) {
     query.handlers.enter.forEach((handler) =>
-      registerEnterQueryHandler(handler, query, world)
+      registerEnterQueryHandler(handler, query, world),
     );
   }
   if (query.handlers.exit.length > 0) {
     query.handlers.exit.forEach((handler) =>
-      registerExitQueryHandler(handler, query, world)
+      registerExitQueryHandler(handler, query, world),
     );
   }
 
@@ -264,7 +276,7 @@ export const addQuery = (world: World, query: Query): Query => {
 export const removeQuery = (world: World, query: Query) => {
   if (query.world !== world) {
     throw new RemoveQueryError(
-      "Cannot remove a query from a world it does not belongs to."
+      "Cannot remove a query from a world it does not belongs to.",
     );
   }
 
@@ -320,7 +332,7 @@ export const matchQuery = (query: Query, archetype: Archetype): boolean => {
 export const registerQueryHandlersForArchetype = (
   archetype: Archetype,
   query: Query,
-  world: World
+  world: World,
 ) => {
   if (query.handlers.enter.length > 0) {
     world.handlers.enter[archetype.id] ??= [];
@@ -341,7 +353,7 @@ export const registerQueryHandlersForArchetype = (
 export const registerEnterQueryHandler = (
   handler: QueryHandler,
   query: Query,
-  world: World
+  world: World,
 ) => {
   for (const archetype of query.archetypes) {
     world.handlers.enter[archetype.id] ??= [];
@@ -358,7 +370,7 @@ export const registerEnterQueryHandler = (
 export const registerExitQueryHandler = (
   handler: QueryHandler,
   query: Query,
-  world: World
+  world: World,
 ) => {
   for (const archetype of query.archetypes) {
     world.handlers.exit[archetype.id] ??= [];
@@ -373,6 +385,8 @@ export const registerExitQueryHandler = (
  */
 export const onEnterQuery = (query: Query) => {
   return (fn: QueryHandler) => {
+    (fn as RegisteredQueryHandler).queryHash = query.hash;
+
     query.handlers.enter.push(fn);
     // If query is not tied to any world, the registration of the handlers will take
     // place during the registration of the query
@@ -389,6 +403,8 @@ export const onEnterQuery = (query: Query) => {
  */
 export const onExitQuery = (query: Query) => {
   return (fn: QueryHandler) => {
+    (fn as RegisteredQueryHandler).queryHash = query.hash;
+
     query.handlers.exit.push(fn);
     // If query is not tied to any world, the registration of the handlers will take
     // place during the registration of the query
@@ -398,5 +414,5 @@ export const onExitQuery = (query: Query) => {
   };
 };
 
-export class AlreadyRegisteredQueryError extends Error { }
-export class RemoveQueryError extends Error { }
+export class AlreadyRegisteredQueryError extends Error {}
+export class RemoveQueryError extends Error {}

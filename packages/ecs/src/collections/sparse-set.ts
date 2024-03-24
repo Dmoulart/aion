@@ -14,7 +14,7 @@ export class SparseSet {
   /**
    * Check if the given number is already in the set.
    * @param num
-   * @returns number is already in the set
+   * @returns true if the number is already in the set
    */
   has(num: number) {
     return this.dense[this.sparse[num]!] === num;
@@ -23,7 +23,6 @@ export class SparseSet {
   /**
    * Remove a number from the set.
    * @param num
-   * @returns nothing
    */
   remove(num: number) {
     if (!this.has(num)) return;
@@ -39,14 +38,15 @@ export class SparseSet {
 
   clone() {
     const cloned = new SparseSet();
+
     cloned.dense = [...this.dense];
     cloned.sparse = [...this.sparse];
+
     return cloned;
   }
 
   /**
    * Get the number of elements in the set.
-   * @returns number of elements in the set
    */
   count() {
     return this.dense.length;

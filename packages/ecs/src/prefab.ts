@@ -1,5 +1,5 @@
 import type { World } from "./world.js";
-import { buildArchetype, onEnterArchetype } from "./archetype.js";
+import { buildArchetype, onArchetypeChange } from "./archetype.js";
 import { createEntity } from "./entity.js";
 import {
   type Component,
@@ -69,7 +69,7 @@ export const prefab = <Definition extends PrefabDefinition>(
     assign(eid, definition, options);
 
     // @todo : ?
-    onEnterArchetype(world, eid, archetype);
+    onArchetypeChange(world, eid, world.rootArchetype, archetype);
 
     return eid;
   };

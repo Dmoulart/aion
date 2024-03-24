@@ -56,7 +56,7 @@ export type World = {
    */
   archetypes: Archetype[];
   /**
-   * The registerd queries
+   * The registerd queries, hash as key, query as value.
    */
   queries: Map<number, Query>;
   /**

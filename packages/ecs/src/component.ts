@@ -7,11 +7,7 @@ import {
 } from "./types.js";
 import type { World } from "./world.js";
 import { type ID, NonExistantEntity } from "./entity.js";
-import {
-  deriveArchetype,
-  onEnterArchetype,
-  onExitArchetype,
-} from "./archetype.js";
+import { deriveArchetype, onArchetypeChange } from "./archetype.js";
 import { type Entity } from "./entity.js";
 import { nextID } from "./id.js";
 import {
@@ -166,9 +162,9 @@ export function attach(
   idOrComponent: ID | Component,
   eid: Entity,
 ) {
-  const archetype = world.entitiesArchetypes[eid]!;
+  const oldArchetype = world.entitiesArchetypes[eid]!;
 
-  if (!archetype) {
+  if (!oldArchetype) {
     throw new NonExistantEntity(
       `Trying to add component to a non existant entity with id : ${eid}`,
     );
@@ -177,16 +173,16 @@ export function attach(
   const id =
     typeof idOrComponent === "object" ? idOrComponent[$cid] : idOrComponent;
 
-  if (archetype.mask.has(id)) return;
+  if (oldArchetype.mask.has(id)) return;
 
-  const newArchetype = deriveArchetype(archetype, id, world);
+  const newArchetype = deriveArchetype(oldArchetype, id, world);
 
-  archetype.entities.remove(eid);
+  oldArchetype.entities.remove(eid);
   newArchetype.entities.insert(eid);
 
   world.entitiesArchetypes[eid] = newArchetype;
 
-  onEnterArchetype(world, eid, newArchetype);
+  onArchetypeChange(world, eid, oldArchetype, newArchetype);
 }
 
 /**
@@ -205,9 +201,9 @@ export function detach(
   idOrComponent: ID | Component,
   eid: Entity,
 ): void {
-  const archetype = world.entitiesArchetypes[eid];
+  const oldArchetype = world.entitiesArchetypes[eid];
 
-  if (!archetype) {
+  if (!oldArchetype) {
     throw new NonExistantEntity(
       `Trying to remove component from a non existant entity with id :${eid}`,
     );
@@ -216,16 +212,16 @@ export function detach(
   const id =
     typeof idOrComponent === "object" ? idOrComponent[$cid] : idOrComponent;
 
-  if (!archetype.mask.has(id)) return;
+  if (!oldArchetype.mask.has(id)) return;
 
-  const newArchetype = deriveArchetype(archetype, id, world);
+  const newArchetype = deriveArchetype(oldArchetype, id, world);
 
-  archetype.entities.remove(eid);
+  oldArchetype.entities.remove(eid);
   newArchetype.entities.insert(eid);
 
   world.entitiesArchetypes[eid] = newArchetype;
 
-  onExitArchetype(world, eid, archetype);
+  onArchetypeChange(world, eid, oldArchetype, newArchetype);
 }
 
 /**
