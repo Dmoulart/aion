@@ -229,7 +229,7 @@ describe("Query", () => {
     detach(world, TestComponent2, eid);
     expect(removed).toStrictEqual(1);
   });
-  it("des not fire exit handlers when entity change archetype but stay in query", () => {
+  it("does not fire exit handlers when entity change archetype but stays in query", () => {
     const world = createWorld();
 
     const A = defineComponent({
@@ -258,6 +258,34 @@ describe("Query", () => {
 
     detach(world, B, eid);
     expect(removed).toStrictEqual(0);
+  });
+  it("does not fire enter handlers when entity change archetype but stays in query", () => {
+    const world = createWorld();
+
+    const A = defineComponent({
+      a: i8,
+    });
+    const B = defineComponent({
+      b: i32,
+    });
+
+    const query = createQuery(any(A, B));
+    addQuery(world, query);
+
+    const onEnter = onEnterQuery(query);
+
+    let added = 0;
+    onEnter(() => {
+      added++;
+    });
+
+    const eid = createEntity(world);
+
+    attach(world, A, eid);
+    expect(added).toStrictEqual(1);
+
+    attach(world, B, eid);
+    expect(added).toStrictEqual(1);
   });
   it("can track whenever entities enter the query even if handlers have been defined before the query has been registered", () => {
     const world = createWorld();

@@ -121,6 +121,7 @@ export const deriveArchetype = (
 
 /**
  * Call the enter and exit handlers of the two given archetypes.
+ * @todo:perf optimize
  * @param world
  * @param eid
  * @param archetype

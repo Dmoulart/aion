@@ -159,7 +159,6 @@ export function createScenes() {
 
   defineScene("invasion", () => {
     const ENEMY_NUMBER = 10;
-    // debugger;
     // const { left, top } = getFloorBounds();
 
     for (let i = 0; i < ENEMY_NUMBER; i++) {
@@ -187,8 +186,6 @@ export function createScenes() {
       const { query } = useECS();
 
       query(RuntimeCollider, RuntimeCharacterController).each((entity) => {
-        console.log("on update", entity);
-        debugger;
         const controller = RuntimeCharacterController[entity]!;
         controller.computeColliderMovement(RuntimeCollider[entity]!, {
           x: 1,
