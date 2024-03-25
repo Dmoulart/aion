@@ -22,8 +22,10 @@ export type BaseEvents = { update: void; draw: void };
 
 export type Engine<T = BaseEngine> = BaseEngine & T & { use: () => Engine<T> };
 
+export type Plugin<T> = (engine: BaseEngine) => T;
+
 export function defineEngine<T>(
-  init: (engine: BaseEngine) => T,
+  init: Plugin<T>,
   setup: () => void,
   options?: DefineEngineOptions,
 ): Engine<T> {

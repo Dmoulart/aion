@@ -78,7 +78,6 @@ export function createScenes() {
       Stroke: "white",
       Collider: createCollider({
         auto: 1,
-        isSensor: 1,
       }),
       Resistance: 100,
     });
@@ -112,6 +111,7 @@ export function createScenes() {
       }
     });
   });
+
   let treasure: Entity;
   defineScene("place-treasure", () => {
     const player = Treasure({

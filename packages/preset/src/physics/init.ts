@@ -1,10 +1,9 @@
 import RAPIER from "@dimforge/rapier2d-compat";
 import { useAion } from "../ctx.js";
 import { initPhysicsSystems } from "./bindings.js";
-import { beforeStart, on, once } from "aion-engine";
+import { beforeStart, on } from "aion-engine";
 import { useECS } from "../ecs.js";
 import { Collision } from "./components.js";
-import { onEnterQuery, query, onExitQuery, type QueryHandler } from "aion-ecs";
 import { initCharacterControllerSystem } from "./character-controller.js";
 
 await RAPIER.init();
