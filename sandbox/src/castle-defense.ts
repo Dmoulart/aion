@@ -9,11 +9,8 @@ import {
   createCollider,
   createBody,
   setZoom,
-  useAion,
   startScene,
   onSceneExit,
-  useECS,
-  getRectBounds,
 } from "aion-preset";
 import {
   Colors,
@@ -27,10 +24,8 @@ import { Entity, defineComponent } from "aion-ecs";
 
 export const Floor = defineComponent({});
 
-const engine = defineEngine(plugins, () => {
-  const { $ecs, $camera, getFloor } = useGame();
-
-  // const { RAPIER } = $physics;
+export const engine = defineEngine(plugins, () => {
+  const { $camera, getFloor } = useGame();
 
   defineLoop(() => {
     emit("update");
@@ -40,10 +35,15 @@ const engine = defineEngine(plugins, () => {
 
   setBackgroundColor("black");
 
-  $ecs.attach(Floor, getFloor());
-
   setZoom(0.7);
   centerCameraOnEntity(getFloor());
+
+  createScenes();
+
+  onSceneExit("build-castle", () => startScene("place-treasure"));
+  onSceneExit("place-treasure", () => startScene("invasion"));
+
+  startScene("build-castle");
 
   on("update", () => {
     translate($camera, direction().scale(10));
@@ -56,16 +56,9 @@ const engine = defineEngine(plugins, () => {
       zoomBy(+0.04);
     }
   });
-
-  createScenes();
-
-  onSceneExit("build-castle", () => startScene("place-treasure"));
-  onSceneExit("place-treasure", () => startScene("invasion"));
-
-  startScene("build-castle");
 });
 
-const useGame = engine.use;
+export const useGame = engine.use;
 
 engine.run();
 
@@ -79,7 +72,10 @@ function plugins() {
   function getFloor() {
     return floor;
   }
+
   beforeStart(() => {
+    const { $ecs } = useGame();
+
     floor = preset.createCube({
       Transform: createTransform(windowCenterX(), windowCenterY()),
       Rect: {
@@ -95,6 +91,8 @@ function plugins() {
         type: preset.$physics.RAPIER.RigidBodyType.Fixed,
       }),
     });
+
+    $ecs.attach(Floor, getFloor());
   });
 
   return { ...preset, getFloor };

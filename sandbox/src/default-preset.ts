@@ -186,6 +186,4 @@ const engine = defineEngine(
   },
 );
 
-const useGame = engine.use;
-
 engine.run();

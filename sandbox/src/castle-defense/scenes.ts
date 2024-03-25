@@ -14,7 +14,6 @@ import {
   exitCurrentScene,
   screenToWorldPosition,
   setPosition,
-  useAion,
   createBody,
   usePhysics,
   RuntimeCharacterController,
@@ -24,11 +23,14 @@ import {
   RuntimeBody,
   getWorldDistance,
 } from "aion-preset";
+
 import { Colors } from "aion-render";
+import { useGame } from "../castle-defense";
+
 export function createScenes() {
   const Resistance = defineComponent(u16);
 
-  const { $ecs } = useAion();
+  const { $ecs } = useGame();
   const { RAPIER } = usePhysics();
 
   // const onCollisionStart = onEnterQuery($ecs.query(Collision));
@@ -76,6 +78,7 @@ export function createScenes() {
       Stroke: "white",
       Collider: createCollider({
         auto: 1,
+        isSensor: 1,
       }),
       Resistance: 100,
     });
