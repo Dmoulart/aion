@@ -23,6 +23,7 @@ import {
   RuntimeBody,
   getWorldDistance,
   setBodyPosition,
+  getRectBounds,
 } from "aion-preset";
 
 import { Colors } from "aion-render";
@@ -100,6 +101,9 @@ export function createScenes() {
           Collider: createCollider({
             auto: 1,
           }),
+          Body: createBody({
+            type: RAPIER.RigidBodyType.Fixed,
+          }),
           Resistance: 10,
         });
 
@@ -163,6 +167,9 @@ export function createScenes() {
 
   defineScene("invasion", () => {
     const ENEMY_NUMBER = 1;
+
+    const { getFloor } = useGame();
+    const { left, top } = getRectBounds(getFloor());
     // const { left, top } = getFloorBounds();
     // const
     //
@@ -170,7 +177,7 @@ export function createScenes() {
 
     for (let i = 0; i < ENEMY_NUMBER; i++) {
       Enemy({
-        Transform: createTransform(i * 10, 100),
+        Transform: createTransform(i * left, top - 25),
         Rect: {
           h: 50,
           w: 10,
