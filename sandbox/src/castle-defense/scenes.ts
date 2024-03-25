@@ -22,6 +22,7 @@ import {
   RuntimeCollider,
   RuntimeBody,
   getWorldDistance,
+  setBodyPosition,
 } from "aion-preset";
 
 import { Colors } from "aion-render";
@@ -85,7 +86,7 @@ export function createScenes() {
     return on("update", () => {
       const { x, y } = screenToWorldPosition(getMouse());
 
-      setPosition(player, { x, y });
+      setBodyPosition(player, { x, y });
 
       if (click()) {
         Wall({
@@ -133,7 +134,7 @@ export function createScenes() {
     const cleanup = on("update", () => {
       const { x, y } = screenToWorldPosition(getMouse());
 
-      setPosition(player, { x, y });
+      setBodyPosition(player, { x, y });
 
       if (click()) {
         treasure = Treasure({

@@ -1,6 +1,8 @@
 import type { Entity, PrefabInstanceOptions } from "aion-ecs";
-import { Body } from "./components.js";
+import { Body, RuntimeBody } from "./components.js";
 import RAPIER from "@dimforge/rapier2d-compat";
+import type { Vector } from "aion-core";
+import { setPosition } from "../index.js";
 // @todo type crap
 const DEFAULT_BODIES_OPTIONS: PrefabInstanceOptions<{
   Body: typeof Body;
@@ -64,4 +66,9 @@ export function setBodyOptions(bodyDesc: RAPIER.RigidBodyDesc, entity: Entity) {
   bodyDesc.setLinearDamping(Body.linearDamping[entity]!);
   // bodyDesc.setAdditionalMass(Body.linearDamping[entity]!); ??
   bodyDesc.setDominanceGroup(Body.dominanceGroup[entity]!);
+}
+
+export function setBodyPosition(entity: Entity, position: Vector) {
+  setPosition(entity, position);
+  RuntimeBody[entity]?.setTranslation(position, false);
 }
