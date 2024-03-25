@@ -34,14 +34,19 @@ export function defineEngine<T>(
   const baseEngine: BaseEngine = {
     events: createEventEmitter<BaseEvents>(),
     loop: () => baseEngine.events.emit("update"),
+    beforeStart: (cb) => beforeStartCallbacks.push(cb),
     run: () => {
+      ctx.call(engine, () =>
+        beforeStartCallbacks.forEach((cb) => cb(baseEngine)),
+      );
+      ctx.call(engine, setup);
+
       (function loop() {
         step();
 
         requestAnimationFrame(loop);
       })();
     },
-    beforeStart: (cb) => beforeStartCallbacks.push(cb),
   };
 
   const plugins = ctx.call(baseEngine, () => init(baseEngine));
@@ -51,10 +56,6 @@ export function defineEngine<T>(
   const engine: Engine<T> = Object.assign(engineWithPlugins, {
     use: ctx.use as () => Engine<T>,
   });
-
-  ctx.call(engine, () => beforeStartCallbacks.forEach((cb) => cb(baseEngine)));
-
-  ctx.call(engine, setup);
 
   function step() {
     ctx.call(engine, engine.loop);

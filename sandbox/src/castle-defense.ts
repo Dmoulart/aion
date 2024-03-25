@@ -1,4 +1,4 @@
-import { defineEngine, defineLoop, emit, on } from "aion-engine";
+import { beforeStart, defineEngine, defineLoop, emit, on } from "aion-engine";
 import { direction, key } from "aion-input";
 import {
   aionPreset,
@@ -23,14 +23,14 @@ import {
   windowWidth,
 } from "aion-render";
 import { createScenes } from "./castle-defense/scenes";
-import { defineComponent } from "aion-ecs";
+import { Entity, defineComponent } from "aion-ecs";
 
 export const Floor = defineComponent({});
 
 const engine = defineEngine(plugins, () => {
-  const { $physics, $ecs, createCube, $camera } = useAion();
+  const { $ecs, $camera, getFloor } = useGame();
 
-  const { RAPIER } = $physics;
+  // const { RAPIER } = $physics;
 
   defineLoop(() => {
     emit("update");
@@ -40,26 +40,10 @@ const engine = defineEngine(plugins, () => {
 
   setBackgroundColor("black");
 
-  const floor = createCube({
-    Transform: createTransform(windowCenterX(), windowCenterY()),
-    Rect: {
-      h: 10,
-      w: windowWidth() * 10,
-    },
-    Fill: Colors["acapulco:400"],
-    Stroke: "white",
-    Collider: createCollider({
-      auto: 1,
-    }),
-    Body: createBody({
-      type: RAPIER.RigidBodyType.Fixed,
-    }),
-  });
-
-  $ecs.attach(Floor, floor);
+  $ecs.attach(Floor, getFloor());
 
   setZoom(0.7);
-  centerCameraOnEntity(floor);
+  centerCameraOnEntity(getFloor());
 
   on("update", () => {
     translate($camera, direction().scale(10));
@@ -86,21 +70,40 @@ const useGame = engine.use;
 engine.run();
 
 function plugins() {
-  return aionPreset({
-    renderDebug: false,
+  const preset = aionPreset({
+    renderDebug: true,
   });
+
+  let floor: Entity = -1;
+
+  function getFloor() {
+    return floor;
+  }
+  beforeStart(() => {
+    floor = preset.createCube({
+      Transform: createTransform(windowCenterX(), windowCenterY()),
+      Rect: {
+        h: 10,
+        w: windowWidth() * 10,
+      },
+      Fill: Colors["acapulco:400"],
+      Stroke: "white",
+      Collider: createCollider({
+        auto: 1,
+      }),
+      Body: createBody({
+        type: preset.$physics.RAPIER.RigidBodyType.Fixed,
+      }),
+    });
+  });
+
+  return { ...preset, getFloor };
 }
 
-export let getFloor = () => {
-  const { query } = useECS();
+// export function getFloor() {
+//   const { query } = useGame()
+// }
 
-  const floor = query(Floor).archetypes[0].entities.dense[0];
-
-  getFloor = () => floor;
-
-  return floor;
-};
-
-export function getFloorBounds() {
-  return getRectBounds(getFloor());
-}
+// export function getFloorBounds() {
+//   return getRectBounds(getFloor());
+// }

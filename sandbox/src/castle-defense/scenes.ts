@@ -1,4 +1,3 @@
-import { vec } from "aion-core";
 import { Entity, defineComponent, u16 } from "aion-ecs";
 import { on } from "aion-engine";
 import { getMouse, click } from "aion-input";
@@ -22,14 +21,10 @@ import {
   CharacterController,
   useECS,
   RuntimeCollider,
-  translate,
   RuntimeBody,
-  getWorldPosition,
   getWorldDistance,
 } from "aion-preset";
 import { Colors } from "aion-render";
-// import { getFloorBounds } from "../castle-defense";
-
 export function createScenes() {
   const Resistance = defineComponent(u16);
 
@@ -165,6 +160,9 @@ export function createScenes() {
   defineScene("invasion", () => {
     const ENEMY_NUMBER = 1;
     // const { left, top } = getFloorBounds();
+    // const
+    //
+    // const floor = getFloor();
 
     for (let i = 0; i < ENEMY_NUMBER; i++) {
       Enemy({

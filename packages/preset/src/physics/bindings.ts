@@ -12,7 +12,12 @@ import { useECS } from "../ecs.js";
 import { Vec, type Vector } from "aion-core";
 import type RAPIER from "@dimforge/rapier2d";
 import { on } from "aion-engine";
-import { positionOf, setPosition, setRotation } from "../basics/transform.js";
+import {
+  getWorldPosition,
+  positionOf,
+  setPosition,
+  setRotation,
+} from "../basics/transform.js";
 import { setBodyOptions } from "./bodies.js";
 
 export function initPhysicsSystems() {
@@ -28,7 +33,7 @@ export function initPhysicsSystems() {
 
     const body = world.createRigidBody(bodyDesc!);
 
-    body.setTranslation(toSimulation(positionOf(ent)), false);
+    body.setTranslation(toSimulation(getWorldPosition(ent)), false);
 
     body.userData = ent;
 
@@ -57,6 +62,7 @@ export function initPhysicsSystems() {
     setColliderOptions(colliderDesc, ent);
 
     const collider = world.createCollider(colliderDesc, body);
+    collider.setTranslation(toSimulation(getWorldPosition(ent)));
 
     RuntimeCollider[ent] = collider;
 
