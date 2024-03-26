@@ -1,4 +1,4 @@
-import { defineComponent, u16, Entity } from "aion-ecs";
+import { defineComponent, u16, Entity, f32 } from "aion-ecs";
 import { beforeStart, defineEngine, defineLoop, emit, on } from "aion-engine";
 import { click, direction, getMouse, key } from "aion-input";
 import {
@@ -30,6 +30,8 @@ import {
   usePhysics,
   aionPreset,
   getRectBounds,
+  getX,
+  getY,
 } from "aion-preset";
 import {
   Colors,
@@ -81,6 +83,10 @@ engine.run();
 
 export function createScenes() {
   const Resistance = defineComponent(u16);
+  const EnemySpawn = defineComponent({
+    frequency: u16,
+    lastSpawn: f32,
+  });
 
   const { $ecs } = useGame();
   const { RAPIER } = usePhysics();
@@ -115,6 +121,11 @@ export function createScenes() {
     Collider,
     Body,
     CharacterController,
+  });
+
+  const SpawnPoint = $ecs.prefab({
+    Transform,
+    EnemySpawn,
   });
 
   defineScene("build-castle", () => {
@@ -218,45 +229,98 @@ export function createScenes() {
   defineScene("invasion", () => {
     const ENEMY_NUMBER = 1;
 
-    const { left, top } = getFloorBounds();
+    const { left, right, top } = getFloorBounds();
 
-    for (let i = 0; i < ENEMY_NUMBER; i++) {
-      Enemy({
-        Transform: createTransform(left, top - 25),
-        Rect: {
-          h: 50,
-          w: 25,
-        },
-        Fill: "white",
-        Stroke: "blue",
-        Collider: createCollider({
-          auto: 1,
-        }),
-        Body: createBody({
-          type: RAPIER.RigidBodyType.Dynamic,
-          rotationsEnabled: 0,
-        }),
-        CharacterController: {
-          offset: 1,
-        },
-      });
-    }
+    SpawnPoint({
+      EnemySpawn: {
+        frequency: 2,
+        lastSpawn: performance.now(),
+      },
+      Transform: createTransform(left, top - 25),
+    });
+
+    SpawnPoint({
+      EnemySpawn: {
+        frequency: 2,
+        lastSpawn: performance.now(),
+      },
+      Transform: createTransform(right, top - 25),
+    });
+
+    // for (let i = 0; i < ENEMY_NUMBER; i++) {
+    //   Enemy({
+    //     Transform: createTransform(left, top - 25),
+    //     Rect: {
+    //       h: 50,
+    //       w: 25,
+    //     },
+    //     Fill: "white",
+    //     Stroke: "blue",
+    //     Collider: createCollider({
+    //       auto: 1,
+    //     }),
+    //     Body: createBody({
+    //       type: RAPIER.RigidBodyType.Dynamic,
+    //       rotationsEnabled: 0,
+    //     }),
+    //     CharacterController: {
+    //       offset: 1,
+    //     },
+    //   });
+    // }
 
     return on("update", () => {
       const { query } = useECS();
+
+      query(Transform, EnemySpawn).each((entity) => {
+        const frequency = EnemySpawn.frequency[entity]!;
+        const lastSpawn = EnemySpawn.lastSpawn[entity]!;
+
+        const now = performance.now();
+
+        const timeSinceLastSpawnInSec = (now - lastSpawn) / 1000;
+
+        // console.log({ timeSinceLastSpawnInSec });
+
+        if (timeSinceLastSpawnInSec >= frequency) {
+          EnemySpawn.lastSpawn[entity] = now;
+
+          Enemy({
+            Transform: createTransform(getX(entity), getY(entity)),
+            Rect: {
+              h: 50,
+              w: 25,
+            },
+            Fill: "white",
+            Stroke: "blue",
+            Collider: createCollider({
+              auto: 1,
+            }),
+            Body: createBody({
+              type: RAPIER.RigidBodyType.Dynamic,
+              rotationsEnabled: 0,
+            }),
+            CharacterController: {
+              offset: 1,
+            },
+          });
+        }
+      });
 
       query(RuntimeCollider, RuntimeBody, RuntimeCharacterController).each(
         (entity) => {
           const controller = RuntimeCharacterController[entity]!;
 
-          controller.computeColliderMovement(RuntimeCollider[entity]!, {
-            x: 1,
-            y: 0,
-          });
+          const distance = getWorldDistance(treasure, entity);
 
-          const movement = getWorldDistance(treasure, entity).limit(2);
+          const movement = distance.norm().scale(10);
 
-          RuntimeBody[entity]!.setLinvel(movement, true);
+          controller.computeColliderMovement(
+            RuntimeCollider[entity]!,
+            movement,
+          );
+
+          RuntimeBody[entity]!.setLinvel(controller.computedMovement(), false);
         },
       );
     });
