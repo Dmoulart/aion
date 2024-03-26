@@ -1,16 +1,35 @@
+import { defineComponent, u16, Entity } from "aion-ecs";
 import { beforeStart, defineEngine, defineLoop, emit, on } from "aion-engine";
-import { direction, key } from "aion-input";
+import { click, direction, getMouse, key } from "aion-input";
 import {
-  aionPreset,
-  createTransform,
   translate,
   zoomBy,
   centerCameraOnEntity,
-  createCollider,
-  createBody,
   setZoom,
   startScene,
   onSceneExit,
+  Body,
+  CharacterController,
+  Collider,
+  Fill,
+  Rect,
+  RuntimeBody,
+  RuntimeCharacterController,
+  RuntimeCollider,
+  Stroke,
+  Transform,
+  createBody,
+  createCollider,
+  createTransform,
+  defineScene,
+  exitCurrentScene,
+  getWorldDistance,
+  screenToWorldPosition,
+  setBodyPosition,
+  useECS,
+  usePhysics,
+  aionPreset,
+  getRectBounds,
 } from "aion-preset";
 import {
   Colors,
@@ -19,8 +38,6 @@ import {
   windowCenterY,
   windowWidth,
 } from "aion-render";
-import { createScenes } from "./castle-defense/scenes";
-import { Entity, defineComponent } from "aion-ecs";
 
 export const Floor = defineComponent({});
 
@@ -62,11 +79,196 @@ export const useGame = engine.use;
 
 engine.run();
 
-function plugins() {
+export function createScenes() {
+  const Resistance = defineComponent(u16);
+
+  const { $ecs } = useGame();
+  const { RAPIER } = usePhysics();
+
+  // const onCollisionStart = onEnterQuery($ecs.query(Collision));
+  // const onCollisionEnd = onExitQuery($ecs.query(Collision));
+
+  const Wall = $ecs.prefab({
+    Transform,
+    Rect,
+    Fill,
+    Stroke,
+    Collider,
+    Body,
+    Resistance,
+  });
+
+  const Treasure = $ecs.prefab({
+    Transform,
+    Rect,
+    Fill,
+    Stroke,
+    Collider,
+    Body,
+  });
+
+  const Enemy = $ecs.prefab({
+    Transform,
+    Rect,
+    Fill,
+    Stroke,
+    Collider,
+    Body,
+    CharacterController,
+  });
+
+  defineScene("build-castle", () => {
+    let wallNumber = 0;
+
+    const player = Wall({
+      Transform: createTransform(0, 0),
+      Rect: {
+        h: 500,
+        w: 10,
+      },
+      Fill: "grey",
+      Stroke: "white",
+      Collider: createCollider({
+        auto: 1,
+      }),
+      Resistance: 100,
+    });
+
+    return on("update", () => {
+      const { x, y } = screenToWorldPosition(getMouse());
+
+      setBodyPosition(player, { x, y });
+
+      if (click()) {
+        Wall({
+          Transform: createTransform(x, y),
+          Rect: {
+            h: Rect.h[player],
+            w: Rect.w[player],
+          },
+          Fill: Colors["cornflower:600"],
+          Stroke: "white",
+          Collider: createCollider({
+            auto: 1,
+          }),
+          Body: createBody({
+            type: RAPIER.RigidBodyType.Fixed,
+          }),
+          Resistance: 10,
+        });
+
+        wallNumber++;
+      }
+
+      if (wallNumber === 4) {
+        $ecs.remove(player);
+        exitCurrentScene();
+      }
+    });
+  });
+
+  let treasure: Entity;
+  defineScene("place-treasure", () => {
+    const player = Treasure({
+      Transform: createTransform(0, 0),
+      Rect: {
+        h: 50,
+        w: 50,
+      },
+      Fill: "yellow",
+      Stroke: "white",
+      Collider: createCollider({
+        auto: 1,
+      }),
+      Body: createBody({
+        type: RAPIER.RigidBodyType.Dynamic,
+      }),
+    });
+
+    const cleanup = on("update", () => {
+      const { x, y } = screenToWorldPosition(getMouse());
+
+      setBodyPosition(player, { x, y });
+
+      if (click()) {
+        treasure = Treasure({
+          Transform: createTransform(x, y),
+          Rect: {
+            h: Rect.h[player],
+            w: Rect.w[player],
+          },
+          Fill: "yellow",
+          Stroke: "white",
+          Collider: createCollider({
+            auto: 1,
+          }),
+          Body: createBody({
+            type: RAPIER.RigidBodyType.Dynamic,
+          }),
+        });
+
+        $ecs.remove(player);
+        exitCurrentScene();
+      }
+    });
+
+    return cleanup;
+  });
+
+  defineScene("invasion", () => {
+    const ENEMY_NUMBER = 1;
+
+    const { left, top } = getFloorBounds();
+
+    for (let i = 0; i < ENEMY_NUMBER; i++) {
+      Enemy({
+        Transform: createTransform(left, top - 25),
+        Rect: {
+          h: 50,
+          w: 25,
+        },
+        Fill: "white",
+        Stroke: "blue",
+        Collider: createCollider({
+          auto: 1,
+        }),
+        Body: createBody({
+          type: RAPIER.RigidBodyType.Dynamic,
+          rotationsEnabled: 0,
+        }),
+        CharacterController: {
+          offset: 1,
+        },
+      });
+    }
+
+    return on("update", () => {
+      const { query } = useECS();
+
+      query(RuntimeCollider, RuntimeBody, RuntimeCharacterController).each(
+        (entity) => {
+          const controller = RuntimeCharacterController[entity]!;
+
+          controller.computeColliderMovement(RuntimeCollider[entity]!, {
+            x: 1,
+            y: 0,
+          });
+
+          const movement = getWorldDistance(treasure, entity).limit(2);
+
+          RuntimeBody[entity]!.setLinvel(movement, true);
+        },
+      );
+    });
+  });
+}
+
+export function plugins() {
   const preset = aionPreset({
     renderDebug: true,
   });
 
+  // @todo: find a better way to keep a reference to an entity
   let floor: Entity = -1;
 
   function getFloor() {
@@ -75,6 +277,7 @@ function plugins() {
 
   beforeStart(() => {
     const { $ecs } = useGame();
+    const { RAPIER } = usePhysics();
 
     floor = preset.createCube({
       Transform: createTransform(windowCenterX(), windowCenterY()),
@@ -88,7 +291,7 @@ function plugins() {
         auto: 1,
       }),
       Body: createBody({
-        type: preset.$physics.RAPIER.RigidBodyType.Fixed,
+        type: RAPIER.RigidBodyType.Fixed,
       }),
     });
 
@@ -98,10 +301,7 @@ function plugins() {
   return { ...preset, getFloor };
 }
 
-// export function getFloor() {
-//   const { query } = useGame()
-// }
-
-// export function getFloorBounds() {
-//   return getRectBounds(getFloor());
-// }
+export function getFloorBounds() {
+  const { getFloor } = useGame();
+  return getRectBounds(getFloor());
+}

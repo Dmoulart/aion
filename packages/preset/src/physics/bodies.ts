@@ -62,6 +62,11 @@ export function setBodyOptions(bodyDesc: RAPIER.RigidBodyDesc, entity: Entity) {
     Boolean(Body.translationsEnabledX[entity]!),
     Boolean(Body.translationsEnabledY[entity]!),
   );
+
+  if (Body.rotationsEnabled[entity]! === 0) {
+    bodyDesc.lockRotations();
+  }
+
   bodyDesc.setGravityScale(Body.gravityScale[entity]!);
   bodyDesc.setLinearDamping(Body.linearDamping[entity]!);
   // bodyDesc.setAdditionalMass(Body.linearDamping[entity]!); ??

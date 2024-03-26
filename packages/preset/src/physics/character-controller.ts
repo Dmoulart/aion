@@ -4,7 +4,6 @@ import {
   not,
   onEnterQuery,
   onExitQuery,
-  query,
   u32,
 } from "aion-ecs";
 import { usePhysics } from "./init.js";
@@ -46,7 +45,7 @@ export function initCharacterControllerSystem() {
 
     attach(RuntimeCharacterController, ent);
 
-    controller.enableSnapToGround(0.1);
+    controller.enableSnapToGround(0.5);
     controller.autostepEnabled();
     controller.autostepIncludesDynamicBodies();
     controller.setSlideEnabled(true);

@@ -67,7 +67,7 @@ export function setColliderOptions(
   colliderDesc.setRestitution(Collider.restitution[entity]!);
   // colliderDesc.setSolverGroups(Collider.solverGroups[entity]!); !!!
   colliderDesc.setFrictionCombineRule(Collider.frictionCombineRule[entity]!);
-  colliderDesc.rotationsEnabled = Boolean(Collider.rotationsEnabled[entity]!);
+  // colliderDesc.rotationsEnabled = Boolean(Collider.rotationsEnabled[entity]!);
 }
 
 export function intersectingColliders(ent: Entity) {

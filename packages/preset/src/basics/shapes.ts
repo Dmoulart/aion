@@ -1,9 +1,9 @@
 import type { Entity } from "aion-ecs";
-import { Rect, Transform } from "../components.js";
-import { positionOf } from "./transform.js";
+import { Rect } from "../components.js";
+import { getWorldPosition } from "./transform.js";
 
 export function getRectBounds(entity: Entity) {
-  const position = positionOf(entity);
+  const position = getWorldPosition(entity);
 
   const width = Rect.w[entity]!;
   const height = Rect.h[entity]!;
