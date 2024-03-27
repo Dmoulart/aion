@@ -32,6 +32,7 @@ import {
   getRectBounds,
   getX,
   getY,
+  createCharacterController,
 } from "aion-preset";
 import {
   Colors,
@@ -227,8 +228,6 @@ export function createScenes() {
   });
 
   defineScene("invasion", () => {
-    const ENEMY_NUMBER = 1;
-
     const { left, right, top } = getFloorBounds();
 
     SpawnPoint({
@@ -247,28 +246,6 @@ export function createScenes() {
       Transform: createTransform(right, top - 25),
     });
 
-    // for (let i = 0; i < ENEMY_NUMBER; i++) {
-    //   Enemy({
-    //     Transform: createTransform(left, top - 25),
-    //     Rect: {
-    //       h: 50,
-    //       w: 25,
-    //     },
-    //     Fill: "white",
-    //     Stroke: "blue",
-    //     Collider: createCollider({
-    //       auto: 1,
-    //     }),
-    //     Body: createBody({
-    //       type: RAPIER.RigidBodyType.Dynamic,
-    //       rotationsEnabled: 0,
-    //     }),
-    //     CharacterController: {
-    //       offset: 1,
-    //     },
-    //   });
-    // }
-
     return on("update", () => {
       const { query } = useECS();
 
@@ -279,8 +256,6 @@ export function createScenes() {
         const now = performance.now();
 
         const timeSinceLastSpawnInSec = (now - lastSpawn) / 1000;
-
-        // console.log({ timeSinceLastSpawnInSec });
 
         if (timeSinceLastSpawnInSec >= frequency) {
           EnemySpawn.lastSpawn[entity] = now;
@@ -300,9 +275,13 @@ export function createScenes() {
               type: RAPIER.RigidBodyType.Dynamic,
               rotationsEnabled: 0,
             }),
-            CharacterController: {
+            CharacterController: createCharacterController({
               offset: 1,
-            },
+              autoStepMaxHeight: 0.1,
+              autoStepMinWidth: 0.1,
+              snapToGround: 1,
+              slideEnabled: 0,
+            }),
           });
         }
       });
