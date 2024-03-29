@@ -47,9 +47,6 @@ export function setColliderOptions(
   colliderDesc.setActiveEvents(Collider.activeEvents[entity]!);
   colliderDesc.setActiveCollisionTypes(Collider.activeCollisionTypes[entity]!);
   colliderDesc.setCollisionGroups(Collider.collisionGroups[entity]!);
-
-  console.log(Collider.collisionGroups[entity]!.toString(2));
-  //
   colliderDesc.setActiveHooks(Collider.activeHooks[entity]!);
   colliderDesc.setContactForceEventThreshold(
     Collider.contactForceEventThreshold[entity]!,

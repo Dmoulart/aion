@@ -1,4 +1,4 @@
-import { defineComponent, u16, Entity, f32 } from "aion-ecs";
+import { defineComponent, u16, Entity, f32, createTag } from "aion-ecs";
 import { beforeStart, defineEngine, defineLoop, emit, on } from "aion-engine";
 import { click, direction, getMouse, key } from "aion-input";
 import {
@@ -33,7 +33,6 @@ import {
   getX,
   getY,
   createCharacterController,
-  defineCollisionGroup,
 } from "aion-preset";
 import {
   Colors,
@@ -47,7 +46,7 @@ import {
   ENEMY_COLLISION_GROUP,
 } from "./castledefense/collision-groups";
 
-export const Floor = defineComponent({});
+export const Floor = createTag();
 
 export const engine = defineEngine(plugins, () => {
   const { $camera, getFloor } = useGame();
@@ -309,9 +308,6 @@ export function createScenes() {
             movement,
             undefined,
             ENEMY_COLLISION_GROUP,
-            // (e) => {
-            //   return  e.parent()?.userData
-            // }
           );
 
           RuntimeBody[entity]!.setLinvel(controller.computedMovement(), false);
