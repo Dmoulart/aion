@@ -42,6 +42,11 @@ import {
   windowCenterY,
   windowWidth,
 } from "aion-render";
+import {
+  OBSTACLE_COLLISION_GROUP,
+  ENEMY_COLLISION_GROUP,
+  ENEMY_COLLISION_GROUP_IGNORE_OBSTACLE,
+} from "./cdef/collision-groups";
 
 export const Floor = defineComponent({});
 
@@ -143,6 +148,7 @@ export function createScenes() {
       Stroke: "white",
       Collider: createCollider({
         auto: 1,
+        collisionGroups: OBSTACLE_COLLISION_GROUP,
       }),
       Resistance: 100,
     });
@@ -163,6 +169,7 @@ export function createScenes() {
           Stroke: "white",
           Collider: createCollider({
             auto: 1,
+            collisionGroups: OBSTACLE_COLLISION_GROUP,
           }),
           Body: createBody({
             type: RAPIER.RigidBodyType.Fixed,
@@ -192,6 +199,7 @@ export function createScenes() {
       Stroke: "white",
       Collider: createCollider({
         auto: 1,
+        collisionGroups: OBSTACLE_COLLISION_GROUP,
       }),
       Body: createBody({
         type: RAPIER.RigidBodyType.Dynamic,
@@ -214,6 +222,7 @@ export function createScenes() {
           Stroke: "white",
           Collider: createCollider({
             auto: 1,
+            collisionGroups: OBSTACLE_COLLISION_GROUP,
           }),
           Body: createBody({
             type: RAPIER.RigidBodyType.Dynamic,
@@ -246,19 +255,6 @@ export function createScenes() {
       },
       Transform: createTransform(right, top - 25),
     });
-
-    const ENEMY_GROUP = 0b1;
-    const OBSTACLES_GROUP = 0b10;
-
-    const ENEMY_COLLISION_GROUP = defineCollisionGroup()
-      .isPartOfGroups(ENEMY_GROUP)
-      .canInteractWith(OBSTACLES_GROUP)
-      .get();
-
-    console.log("ENEMY", ENEMY_COLLISION_GROUP.toString(2));
-
-    // @todo: better handling of this
-    const ENEMY_COLLISION_GROUPS = 0b0000_0000_0000_1101;
 
     return on("update", () => {
       const { query } = useECS();
@@ -352,6 +348,7 @@ export function plugins() {
       Stroke: "white",
       Collider: createCollider({
         auto: 1,
+        collisionGroups: OBSTACLE_COLLISION_GROUP,
       }),
       Body: createBody({
         type: RAPIER.RigidBodyType.Fixed,

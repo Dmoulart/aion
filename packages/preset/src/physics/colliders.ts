@@ -46,7 +46,9 @@ export function setColliderOptions(
 ) {
   colliderDesc.setActiveEvents(Collider.activeEvents[entity]!);
   colliderDesc.setActiveCollisionTypes(Collider.activeCollisionTypes[entity]!);
-  // colliderDesc.setCollisionGroups(Collider.collisionGroups[entity]!); !!!
+  colliderDesc.setCollisionGroups(Collider.collisionGroups[entity]!);
+
+  console.log(Collider.collisionGroups[entity]!.toString(2));
   //
   colliderDesc.setActiveHooks(Collider.activeHooks[entity]!);
   colliderDesc.setContactForceEventThreshold(
@@ -81,7 +83,6 @@ export function setColliderOptions(
 
 //   return colliders;
 // }
-window.defineCollisionGroup = defineCollisionGroup;
 export function defineCollisionGroup() {
   let membership = 0;
   let filter = 0;
