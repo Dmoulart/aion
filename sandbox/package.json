@@ -4,10 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --debug hmr",
     "build": "tsc && vite build",
-    "preview": "vite preview",
-    "debug-hmr": "vite --debug hmr"
+    "preview": "vite preview"
   },
   "dependencies": {
     "aion-core": "workspace:*",

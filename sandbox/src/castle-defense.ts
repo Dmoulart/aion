@@ -45,8 +45,7 @@ import {
 import {
   OBSTACLE_COLLISION_GROUP,
   ENEMY_COLLISION_GROUP,
-  ENEMY_COLLISION_GROUP_IGNORE_OBSTACLE,
-} from "./cdef/collision-groups";
+} from "./castledefense/collision-groups";
 
 export const Floor = defineComponent({});
 
