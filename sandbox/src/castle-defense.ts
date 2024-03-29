@@ -33,6 +33,7 @@ import {
   getX,
   getY,
   createCharacterController,
+  defineCollisionGroup,
 } from "aion-preset";
 import {
   Colors,
@@ -136,7 +137,7 @@ export function createScenes() {
       Transform: createTransform(0, 0),
       Rect: {
         h: 500,
-        w: 10,
+        w: 50,
       },
       Fill: "grey",
       Stroke: "white",
@@ -246,6 +247,19 @@ export function createScenes() {
       Transform: createTransform(right, top - 25),
     });
 
+    const ENEMY_GROUP = 0b1;
+    const OBSTACLES_GROUP = 0b10;
+
+    const ENEMY_COLLISION_GROUP = defineCollisionGroup()
+      .isPartOfGroups(ENEMY_GROUP)
+      .canInteractWith(OBSTACLES_GROUP)
+      .get();
+
+    console.log("ENEMY", ENEMY_COLLISION_GROUP.toString(2));
+
+    // @todo: better handling of this
+    const ENEMY_COLLISION_GROUPS = 0b0000_0000_0000_1101;
+
     return on("update", () => {
       const { query } = useECS();
 
@@ -270,17 +284,18 @@ export function createScenes() {
             Stroke: "blue",
             Collider: createCollider({
               auto: 1,
+              collisionGroups: ENEMY_COLLISION_GROUP,
             }),
             Body: createBody({
               type: RAPIER.RigidBodyType.Dynamic,
               rotationsEnabled: 0,
             }),
             CharacterController: createCharacterController({
-              offset: 1,
+              offset: 0.01,
               autoStepMaxHeight: 0.1,
-              autoStepMinWidth: 0.1,
+              autoStepMinWidth: 0.2,
               snapToGround: 1,
-              slideEnabled: 0,
+              slideEnabled: 1,
             }),
           });
         }
@@ -297,6 +312,11 @@ export function createScenes() {
           controller.computeColliderMovement(
             RuntimeCollider[entity]!,
             movement,
+            undefined,
+            ENEMY_COLLISION_GROUP,
+            // (e) => {
+            //   return  e.parent()?.userData
+            // }
           );
 
           RuntimeBody[entity]!.setLinvel(controller.computedMovement(), false);
@@ -326,7 +346,7 @@ export function plugins() {
       Transform: createTransform(windowCenterX(), windowCenterY()),
       Rect: {
         h: 10,
-        w: windowWidth() * 10,
+        w: windowWidth() * 1,
       },
       Fill: Colors["acapulco:400"],
       Stroke: "white",

@@ -79,7 +79,9 @@ export function initCharacterControllerSystem() {
     const controller = world.createCharacterController(
       CharacterController.offset[ent]!,
     );
+
     setCharacterControllerOptions(ent, controller);
+
     RuntimeCharacterController[ent] = controller;
 
     attach(RuntimeCharacterController, ent);
