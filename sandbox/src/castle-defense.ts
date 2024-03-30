@@ -44,6 +44,7 @@ import {
   getWorldPosition,
   toSimulationPoint,
   fromSimulationPoint,
+  castRay,
 } from "aion-preset";
 import {
   Colors,
@@ -319,38 +320,40 @@ export function createScenes() {
 
       enemies.each((entity) => {
         debugger;
-        const { world } = usePhysics();
-
-        const from = toSimulationPoint(getWorldPosition(entity));
-        const to = getWorldDistance(treasure, entity).norm();
-        const ray = new RAPIER.Ray(from, to);
-
-        const hit = world.castRay(
-          ray,
-          4.0,
-          false,
-          undefined,
-          ENEMY_COLLISION_GROUP, // don't intersect with enemies'
-        );
-
-        if (hit != null) {
-          // The first collider hit has the handle `hit.colliderHandle` and it hit after
-          // the ray travelled a distance equal to `ray.dir * toi`.
-          let hitPoint = ray.pointAt(hit.toi); // Same as: `ray.origin + ray.dir * toi`
-          console.log(
-            "Collider",
-            hit.collider.handle,
-            "hit at point",
-            hitPoint,
-          );
-          const { x, y } = fromSimulationPoint(hitPoint);
-
-          const e = hit.collider.parent()?.userData as number;
-          Fill[e] = "blue";
-          // once("draw", () => {
-          //   circle(x, y, 10).fill("blue");
-          // });
+        const hit = castRay(entity, treasure, ENEMY_COLLISION_GROUP, 4.0);
+        if (hit) {
+          Fill[hit.entity] = "blue";
         }
+        // const from = toSimulationPoint(getWorldPosition(entity));
+        // const to = getWorldDistance(treasure, entity).norm();
+        // const ray = new RAPIER.Ray(from, to);
+
+        // const hit = world.castRay(
+        //   ray,
+        //   4.0,
+        //   false,
+        //   undefined,
+        //   ENEMY_COLLISION_GROUP, // don't intersect with enemies'
+        // );
+
+        // if (hit != null) {
+        //   // The first collider hit has the handle `hit.colliderHandle` and it hit after
+        //   // the ray travelled a distance equal to `ray.dir * toi`.
+        //   let hitPoint = ray.pointAt(hit.toi); // Same as: `ray.origin + ray.dir * toi`
+        //   console.log(
+        //     "Collider",
+        //     hit.collider.handle,
+        //     "hit at point",
+        //     hitPoint,
+        //   );
+        //   const { x, y } = fromSimulationPoint(hitPoint);
+
+        //   const e = hit.collider.parent()?.userData as number;
+        //   Fill[e] = "blue";
+        //   // once("draw", () => {
+        //   //   circle(x, y, 10).fill("blue");
+        //   // });
+        // }
       });
 
       enemies.each((entity) => {
