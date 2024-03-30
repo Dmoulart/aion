@@ -1,5 +1,12 @@
 import { Entity } from "aion-ecs";
-import { beforeStart, defineEngine, defineLoop, emit, on } from "aion-engine";
+import {
+  beforeStart,
+  defineEngine,
+  defineLoop,
+  emit,
+  on,
+  once,
+} from "aion-engine";
 import { click, direction, getMouse, key } from "aion-input";
 import {
   translate,
@@ -36,9 +43,13 @@ import {
   getGravity,
   getWorldPosition,
   toSimulationPoint,
+  fromSimulationPoint,
 } from "aion-preset";
 import {
   Colors,
+  circle,
+  fillRect,
+  rect,
   setBackgroundColor,
   windowCenterX,
   windowCenterY,
@@ -313,7 +324,14 @@ export function createScenes() {
         console.log({ from, to });
         const ray = new RAPIER.Ray(from, to);
 
-        const hit = world.castRay(ray, 4.0, true);
+        const hit = world.castRay(
+          ray,
+          4.0,
+          false,
+          undefined,
+          ENEMY_COLLISION_GROUP,
+        );
+
         if (hit != null) {
           // The first collider hit has the handle `hit.colliderHandle` and it hit after
           // the ray travelled a distance equal to `ray.dir * toi`.
@@ -324,6 +342,13 @@ export function createScenes() {
             "hit at point",
             hitPoint,
           );
+          const { x, y } = fromSimulationPoint(hitPoint);
+
+          const e = hit.collider.parent()?.userData as number;
+          Fill[e] = "blue";
+          // once("draw", () => {
+          //   circle(x, y, 10).fill("blue");
+          // });
         }
       });
 
