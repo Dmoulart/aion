@@ -33,7 +33,7 @@ export function initPhysicsSystems() {
 
     const body = world.createRigidBody(bodyDesc!);
 
-    body.setTranslation(toSimulation(getWorldPosition(ent)), false);
+    body.setTranslation(toSimulationPoint(getWorldPosition(ent)), false);
 
     body.userData = ent;
 
@@ -62,7 +62,7 @@ export function initPhysicsSystems() {
     setColliderOptions(colliderDesc, ent);
 
     const collider = world.createCollider(colliderDesc, body);
-    collider.setTranslation(toSimulation(getWorldPosition(ent)));
+    collider.setTranslation(toSimulationPoint(getWorldPosition(ent)));
 
     RuntimeCollider[ent] = collider;
 
@@ -75,7 +75,7 @@ export function initPhysicsSystems() {
     query(RuntimeBody, Transform).each((ent) => {
       const body = RuntimeBody[ent]!;
 
-      setPosition(ent, fromSimulation(body.translation()));
+      setPosition(ent, fromSimulationPoint(body.translation()));
 
       setRotation(ent, body.rotation());
     });
@@ -109,10 +109,10 @@ function createColliderDesc(ent: Entity): RAPIER.ColliderDesc[] {
 
 export const SCALE_FACTOR = 50;
 
-function fromSimulation(vec: Vector, factor = SCALE_FACTOR) {
+export function fromSimulationPoint(vec: Vector, factor = SCALE_FACTOR) {
   return new Vec(vec.x * factor, vec.y * factor);
 }
 
-function toSimulation(vec: Vector, factor = SCALE_FACTOR) {
+export function toSimulationPoint(vec: Vector, factor = SCALE_FACTOR) {
   return new Vec(vec.x / factor, vec.y / factor);
 }

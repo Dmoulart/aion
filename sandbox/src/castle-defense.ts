@@ -1,4 +1,4 @@
-import { defineComponent, u16, Entity, f32, createTag } from "aion-ecs";
+import { Entity } from "aion-ecs";
 import { beforeStart, defineEngine, defineLoop, emit, on } from "aion-engine";
 import { click, direction, getMouse, key } from "aion-input";
 import {
@@ -33,6 +33,9 @@ import {
   getX,
   getY,
   createCharacterController,
+  getGravity,
+  getWorldPosition,
+  toSimulationPoint,
 } from "aion-preset";
 import {
   Colors,
@@ -45,8 +48,13 @@ import {
   OBSTACLE_COLLISION_GROUP,
   ENEMY_COLLISION_GROUP,
 } from "./castledefense/collision-groups";
-
-export const Floor = createTag();
+import {
+  Resistance,
+  IsEnemy,
+  EnemySpawn,
+  Floor,
+  IsTreasure,
+} from "./castledefense/components";
 
 export const engine = defineEngine(plugins, () => {
   const { $camera, getFloor } = useGame();
@@ -87,12 +95,6 @@ export const useGame = engine.use;
 engine.run();
 
 export function createScenes() {
-  const Resistance = defineComponent(u16);
-  const EnemySpawn = defineComponent({
-    frequency: u16,
-    lastSpawn: f32,
-  });
-
   const { $ecs } = useGame();
   const { RAPIER } = usePhysics();
 
@@ -116,6 +118,7 @@ export function createScenes() {
     Stroke,
     Collider,
     Body,
+    IsTreasure,
   });
 
   const Enemy = $ecs.prefab({
@@ -126,6 +129,7 @@ export function createScenes() {
     Collider,
     Body,
     CharacterController,
+    IsEnemy,
   });
 
   const SpawnPoint = $ecs.prefab({
@@ -295,24 +299,56 @@ export function createScenes() {
         }
       });
 
-      query(RuntimeCollider, RuntimeBody, RuntimeCharacterController).each(
-        (entity) => {
-          const controller = RuntimeCharacterController[entity]!;
+      query(
+        RuntimeCollider,
+        RuntimeBody,
+        RuntimeCharacterController,
+        IsEnemy,
+      ).each((entity) => {
+        debugger;
+        const { world } = usePhysics();
 
-          const distance = getWorldDistance(treasure, entity);
+        const from = toSimulationPoint(getWorldPosition(entity));
+        const to = getWorldDistance(treasure, entity).norm();
+        console.log({ from, to });
+        const ray = new RAPIER.Ray(from, to);
 
-          const movement = distance.norm().scale(10);
-
-          controller.computeColliderMovement(
-            RuntimeCollider[entity]!,
-            movement,
-            undefined,
-            ENEMY_COLLISION_GROUP,
+        const hit = world.castRay(ray, 4.0, true);
+        if (hit != null) {
+          // The first collider hit has the handle `hit.colliderHandle` and it hit after
+          // the ray travelled a distance equal to `ray.dir * toi`.
+          let hitPoint = ray.pointAt(hit.toi); // Same as: `ray.origin + ray.dir * toi`
+          console.log(
+            "Collider",
+            hit.collider.handle,
+            "hit at point",
+            hitPoint,
           );
+        }
+      });
 
-          RuntimeBody[entity]!.setLinvel(controller.computedMovement(), false);
-        },
-      );
+      query(
+        RuntimeCollider,
+        RuntimeBody,
+        RuntimeCharacterController,
+        IsEnemy,
+      ).each((entity) => {
+        const controller = RuntimeCharacterController[entity]!;
+
+        const movement = getWorldDistance(treasure, entity)
+          .norm()
+          .scale(10)
+          .add(getGravity());
+
+        controller.computeColliderMovement(
+          RuntimeCollider[entity]!,
+          movement,
+          undefined,
+          ENEMY_COLLISION_GROUP,
+        );
+
+        RuntimeBody[entity]!.setLinvel(controller.computedMovement(), false);
+      });
     });
   });
 }

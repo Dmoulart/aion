@@ -66,3 +66,7 @@ export function initPhysics(options?: InitPhysicsOptions) {
 export function usePhysics() {
   return useAion().$physics;
 }
+
+export function getGravity() {
+  return usePhysics().world.gravity;
+}
