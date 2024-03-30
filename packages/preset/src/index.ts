@@ -8,3 +8,4 @@ export * from "./basics/index.js";
 export * from "./math/index.js";
 export * from "./hierarchy/index.js";
 export * from "./scene/index.js";
+export * from "./ai/index.js";
