@@ -269,9 +269,16 @@ export function createScenes() {
       Transform: createTransform(right, top - 25),
     });
 
-    return on("update", () => {
-      const { query } = useECS();
+    const { query } = useECS();
 
+    const enemies = query(
+      RuntimeCollider,
+      RuntimeBody,
+      RuntimeCharacterController,
+      IsEnemy,
+    );
+
+    return on("update", () => {
       query(Transform, EnemySpawn).each((entity) => {
         const frequency = EnemySpawn.frequency[entity]!;
         const lastSpawn = EnemySpawn.lastSpawn[entity]!;
@@ -310,18 +317,12 @@ export function createScenes() {
         }
       });
 
-      query(
-        RuntimeCollider,
-        RuntimeBody,
-        RuntimeCharacterController,
-        IsEnemy,
-      ).each((entity) => {
+      enemies.each((entity) => {
         debugger;
         const { world } = usePhysics();
 
         const from = toSimulationPoint(getWorldPosition(entity));
         const to = getWorldDistance(treasure, entity).norm();
-        console.log({ from, to });
         const ray = new RAPIER.Ray(from, to);
 
         const hit = world.castRay(
@@ -329,7 +330,7 @@ export function createScenes() {
           4.0,
           false,
           undefined,
-          ENEMY_COLLISION_GROUP,
+          ENEMY_COLLISION_GROUP, // don't intersect with enemies'
         );
 
         if (hit != null) {
@@ -352,12 +353,7 @@ export function createScenes() {
         }
       });
 
-      query(
-        RuntimeCollider,
-        RuntimeBody,
-        RuntimeCharacterController,
-        IsEnemy,
-      ).each((entity) => {
+      enemies.each((entity) => {
         const controller = RuntimeCharacterController[entity]!;
 
         const movement = getWorldDistance(treasure, entity)
