@@ -135,7 +135,7 @@ export type Action = {
   name: string;
 };
 
-export type Plan = Action[];
+export type Plan = { action: Action; source: Entity; target: Entity }[];
 
 export function getState(id: StateID) {
   assertDefined(WORLD_STATES[id]!);
@@ -174,75 +174,33 @@ export function findAction(desiredState: StateID): Action {
 export function isWorldState(object: unknown): object is WorldState {
   return Array.isArray(object) && object.length === 2;
 }
-export function planify(source: Entity, goal: Goal, plan: Plan = []): Plan {
+
+export function planify(
+  source: Entity,
+  goal: Goal,
+  iter = 10,
+  plan: Plan = [],
+): Plan {
+  //limit
+  if (iter-- === 0) {
+    return plan;
+  }
+
   const [desiredState, target] = goal;
-  console.log("Desired state", getState(desiredState).name);
+  console.log("Desired state", getState(desiredState).name, { source, target });
 
   const result = evaluateState(source, goal);
 
   if (result === true) {
-    return [];
+    return plan;
   } else if (isWorldState(result)) {
-    const [necessaryState, target] = result;
-    const action = findAction(necessaryState);
-
-    console.log("Necessary state : ", getState(necessaryState).name);
-    console.log("Necessary state action :", action.name);
-    plan.push(action);
-
-    return planify(source, [action.preconditions, target]);
+    return planify(source, result, iter, plan);
   } else {
     const action = findAction(desiredState);
-    console.log("Desired state action :", action.name);
+    console.log("Desired state action :", action.name, { source, target });
 
-    plan.push(action);
+    plan.push({ action, source, target });
 
-    return planify(source, [action.preconditions, target]);
+    return planify(source, [action.preconditions, target], iter, plan);
   }
 }
-
-// const plan = planify(1, [DoesNotExist, 2]);
-
-// console.log(plan);
-//
-//
-// const CanReach = defineWorldState(
-//   "CanReach",
-//   (source: Entity, target: Entity) => {
-//     // return false;
-
-//     return Math.random() > 0.5 ? [DoesNotExist, 3] : true;
-//   },
-// );
-
-// const IsAdjacentTo = defineWorldState(
-//   "IsAdjacentTo",
-//   (source: Entity, target: Entity) => {
-//     return false;
-//   },
-// );
-
-// const DoesNotExist = defineWorldState(
-//   "IsDead",
-//   (source: Entity, target: Entity) => {
-//     return false;
-//   },
-// );
-
-// const MoveTo = defineAction({
-//   effects: IsAdjacentTo,
-//   preconditions: CanReach,
-//   name: "MoveTo",
-// });
-
-// const Kill = defineAction({
-//   effects: DoesNotExist,
-//   preconditions: IsAdjacentTo,
-//   name: "Kill",
-// });
-
-// const ClearWay = defineAction({
-//   effects: CanReach,
-//   preconditions: IsAdjacentTo,
-//   name: "ClearWay",
-// });

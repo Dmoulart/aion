@@ -35,6 +35,7 @@ import {
   createCharacterController,
   getGravity,
   castRay,
+  Brain,
 } from "aion-preset";
 import {
   Colors,
@@ -54,6 +55,7 @@ import {
   Floor,
   IsTreasure,
 } from "./castledefense/components";
+import { createTakeTreasureGoal } from "./castledefense/ai";
 
 export const engine = defineEngine(plugins, () => {
   const { $camera, getFloor } = useGame();
@@ -129,6 +131,7 @@ export function createScenes() {
     Body,
     CharacterController,
     IsEnemy,
+    Brain,
   });
 
   const SpawnPoint = $ecs.prefab({
@@ -286,6 +289,9 @@ export function createScenes() {
             },
             Fill: "white",
             Stroke: "blue",
+            Brain: {
+              goal: createTakeTreasureGoal(treasure),
+            },
             Collider: createCollider({
               auto: 1,
               collisionGroups: ENEMY_COLLISION_GROUP,
@@ -305,12 +311,12 @@ export function createScenes() {
         }
       });
 
-      enemies.each((entity) => {
-        const hit = castRay(entity, treasure, ENEMY_COLLISION_GROUP, 4.0);
-        if (hit) {
-          Fill[hit.entity] = "blue";
-        }
-      });
+      // enemies.each((entity) => {
+      //   const hit = castRay(entity, treasure, ENEMY_COLLISION_GROUP, 4.0);
+      //   if (hit) {
+      //     Fill[hit.entity] = "blue";
+      //   }
+      // });
 
       enemies.each((entity) => {
         const controller = RuntimeCharacterController[entity]!;
@@ -336,6 +342,7 @@ export function createScenes() {
 export function plugins() {
   const preset = aionPreset({
     renderDebug: true,
+    debugEntityID: true,
   });
 
   // @todo: find a better way to keep a reference to an entity

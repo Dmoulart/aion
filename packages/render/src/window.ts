@@ -282,7 +282,7 @@ export function fillText(
   maxWidth?: number | undefined,
 ) {
   if (color) {
-    instance.ctx.strokeStyle = color;
+    instance.ctx.fillStyle = color;
   }
 
   instance.ctx.fillText(text, x, y, maxWidth);
