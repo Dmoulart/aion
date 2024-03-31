@@ -55,7 +55,7 @@ import {
   Floor,
   IsTreasure,
 } from "./castledefense/components";
-import { createTakeTreasureGoal } from "./castledefense/ai";
+import { createTakeTreasureGoal, setupAI } from "./castledefense/ai";
 
 export const engine = defineEngine(plugins, () => {
   const { $camera, getFloor } = useGame();
@@ -244,6 +244,8 @@ export function createScenes() {
   defineScene("invasion", () => {
     const { left, right, top } = getFloorBounds();
 
+    setupAI();
+
     SpawnPoint({
       EnemySpawn: {
         frequency: 2,
@@ -318,23 +320,23 @@ export function createScenes() {
       //   }
       // });
 
-      enemies.each((entity) => {
-        const controller = RuntimeCharacterController[entity]!;
+      // enemies.each((entity) => {
+      //   const controller = RuntimeCharacterController[entity]!;
 
-        const movement = getWorldDistance(treasure, entity)
-          .norm()
-          .scale(10)
-          .add(getGravity());
+      //   const movement = getWorldDistance(treasure, entity)
+      //     .norm()
+      //     .scale(10)
+      //     .add(getGravity());
 
-        controller.computeColliderMovement(
-          RuntimeCollider[entity]!,
-          movement,
-          undefined,
-          ENEMY_COLLISION_GROUP,
-        );
+      //   controller.computeColliderMovement(
+      //     RuntimeCollider[entity]!,
+      //     movement,
+      //     undefined,
+      //     ENEMY_COLLISION_GROUP,
+      //   );
 
-        RuntimeBody[entity]!.setLinvel(controller.computedMovement(), false);
-      });
+      //   RuntimeBody[entity]!.setLinvel(controller.computedMovement(), false);
+      // });
     });
   });
 }

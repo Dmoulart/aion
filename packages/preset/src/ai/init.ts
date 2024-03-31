@@ -6,6 +6,7 @@ import { Brain, PlanComponent, planifyGoal } from "./brain.js";
 export function initAI() {
   beforeStart(() => {
     const { query, attach } = useECS();
+
     const onAddedBrain = onEnterQuery(query(Brain));
 
     onAddedBrain((entity) => {

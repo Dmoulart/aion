@@ -1,115 +1,6 @@
 import { assert, assertDefined } from "aion-core";
 import { defineComponent, type Entity } from "aion-ecs";
 
-// export const ACTIONS = {
-//   Kill: 0,
-//   MoveTo: 1,
-//   AdjacentTo: 2,
-// } as const;
-
-// export type Goal = {
-//   precondition: () => boolean;
-//   desiredWorldState: () => boolean;
-// };
-
-// export type Action = {
-//   precondition: () => boolean;
-//   effect: () => void;
-// };
-
-// export function defineGoal(
-//   precondition: () => boolean,
-//   desiredWorldState: () => boolean,
-// ) {}
-
-// export const ACTIONS = {
-//   Kill: 0,
-//   MoveTo: 1,
-//   AdjacentTo: 2,
-// } as const;
-
-// umwelt
-// export const State = {
-//   IsAdjacentTo: 0,
-//   CanReach: 1,
-//   Dead: 2,
-// } as const;
-
-// export const verify: Record<
-//   State,
-//   (source: Entity, Target: Entity) => boolean | WorldState
-// > = {
-//   [State.IsAdjacentTo](source: Entity, subject: Entity) {
-//     return true;
-//   },
-//   [State.CanReach](source: Entity, subject: Entity) {
-//     return [State.Dead, 3];
-//   },
-//   [State.Dead](source: Entity, subject: Entity) {
-//     return false;
-//   },
-// };
-
-// export type State = (typeof State)[keyof typeof State];
-// export type Subject = Entity;
-
-// //
-// export type Goal = {
-//   desire: WorldState[];
-// };
-
-// export type Action = {
-//   preconditions: WorldState[];
-//   effect: WorldState[];
-// };
-
-// export type Plan = Action[];
-
-// export type WorldState = [State, Subject];
-
-// const MoveTo = (ent: Entity): Action => ({
-//   preconditions: [[State.CanReach, ent]],
-//   effect: [[State.IsAdjacentTo, ent]],
-// });
-
-// const Kill = (ent: Entity): Action => ({
-//   preconditions: [[State.IsAdjacentTo, ent]],
-//   effect: [[State.Dead, ent]],
-// });
-
-// // keyed by effects
-// const ACTIONS: Record<State, Action[]> = {};
-
-// export function defineAction(): Action {}
-
-// export function planify(entity: Entity, desire: WorldState): Plan {
-//   const [desiredState, target] = desire;
-
-//   const accomplished = verify[desiredState](entity, target);
-
-//   if (accomplished === true) {
-//     return [];
-//   }
-
-//   accomplished
-// }
-
-// planify(1, [State.Dead, 2]);
-
-// console.log(Kill(1));
-//
-//
-// export type Goal = {
-//   precondition: () => boolean;
-//   desiredWorldState: () => boolean;
-// };
-
-// export type Action = {
-//   precondition: () => boolean;
-//   effect: () => void;
-// };
-//
-
 let nextID = 0;
 const WORLD_STATES: Record<
   StateID,
@@ -135,7 +26,8 @@ export type Action = {
   name: string;
 };
 
-export type Plan = { action: Action; source: Entity; target: Entity }[];
+export type PlannedAction = { action: Action; source: Entity; target: Entity };
+export type Plan = PlannedAction[];
 
 export function getState(id: StateID) {
   assertDefined(WORLD_STATES[id]!);

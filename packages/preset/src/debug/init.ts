@@ -10,7 +10,8 @@ export function initDebug(options?: InitDebugOptions) {
   if (options?.debugEntityID) {
     beforeStart(() => {
       const ecs = useECS();
-      on("draw", () => {
+
+      on("render", () => {
         ecs.query(Transform).each((ent) => {
           const pos = getWorldPosition(ent);
           fillText(ent.toString(), pos.x, pos.y, "red");

@@ -14,6 +14,7 @@ import { Rect, Stroke, Fill, Circle, Transform } from "../components.js";
 import { not, type Entity } from "aion-ecs";
 import { getProjectionMatrix } from "./camera.js";
 import { Parent, forEachChildOf } from "../index.js";
+import { emit } from "aion-engine";
 
 export function render(camera: Entity) {
   const { query, any } = useECS();
@@ -33,6 +34,9 @@ export function render(camera: Entity) {
       draw(ctx, ent);
     },
   );
+
+  // too
+  emit("render");
 
   postDraw(ctx);
 }
