@@ -44,6 +44,7 @@ export function defineWorldState(name: string, evaluate: EvaluateWorldState) {
 export function defineAction(action: Action) {
   WORLD_ACTIONS[action.effects] ??= [];
   WORLD_ACTIONS[action.effects]?.push(action);
+  return action;
 }
 
 export function evaluateState(source: Entity, [id, target]: WorldState) {
@@ -91,7 +92,7 @@ export function planify(
     const action = findAction(desiredState);
     console.log("Desired state action :", action.name, { source, target });
 
-    plan.push({ action, source, target });
+    plan.unshift({ action, source, target });
 
     return planify(source, [action.preconditions, target], iter, plan);
   }

@@ -1,23 +1,14 @@
-import {
-  Component,
-  Entity,
-  defineComponent,
-  eid,
-  i32,
-  onEnterQuery,
-  query,
-} from "aion-ecs";
+import { Entity, defineComponent, eid, i32 } from "aion-ecs";
 import { on } from "aion-engine";
 import {
   Collider,
   Fill,
-  PlanComponent,
-  PlannedAction,
   RuntimeBody,
   RuntimeCharacterController,
   RuntimeCollider,
   castRay,
   defineAction,
+  defineBehavior,
   defineWorldState,
   getGravity,
   getWorldDistance,
@@ -39,6 +30,7 @@ import { ENEMY_COLLISION_GROUP } from "./collision-groups";
 export const CanReach = defineWorldState(
   "CanReach",
   (source: Entity, target: Entity) => {
+    debugger;
     // return false;
     const hit = castRay(source, target, Collider.collisionGroups[source], 18.0);
     if (hit) {
@@ -65,7 +57,7 @@ export const DoesNotExist = defineWorldState(
   "IsDead",
   (_: Entity, target: Entity) => {
     const { exists } = useECS();
-    return exists(target);
+    return !exists(target);
   },
 );
 
@@ -111,69 +103,40 @@ export function createTakeTreasureGoal(treasure: Entity) {
 export function setupAI() {
   const { query } = useECS();
 
-  const onAddedPlan = onEnterQuery(query(PlanComponent));
+  const moveToTarget = defineBehavior(
+    MoveTo,
+    MoveToAction,
+    (entity: Entity) => {
+      debugger;
+      const controller = RuntimeCharacterController[entity]!;
+      const movement = getWorldDistance(MoveToAction.target[entity], entity)
+        .norm()
+        .scale(10)
+        .add(getGravity());
 
-  onAddedPlan((entity) => {
-    const nextAction = PlanComponent[entity]![0];
+      controller.computeColliderMovement(
+        RuntimeCollider[entity]!,
+        movement,
+        undefined,
+        ENEMY_COLLISION_GROUP,
+      );
 
-    if (nextAction) {
-      attachAction(entity, nextAction);
-    }
+      const computedMovement = controller.computedMovement();
+
+      RuntimeBody[entity]!.setLinvel(computedMovement, false);
+    },
+  );
+
+  setupBehavior(() => {
+    query(
+      MoveToAction,
+      RuntimeCharacterController,
+      RuntimeBody,
+      RuntimeCollider,
+    ).each(moveToTarget);
   });
-
-  setupBehavior(moveToBehavior);
-}
-
-export function attachAction(entity: Entity, action: PlannedAction) {
-  const { attach } = useECS();
-
-  let component: Component;
-
-  switch (action.action.name) {
-    case "MoveTo":
-      component = MoveToAction;
-      break;
-    case "Kill":
-      component = KillAction;
-      break;
-    case "ClearWay":
-      component = KillAction;
-      break;
-    default:
-      throw new Error(`No component for action ${action.action.name}`);
-  }
-
-  component.target[entity] = action.target;
-  attach(component, entity);
 }
 
 export function setupBehavior(behavior: () => void) {
   on("update", behavior);
-}
-
-export function moveToBehavior() {
-  const { query } = useECS();
-
-  query(
-    MoveToAction,
-    RuntimeCharacterController,
-    RuntimeBody,
-    RuntimeCollider,
-  ).each((entity) => {
-    const controller = RuntimeCharacterController[entity]!;
-
-    const movement = getWorldDistance(MoveToAction.target[entity], entity)
-      .norm()
-      .scale(10)
-      .add(getGravity());
-
-    controller.computeColliderMovement(
-      RuntimeCollider[entity]!,
-      movement,
-      undefined,
-      ENEMY_COLLISION_GROUP,
-    );
-
-    RuntimeBody[entity]!.setLinvel(controller.computedMovement(), false);
-  });
 }

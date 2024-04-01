@@ -254,13 +254,13 @@ export function createScenes() {
       Transform: createTransform(left, top - 25),
     });
 
-    SpawnPoint({
-      EnemySpawn: {
-        frequency: 2,
-        lastSpawn: performance.now(),
-      },
-      Transform: createTransform(right, top - 25),
-    });
+    // SpawnPoint({
+    //   EnemySpawn: {
+    //     frequency: 2,
+    //     lastSpawn: performance.now(),
+    //   },
+    //   Transform: createTransform(right, top - 25),
+    // });
 
     const { query } = useECS();
 
