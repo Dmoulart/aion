@@ -80,7 +80,6 @@ export function planify(
   }
 
   const [desiredState, target] = goal;
-  console.log("Desired state", getState(desiredState).name, { source, target });
 
   const result = evaluateState(source, goal);
 
@@ -90,7 +89,6 @@ export function planify(
     return planify(source, result, iter, plan);
   } else {
     const action = findAction(desiredState);
-    console.log("Desired state action :", action.name, { source, target });
 
     plan.unshift({ action, source, target });
 

@@ -16,7 +16,3 @@ export function planifyGoal(entity: Entity) {
 export function getGoal(entity: Entity) {
   return Brain.goal[entity]!;
 }
-// export function setGoal(entity: Entity, goal: WorldState) {
-//   Brain.goal[entity]![0] = goal[0];
-//   Brain.goal[entity]![1] = goal[1];
-// }
