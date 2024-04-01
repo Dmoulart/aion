@@ -45,15 +45,15 @@ import {
 import {
   OBSTACLE_COLLISION_GROUP,
   ENEMY_COLLISION_GROUP,
-} from "./castledefense/collision-groups";
+} from "./castle-defense/collision-groups";
 import {
   Resistance,
   IsEnemy,
   EnemySpawn,
   Floor,
   IsTreasure,
-} from "./castledefense/components";
-import { createTakeTreasureGoal, setupAI } from "./castledefense/ai";
+} from "./castle-defense/components";
+import { createTakeTreasureGoal, setupAI } from "./castle-defense/ai";
 
 export const engine = defineEngine(plugins, () => {
   const { $camera, getFloor } = useGame();

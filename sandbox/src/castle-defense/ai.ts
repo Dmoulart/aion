@@ -23,17 +23,6 @@ import {
 import { ENEMY_COLLISION_GROUP } from "./collision-groups";
 import { vec } from "aion-core";
 
-// const Destroy = (e: Entity) =>
-//   defineGoal(
-//     () => isAdjacentTo(e),
-//     () => {
-//     const {
-//       $ecs: { exists },
-//     } = useGame();
-
-//     return !exists(e);
-//   });
-
 export const CanReach = defineWorldState(
   "CanReach",
   (source: Entity, target: Entity) => {
@@ -104,10 +93,6 @@ export const ClearWayAction = defineComponent({
   target: eid,
 });
 
-// const plan = planify(1, [DoesNotExist, 2]);
-
-// console.log(plan);
-
 export function createTakeTreasureGoal(treasure: Entity) {
   const goal = new i32(2);
   goal[0] = IsAdjacentTo;
@@ -159,7 +144,7 @@ export function setupAI() {
 
       // @todo: this is not right
       const sword = getFirstChildOf(entity)!;
-      const swordPosition = vec().fromAlike(getLocalPosition(sword));
+      const swordPosition = vec(getLocalPosition(sword));
 
       setPosition(sword, swordPosition.lerp(vec(-20, 0), 0.1));
       // setRotation(sword, )
