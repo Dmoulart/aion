@@ -1,4 +1,4 @@
-import { Entity, defineComponent, eid, i32 } from "aion-ecs";
+import { Entity, defineComponent, eid, i32, u8 } from "aion-ecs";
 import { on } from "aion-engine";
 import {
   Collider,
@@ -10,12 +10,18 @@ import {
   defineAction,
   defineBehavior,
   defineWorldState,
+  getBody,
+  getFirstChildOf,
   getGravity,
+  getLocalPosition,
   getWorldDistance,
+  setPosition,
+  setRotation,
   toSimulationPoint,
   useECS,
 } from "aion-preset";
 import { ENEMY_COLLISION_GROUP } from "./collision-groups";
+import { vec } from "aion-core";
 
 // const Destroy = (e: Entity) =>
 //   defineGoal(
@@ -83,8 +89,10 @@ export const Kill = defineAction({
   preconditions: IsAdjacentTo,
   name: "Kill",
 });
+
 export const KillAction = defineComponent({
   target: eid,
+  state: u8,
 });
 
 export const ClearWay = defineAction({
@@ -142,8 +150,21 @@ export function setupAI() {
     ).each(moveToTarget);
   });
 
-  const killTarget = defineBehavior(Kill, KillAction, (_: Entity) => {
-    console.log("kill !", _);
+  const killTarget = defineBehavior(Kill, KillAction, (entity: Entity) => {
+    console.log("kill !");
+
+    // momentum
+    if (KillAction.state[entity] === 0) {
+      const body = getBody(entity);
+
+      // @todo: this is not right
+      const sword = getFirstChildOf(entity)!;
+      const swordPosition = vec().fromAlike(getLocalPosition(sword));
+
+      setPosition(sword, swordPosition.lerp(vec(-20, 0), 0.1));
+      // setRotation(sword, )
+      // body.setLinvel()
+    }
   });
 
   setupBehavior(() => {

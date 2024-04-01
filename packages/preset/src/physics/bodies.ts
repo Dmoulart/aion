@@ -77,3 +77,7 @@ export function setBodyPosition(entity: Entity, position: Vector) {
   setPosition(entity, position);
   RuntimeBody[entity]?.setTranslation(position, false);
 }
+
+export function getBody(entity: Entity) {
+  return RuntimeBody[entity]!;
+}

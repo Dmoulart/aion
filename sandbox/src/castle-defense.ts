@@ -33,6 +33,7 @@ import {
   getY,
   createCharacterController,
   Brain,
+  addChildTo,
 } from "aion-preset";
 import {
   Colors,
@@ -63,7 +64,7 @@ export const engine = defineEngine(plugins, () => {
     emit("draw");
   });
 
-  setBackgroundColor("black");
+  setBackgroundColor("rgba(156, 156, 156, 0.8)");
 
   setZoom(0.7);
   centerCameraOnEntity(getFloor());
@@ -129,6 +130,13 @@ export function createScenes() {
     CharacterController,
     IsEnemy,
     Brain,
+  });
+
+  const Sword = $ecs.prefab({
+    Transform,
+    Rect,
+    Fill,
+    Stroke,
   });
 
   const SpawnPoint = $ecs.prefab({
@@ -251,13 +259,13 @@ export function createScenes() {
       Transform: createTransform(left, top - 25),
     });
 
-    // SpawnPoint({
-    //   EnemySpawn: {
-    //     frequency: 2,
-    //     lastSpawn: performance.now(),
-    //   },
-    //   Transform: createTransform(right, top - 25),
-    // });
+    SpawnPoint({
+      EnemySpawn: {
+        frequency: 2,
+        lastSpawn: performance.now(),
+      },
+      Transform: createTransform(right, top - 25),
+    });
 
     const { query } = useECS();
 
@@ -280,7 +288,17 @@ export function createScenes() {
         if (secondsSinceLastSpawn >= frequency) {
           EnemySpawn.lastSpawn[entity] = now;
 
-          Enemy({
+          const sword = Sword({
+            Transform: createTransform(10, -20),
+            Fill: "grey",
+            Stroke: "black",
+            Rect: {
+              h: 50,
+              w: 5,
+            },
+          });
+
+          const enemy = Enemy({
             Transform: createTransform(getX(entity), getY(entity)),
             Rect: {
               h: 50,
@@ -307,6 +325,8 @@ export function createScenes() {
               slideEnabled: 1,
             }),
           });
+
+          addChildTo(enemy, sword);
         }
       });
 
