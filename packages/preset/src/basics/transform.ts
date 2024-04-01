@@ -11,6 +11,12 @@ import {
 } from "../index.js";
 import type { Entity } from "aion-ecs";
 
+export type TransformData = Float32Array;
+
+export function getTransform(entity: Entity) {
+  return Transform[entity]!;
+}
+
 // @todo:perf used when creating transform with prefab. Not optimized.
 // we should be able to create a transform without instanciating a new array in prefabs.
 export function createTransform(x: number, y: number): Float32Array {
@@ -120,6 +126,26 @@ export function rotationOf(ent: Entity) {
     );
   } else {
     return 0;
+  }
+}
+export function getLocalRotation(ent: Entity): number {
+  return getTransformRotation(Transform[ent]!);
+}
+
+export function getTransformRotation(transform: Float32Array) {
+  // Extract the rotation component from the transformation matrix
+  const a = transform[0]!;
+  const b = transform[1]!;
+  const c = transform[2]!;
+  const d = transform[3]!;
+
+  // Calculate the rotation angle based on the rotation component
+  if (a || b) {
+    return Math.atan2(b, a); // Return the angle in radians using arctan2
+  } else if (c || d) {
+    return Math.atan2(c, d); // Return the angle in radians using arctan2
+  } else {
+    return 0; // If there is no rotation component, return 0
   }
 }
 

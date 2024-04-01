@@ -17,6 +17,7 @@ import {
   initScenes,
   render,
   type InitDebugOptions,
+  initAnimations,
 } from "./index.js";
 import { debugRender } from "./physics/debug.js";
 
@@ -31,6 +32,8 @@ export function aionPreset(options?: AionPresetOptions) {
   const $physics = initPhysics(options);
 
   initAI();
+
+  initAnimations();
 
   initDebug(options);
 

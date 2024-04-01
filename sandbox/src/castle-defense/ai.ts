@@ -6,8 +6,10 @@ import {
   RuntimeBody,
   RuntimeCharacterController,
   RuntimeCollider,
+  Transform,
   castRay,
   defineAction,
+  defineAnimationConfig,
   defineBehavior,
   defineWorldState,
   getBody,
@@ -18,6 +20,7 @@ import {
   setPosition,
   setWorldRotation,
   toSimulationPoint,
+  updateAnimation,
   useECS,
 } from "aion-preset";
 import { ENEMY_COLLISION_GROUP } from "./collision-groups";
@@ -130,8 +133,38 @@ export function setupAI() {
     ).each(moveToTarget);
   });
 
+  const AttackAnimation = defineAnimationConfig({
+    states: {
+      initial: {
+        transform: {
+          x: 0,
+          y: 0,
+          rotation: 0,
+        },
+      },
+      momentum: {
+        transform: {
+          x: -20,
+          y: 0,
+          rotation: 90,
+        },
+        lerp: 1,
+      },
+      estoc: {
+        transform: {
+          x: 30,
+          y: 0,
+          rotation: 90,
+        },
+        lerp: 0.5,
+      },
+    },
+  });
+
   const killTarget = defineBehavior(Kill, KillAction, (entity: Entity) => {
     console.log("kill !");
+
+    // updateAnimation(AttackAnimation, undefined, Transform[entity]!);
 
     // momentum
     if (KillAction.state[entity] === 0) {

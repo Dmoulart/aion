@@ -10,3 +10,4 @@ export * from "./hierarchy/index.js";
 export * from "./scene/index.js";
 export * from "./ai/index.js";
 export * from "./debug/index.js";
+export * from "./animation/index.js";
