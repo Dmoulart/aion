@@ -34,6 +34,7 @@ import {
   createCharacterController,
   Brain,
   addChildTo,
+  getWorldPosition,
 } from "aion-preset";
 import {
   Colors,
@@ -54,6 +55,7 @@ import {
   IsTreasure,
 } from "./castle-defense/components";
 import { createTakeTreasureGoal, setupAI } from "./castle-defense/ai";
+import { createEnemy } from "./castle-defense/enemy";
 
 export const engine = defineEngine(plugins, () => {
   const { $camera, getFloor } = useGame();
@@ -118,25 +120,6 @@ export function createScenes() {
     Collider,
     Body,
     IsTreasure,
-  });
-
-  const Enemy = $ecs.prefab({
-    Transform,
-    Rect,
-    Fill,
-    Stroke,
-    Collider,
-    Body,
-    CharacterController,
-    IsEnemy,
-    Brain,
-  });
-
-  const Sword = $ecs.prefab({
-    Transform,
-    Rect,
-    Fill,
-    Stroke,
   });
 
   const SpawnPoint = $ecs.prefab({
@@ -269,13 +252,6 @@ export function createScenes() {
 
     const { query } = useECS();
 
-    const enemies = query(
-      RuntimeCollider,
-      RuntimeBody,
-      RuntimeCharacterController,
-      IsEnemy,
-    );
-
     return on("update", () => {
       query(Transform, EnemySpawn).each((entity) => {
         const frequency = EnemySpawn.frequency[entity]!;
@@ -288,72 +264,9 @@ export function createScenes() {
         if (secondsSinceLastSpawn >= frequency) {
           EnemySpawn.lastSpawn[entity] = now;
 
-          const sword = Sword({
-            Transform: createTransform(10, -20),
-            Fill: "grey",
-            Stroke: "black",
-            Rect: {
-              h: 50,
-              w: 5,
-            },
-          });
-
-          const enemy = Enemy({
-            Transform: createTransform(getX(entity), getY(entity)),
-            Rect: {
-              h: 50,
-              w: 25,
-            },
-            Fill: "white",
-            Stroke: "blue",
-            Brain: {
-              goal: createTakeTreasureGoal(treasure),
-            },
-            Collider: createCollider({
-              auto: 1,
-              collisionGroups: ENEMY_COLLISION_GROUP,
-            }),
-            Body: createBody({
-              type: RAPIER.RigidBodyType.Dynamic,
-              rotationsEnabled: 0,
-            }),
-            CharacterController: createCharacterController({
-              offset: 0.01,
-              autoStepMaxHeight: 0.1,
-              autoStepMinWidth: 0.2,
-              snapToGround: 1,
-              slideEnabled: 1,
-            }),
-          });
-
-          addChildTo(enemy, sword);
+          createEnemy({ x: getX(entity), y: getY(entity) }, treasure);
         }
       });
-
-      // enemies.each((entity) => {
-      //   const hit = castRay(entity, treasure, ENEMY_COLLISION_GROUP, 4.0);
-      //   if (hit) {
-      //     Fill[hit.entity] = "blue";
-      //   }
-      // });
-
-      // enemies.each((entity) => {
-      //   const controller = RuntimeCharacterController[entity]!;
-
-      //   const movement = getWorldDistance(treasure, entity)
-      //     .norm()
-      //     .scale(10)
-      //     .add(getGravity());
-
-      //   controller.computeColliderMovement(
-      //     RuntimeCollider[entity]!,
-      //     movement,
-      //     undefined,
-      //     ENEMY_COLLISION_GROUP,
-      //   );
-
-      //   RuntimeBody[entity]!.setLinvel(controller.computedMovement(), false);
-      // });
     });
   });
 }
