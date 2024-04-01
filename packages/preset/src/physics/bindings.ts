@@ -14,9 +14,10 @@ import type RAPIER from "@dimforge/rapier2d";
 import { on } from "aion-engine";
 import {
   getWorldPosition,
+  getWorldRotation,
   positionOf,
   setPosition,
-  setRotation,
+  setWorldRotation,
 } from "../basics/transform.js";
 import { setBodyOptions } from "./bodies.js";
 
@@ -34,6 +35,7 @@ export function initPhysicsSystems() {
     const body = world.createRigidBody(bodyDesc!);
 
     body.setTranslation(toSimulationPoint(getWorldPosition(ent)), false);
+    body.setRotation(getWorldRotation(ent), false);
 
     body.userData = ent;
 
@@ -63,6 +65,7 @@ export function initPhysicsSystems() {
 
     const collider = world.createCollider(colliderDesc, body);
     collider.setTranslation(toSimulationPoint(getWorldPosition(ent)));
+    collider.setRotation(getWorldRotation(ent));
 
     RuntimeCollider[ent] = collider;
 
@@ -77,7 +80,7 @@ export function initPhysicsSystems() {
 
       setPosition(ent, fromSimulationPoint(body.translation()));
 
-      setRotation(ent, body.rotation());
+      setWorldRotation(ent, body.rotation());
     });
   });
 }

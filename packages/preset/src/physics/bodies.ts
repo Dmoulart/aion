@@ -75,7 +75,10 @@ export function setBodyOptions(bodyDesc: RAPIER.RigidBodyDesc, entity: Entity) {
 
 export function setBodyPosition(entity: Entity, position: Vector) {
   setPosition(entity, position);
-  RuntimeBody[entity]?.setTranslation(position, false);
+
+  const body = getBody(entity);
+
+  body.setTranslation(position, false);
 }
 
 export function getBody(entity: Entity) {

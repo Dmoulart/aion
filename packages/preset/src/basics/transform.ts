@@ -67,16 +67,30 @@ export function getLocalMatrix(ent: Entity): Matrix | undefined {
   return Transform[ent];
 }
 
-export function setRotation(ent: Entity, rad: number) {
+export function setWorldRotation(ent: Entity, rad: number) {
   const transform = Transform[ent]!;
 
-  //@todo:perf directly set the rotation ? is this even possible ?
+  // Extract the signs of the scaling factors
+  //
+  const scaleXSign = Math.sign(transform[0]!);
+  const scaleYSign = Math.sign(transform[3]!);
+
+  // Extract current translation components
   const tx = transform[4]!;
   const ty = transform[5]!;
 
-  mat.identity(transform);
+  // Reset rotation component while preserving scale sign
+  transform[0] = Math.cos(rad) * scaleXSign;
+  transform[1] = -Math.sin(rad) * scaleYSign;
+  transform[2] = Math.sin(rad) * scaleXSign;
+  transform[3] = Math.cos(rad) * scaleYSign;
 
-  mat.rotate(transform, transform, rad);
+  // Restore scaling factors
+  const newScaleX = getScaleX(transform);
+  const newScaleY = getScaleY(transform);
+
+  transform[0] = newScaleX * scaleXSign;
+  transform[3] = newScaleY * scaleYSign;
 
   // Restore translation components
   transform[4] = tx;
@@ -87,6 +101,7 @@ export function rotate(ent: Entity, rad: number) {
   mat.rotate(Transform[ent]!, Transform[ent]!, rad);
 }
 
+// In radians
 export function rotationOf(ent: Entity) {
   const transform = Transform[ent]!;
 
@@ -112,6 +127,14 @@ export function getWorldRotation(ent: Entity) {
   return rotationOf(ent);
 }
 
-export function scale(ent: Entity, by: number) {
-  mat.scale(Transform[ent]!, Transform[ent]!, [by, by]);
+export function scale(ent: Entity, x: number, y: number = x) {
+  mat.scale(Transform[ent]!, Transform[ent]!, [x, y]);
+}
+
+export function flipX(ent: Entity) {
+  scale(ent, -1, 1);
+}
+
+export function flipY(ent: Entity) {
+  scale(ent, 1, -1);
 }

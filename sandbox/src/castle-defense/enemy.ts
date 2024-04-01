@@ -1,4 +1,4 @@
-import { Vector } from "aion-core";
+import { Vector, leftDirection, rightDirection } from "aion-core";
 import { Entity } from "aion-ecs";
 import {
   Transform,
@@ -9,6 +9,7 @@ import {
   Body,
   CharacterController,
   Brain,
+  Circle,
   createTransform,
   createCollider,
   createBody,
@@ -17,6 +18,11 @@ import {
   useECS,
   usePhysics,
   singleton,
+  getApproximateDirection,
+  scale,
+  rotate,
+  degreesToRadians,
+  flipX,
 } from "aion-preset";
 import { createTakeTreasureGoal } from "./ai";
 import { ENEMY_COLLISION_GROUP } from "./collision-groups";
@@ -68,6 +74,7 @@ export function createEnemy(pos: Vector, target: Entity) {
       h: 50,
       w: 25,
     },
+
     Fill: "white",
     Stroke: "blue",
     Brain: {
@@ -91,4 +98,12 @@ export function createEnemy(pos: Vector, target: Entity) {
   });
 
   addChildTo(enemy, sword);
+
+  const comesFromRight = getApproximateDirection(enemy, target).equals(
+    leftDirection(),
+  );
+
+  if (comesFromRight) {
+    flipX(enemy);
+  }
 }

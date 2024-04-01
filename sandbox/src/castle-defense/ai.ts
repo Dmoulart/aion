@@ -16,7 +16,7 @@ import {
   getLocalPosition,
   getWorldDistance,
   setPosition,
-  setRotation,
+  setWorldRotation,
   toSimulationPoint,
   useECS,
 } from "aion-preset";
@@ -44,12 +44,7 @@ export const IsAdjacentTo = defineWorldState(
   "IsAdjacentTo",
   (source: Entity, target: Entity) => {
     const distance = toSimulationPoint(getWorldDistance(source, target));
-    console.log(
-      "distance",
-      { source, target },
-      Math.abs(distance.x),
-      Math.abs(distance.y),
-    );
+
     // @todo consider y
     return Math.abs(distance.x) <= 1; // && Math.abs(distance.y) <= 4;
   },

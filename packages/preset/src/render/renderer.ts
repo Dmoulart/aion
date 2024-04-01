@@ -41,23 +41,6 @@ export function render(camera: Entity) {
   postDraw(ctx);
 }
 
-export function preDraw(
-  ctx: CanvasRenderingContext2D,
-  matrix: ArrayLike<number>,
-) {
-  // Save the transformation matrix to restore it after drawing
-  // @todo: perf
-  ctx.save();
-  ctx.transform(
-    matrix[0]!,
-    matrix[1]!,
-    matrix[2]!,
-    matrix[3]!,
-    matrix[4]!,
-    matrix[5]!,
-  );
-}
-
 export function draw(ctx: CanvasRenderingContext2D, ent: Entity) {
   const { has } = useECS();
   const { w, h } = Rect;
@@ -91,9 +74,28 @@ export function draw(ctx: CanvasRenderingContext2D, ent: Entity) {
     fill(Fill[ent]!);
   }
 
-  forEachChildOf(ent, (child) => draw(ctx, child));
+  forEachChildOf(ent, (child) => {
+    draw(ctx, child);
+  });
 
   postDraw(ctx);
+}
+
+export function preDraw(
+  ctx: CanvasRenderingContext2D,
+  matrix: ArrayLike<number>,
+) {
+  // Save the transformation matrix to restore it after drawing
+  // @todo: perf
+  ctx.save();
+  ctx.transform(
+    matrix[0]!,
+    matrix[1]!,
+    matrix[2]!,
+    matrix[3]!,
+    matrix[4]!,
+    matrix[5]!,
+  );
 }
 
 export function postDraw(ctx: CanvasRenderingContext2D) {
