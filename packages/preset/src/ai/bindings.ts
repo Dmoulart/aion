@@ -27,17 +27,14 @@ export function defineBehavior(
       (component as any).target[entity],
     ]);
 
-    console.log({ result });
-
-    cb(entity);
-
-    // if (result !== true) {
-    //   // detach(component, entity);
-    //   // PlanComponent[entity]!.shift();
-    //   // beginNextAction(entity);
-    // } else {
-    //   cb(entity);
-    // }
+    if (result !== true) {
+      console.log("ACTION ABORTED");
+      detach(component, entity);
+      PlanComponent[entity]!.shift();
+      beginNextAction(entity);
+    } else {
+      cb(entity);
+    }
   };
 }
 
@@ -49,6 +46,5 @@ export function beginNextAction(entity: Entity) {
     addBehavior(entity, nextAction);
   } else {
     console.info("no next action for entity", entity);
-    // throw new Error("no next Action");
   }
 }

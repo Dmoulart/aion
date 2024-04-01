@@ -107,7 +107,6 @@ export function setupAI() {
     MoveTo,
     MoveToAction,
     (entity: Entity) => {
-      debugger;
       const controller = RuntimeCharacterController[entity]!;
       const movement = getWorldDistance(MoveToAction.target[entity], entity)
         .norm()
