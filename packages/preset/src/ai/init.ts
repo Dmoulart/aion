@@ -1,7 +1,7 @@
 import { onEnterQuery } from "aion-ecs";
 import { useECS } from "../ecs.js";
 import { beforeStart } from "aion-engine";
-import { Brain, PlanComponent, planifyGoal } from "./brain.js";
+import { Brain, PlanComponent, planifyCurrentGoal } from "./brain.js";
 import { beginNextAction } from "./bindings.js";
 
 export function initAI() {
@@ -11,7 +11,7 @@ export function initAI() {
     const onAddedBrain = onEnterQuery(query(Brain));
 
     onAddedBrain((entity) => {
-      const plan = planifyGoal(entity);
+      const plan = planifyCurrentGoal(entity);
       console.log({ plan });
 
       PlanComponent[entity] = plan;

@@ -1,8 +1,9 @@
 import type { Component, Entity, Query } from "aion-ecs";
-import { evaluateState, type Action, type PlannedAction } from "./goal.js";
 import { useECS } from "../ecs.js";
 import { PlanComponent } from "./brain.js";
 import { once } from "aion-engine";
+import type { Action, PlannedAction } from "./action.js";
+import { evaluateState } from "./state.js";
 
 const BEHAVIORS_COMPONENTS: Record<Action["name"], Component> = {};
 

@@ -1,5 +1,7 @@
 import type { Entity } from "aion-ecs";
-import { defineWorldState, defineAction, planify } from "./goal.js";
+import { defineAction } from "./action.js";
+import { planify } from "./planify.js";
+import { defineWorldState } from "./state.js";
 
 const CanReach = defineWorldState("CanReach", (_: Entity, target: Entity) => {
   if (target === 2) {

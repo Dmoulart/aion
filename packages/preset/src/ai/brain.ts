@@ -1,5 +1,6 @@
 import { defineComponent, i32, type Entity } from "aion-ecs";
-import { planify, type WorldState, type Plan } from "./goal.js";
+import type { Plan } from "./action.js";
+import { planify } from "./planify.js";
 
 export const Brain = defineComponent({
   goal: [i32, 2],
@@ -7,7 +8,7 @@ export const Brain = defineComponent({
 
 export const PlanComponent = defineComponent(() => new Array<Plan>());
 
-export function planifyGoal(entity: Entity) {
+export function planifyCurrentGoal(entity: Entity) {
   const goal = getGoal(entity);
 
   return planify(entity, [goal[0]!, goal[1]!]);

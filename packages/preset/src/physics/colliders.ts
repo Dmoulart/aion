@@ -69,6 +69,10 @@ export function setColliderOptions(
   // colliderDesc.rotationsEnabled = Boolean(Collider.rotationsEnabled[entity]!);
 }
 
+export function intersects(ent: Entity) {
+  const { world } = usePhysics();
+}
+
 // export function intersectingColliders(ent: Entity) {
 //   const { world } = usePhysics();
 
