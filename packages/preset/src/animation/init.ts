@@ -25,6 +25,7 @@ export function initAnimations() {
         );
 
         const state = getCurrentAnimationState(entity);
+        console.log("state", state);
 
         const nextState = updateAnimation(config, state, getTransform(entity));
 

@@ -73,11 +73,13 @@ export function getLocalMatrix(ent: Entity): Matrix | undefined {
   return Transform[ent];
 }
 
-export function setWorldRotation(ent: Entity, rad: number) {
-  const transform = Transform[ent]!;
+// is it world or local ?
+export function setRotation(ent: Entity, rad: number) {
+  setTransformRotation(Transform[ent]!, rad);
+}
 
+export function setTransformRotation(transform: Float32Array, rad: number) {
   // Extract the signs of the scaling factors
-  //
   const scaleXSign = Math.sign(transform[0]!);
   const scaleYSign = Math.sign(transform[3]!);
 
@@ -91,12 +93,12 @@ export function setWorldRotation(ent: Entity, rad: number) {
   transform[2] = Math.sin(rad) * scaleXSign;
   transform[3] = Math.cos(rad) * scaleYSign;
 
-  // Restore scaling factors
-  const newScaleX = getScaleX(transform);
-  const newScaleY = getScaleY(transform);
+  // // Restore scaling factors
+  // const newScaleX = getScaleX(transform);
+  // const newScaleY = getScaleY(transform);
 
-  transform[0] = newScaleX * scaleXSign;
-  transform[3] = newScaleY * scaleYSign;
+  // transform[0] = newScaleX * scaleXSign;
+  // transform[3] = newScaleY * scaleYSign;
 
   // Restore translation components
   transform[4] = tx;

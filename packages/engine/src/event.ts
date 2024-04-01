@@ -41,6 +41,8 @@ export function createEventEmitter<T extends Events>() {
   }
 
   function emit<H extends Hook<T>>(hook: H, params?: HandlerParams<T, H>) {
+    if (!events[hook]) return;
+
     for (const cb of events[hook].values()) {
       cb(params as HandlerParams<T, H>);
     }

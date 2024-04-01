@@ -17,7 +17,7 @@ import {
   getWorldRotation,
   positionOf,
   setPosition,
-  setWorldRotation,
+  setRotation,
 } from "../basics/transform.js";
 import { setBodyOptions } from "./bodies.js";
 
@@ -80,7 +80,7 @@ export function initPhysicsSystems() {
 
       setPosition(ent, fromSimulationPoint(body.translation()));
 
-      setWorldRotation(ent, body.rotation());
+      setRotation(ent, body.rotation());
     });
   });
 }

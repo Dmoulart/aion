@@ -4,8 +4,19 @@ import {
   createTransform,
   getLocalRotation,
   getTransformRotation,
+  useECS,
+  AnimationComponent,
+  degreesToRadians,
+  setTransformRotation,
 } from "../index.js";
 import { mat2d } from "gl-matrix";
+import {
+  onEnterQuery,
+  type Component,
+  query,
+  onExitQuery,
+  type Entity,
+} from "aion-ecs";
 
 // export type AnimationTransform = [number, number, number]; //x,y,rot
 
@@ -49,7 +60,7 @@ export function defineAnimationConfig(config: AnimationConfig) {
 
   ANIMATIONS[id] = config;
 
-  return config;
+  return id;
 }
 
 export function getAnimationConfig(id: number) {
@@ -78,7 +89,7 @@ export function updateAnimation(
 
   assertDefined(state);
 
-  const lerpValue = state.lerp || 0;
+  const lerpValue = state.lerp || 1;
 
   let x, y, rotation: number | undefined;
   // x
@@ -97,13 +108,15 @@ export function updateAnimation(
 
   //rot
   if (state.transform.rotation !== undefined) {
-    rotation = lerp(
-      getTransformRotation(output),
-      state.transform.rotation,
-      lerpValue,
-    );
+    debugger;
 
-    mat2d.rotate(output, output, rotation);
+    const currentRotation = getTransformRotation(output);
+
+    const desiredRotation = degreesToRadians(state.transform.rotation);
+
+    rotation = lerp(currentRotation, desiredRotation, lerpValue);
+
+    setTransformRotation(output, rotation);
   }
 
   if (shouldMoveNextState(config, currentState!, x, y, rotation)) {
@@ -135,6 +148,7 @@ export function shouldMoveNextState(
     y === state.transform.y &&
     rotation === state.transform.rotation;
 
+  console.log({ finished });
   return finished;
 }
 
@@ -160,6 +174,28 @@ export function getNextState(config: AnimationConfig, currentState: string) {
   return nextState;
 }
 
+export function bindAnimationToComponent(
+  animationID: number,
+  component: Component,
+  getTargetEntity: (entity: Entity) => Entity = (entity) => entity,
+) {
+  const { query, attach, detach } = useECS();
+
+  const onComponentAdded = onEnterQuery(query(component));
+  onComponentAdded((entity) => {
+    const target = getTargetEntity(entity);
+    AnimationComponent.animation[target] = animationID;
+    AnimationComponent.currentState[target] = "initial";
+    attach(AnimationComponent, target);
+  });
+
+  const onComponentRemoved = onExitQuery(query(component));
+
+  onComponentRemoved((entity) => {
+    const target = getTargetEntity(entity);
+    detach(AnimationComponent, target);
+  });
+}
 // export function runAnimation(
 //   animationID: number,
 //   id: number = nextAnimationInstanceID++,

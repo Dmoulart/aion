@@ -7,6 +7,7 @@ import {
   RuntimeCharacterController,
   RuntimeCollider,
   Transform,
+  bindAnimationToComponent,
   castRay,
   defineAction,
   defineAnimationConfig,
@@ -18,7 +19,7 @@ import {
   getLocalPosition,
   getWorldDistance,
   setPosition,
-  setWorldRotation,
+  setRotation,
   toSimulationPoint,
   updateAnimation,
   useECS,
@@ -138,46 +139,52 @@ export function setupAI() {
       initial: {
         transform: {
           x: 0,
-          y: 0,
+          // y: 0,
           rotation: 0,
         },
+        lerp: 1,
       },
       momentum: {
         transform: {
           x: -20,
-          y: 0,
-          rotation: 90,
+          // y: 0,
+          // rotation: 90,
         },
-        lerp: 1,
+        lerp: 0.5,
       },
       estoc: {
         transform: {
-          x: 30,
-          y: 0,
-          rotation: 90,
+          x: 20,
+          // y: 0,
+          rotation: 60,
         },
         lerp: 0.5,
       },
     },
   });
 
+  bindAnimationToComponent(AttackAnimation, KillAction, (entity) => {
+    // @todo: this is not right
+    const sword = getFirstChildOf(entity)!;
+    return sword;
+  });
+
   const killTarget = defineBehavior(Kill, KillAction, (entity: Entity) => {
     console.log("kill !");
 
-    // updateAnimation(AttackAnimation, undefined, Transform[entity]!);
+    // // updateAnimation(AttackAnimation, undefined, Transform[entity]!);
 
-    // momentum
-    if (KillAction.state[entity] === 0) {
-      const body = getBody(entity);
+    // // momentum
+    // if (KillAction.state[entity] === 0) {
+    //   const body = getBody(entity);
 
-      // @todo: this is not right
-      const sword = getFirstChildOf(entity)!;
-      const swordPosition = vec(getLocalPosition(sword));
+    //   // @todo: this is not right
+    //   const sword = getFirstChildOf(entity)!;
+    //   const swordPosition = vec(getLocalPosition(sword));
 
-      setPosition(sword, swordPosition.lerp(vec(-20, 0), 0.1));
-      // setRotation(sword, )
-      // body.setLinvel()
-    }
+    //   setPosition(sword, swordPosition.lerp(vec(-20, 0), 0.1));
+    //   // setRotation(sword, )
+    //   // body.setLinvel()
   });
 
   setupBehavior(() => {

@@ -251,9 +251,10 @@ export function createScenes() {
     });
 
     const { query } = useECS();
-
+    let enemyCreated = false;
     return on("update", () => {
       query(Transform, EnemySpawn).each((entity) => {
+        if (enemyCreated) return;
         const frequency = EnemySpawn.frequency[entity]!;
         const lastSpawn = EnemySpawn.lastSpawn[entity]!;
 
@@ -265,6 +266,8 @@ export function createScenes() {
           EnemySpawn.lastSpawn[entity] = now;
 
           createEnemy({ x: getX(entity), y: getY(entity) }, treasure);
+
+          enemyCreated = true;
         }
       });
     });
@@ -273,8 +276,8 @@ export function createScenes() {
 
 export function plugins() {
   const preset = aionPreset({
-    renderDebug: true,
-    debugEntityID: true,
+    renderDebug: false,
+    debugEntityID: false,
   });
 
   // @todo: find a better way to keep a reference to an entity
