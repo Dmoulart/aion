@@ -23,7 +23,6 @@ import {
   createTransform,
   defineScene,
   exitCurrentScene,
-  getWorldDistance,
   screenToWorldPosition,
   setBodyPosition,
   useECS,
@@ -33,8 +32,6 @@ import {
   getX,
   getY,
   createCharacterController,
-  getGravity,
-  castRay,
   Brain,
 } from "aion-preset";
 import {

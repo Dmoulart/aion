@@ -2,6 +2,7 @@ import type { Component, Entity, Query } from "aion-ecs";
 import { evaluateState, type Action, type PlannedAction } from "./goal.js";
 import { useECS } from "../ecs.js";
 import { PlanComponent } from "./brain.js";
+import { once } from "aion-engine";
 
 const BEHAVIORS_COMPONENTS: Record<Action["name"], Component> = {};
 
@@ -28,12 +29,37 @@ export function defineBehavior(
     ]);
 
     if (result !== true) {
-      console.log("ACTION ABORTED");
-      detach(component, entity);
-      PlanComponent[entity]!.shift();
-      beginNextAction(entity);
+      //@todo remove components in another system ?
+      once("update", () => {
+        console.log("ACTION Aborted");
+
+        detach(component, entity);
+
+        PlanComponent[entity]!.shift();
+
+        beginNextAction(entity);
+      });
     } else {
       cb(entity);
+    }
+
+    const isActionDone = evaluateState(entity, [
+      action.effects,
+      (component as any).target[entity],
+    ]);
+
+    if (isActionDone) {
+      //@todo remove components in another system ?
+      // removing component in the current system make the all things wacky
+      once("update", () => {
+        console.log("ACTION Done");
+
+        detach(component, entity);
+
+        PlanComponent[entity]!.shift();
+
+        beginNextAction(entity);
+      });
     }
   };
 }

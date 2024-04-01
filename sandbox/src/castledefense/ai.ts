@@ -12,6 +12,7 @@ import {
   defineWorldState,
   getGravity,
   getWorldDistance,
+  toSimulationPoint,
   useECS,
 } from "aion-preset";
 import { ENEMY_COLLISION_GROUP } from "./collision-groups";
@@ -30,7 +31,6 @@ import { ENEMY_COLLISION_GROUP } from "./collision-groups";
 export const CanReach = defineWorldState(
   "CanReach",
   (source: Entity, target: Entity) => {
-    debugger;
     // return false;
     const hit = castRay(source, target, Collider.collisionGroups[source], 18.0);
     if (hit) {
@@ -48,8 +48,15 @@ export const CanReach = defineWorldState(
 export const IsAdjacentTo = defineWorldState(
   "IsAdjacentTo",
   (source: Entity, target: Entity) => {
-    const distance = getWorldDistance(source, target);
-    return Math.abs(distance.x) <= 2 && Math.abs(distance.y) <= 2;
+    const distance = toSimulationPoint(getWorldDistance(source, target));
+    console.log(
+      "distance",
+      { source, target },
+      Math.abs(distance.x),
+      Math.abs(distance.y),
+    );
+    // @todo consider y
+    return Math.abs(distance.x) <= 1; // && Math.abs(distance.y) <= 4;
   },
 );
 
@@ -133,6 +140,28 @@ export function setupAI() {
       RuntimeBody,
       RuntimeCollider,
     ).each(moveToTarget);
+  });
+
+  const killTarget = defineBehavior(Kill, KillAction, (_: Entity) => {
+    console.log("kill !", _);
+  });
+
+  setupBehavior(() => {
+    query(
+      MoveToAction,
+      RuntimeCharacterController,
+      RuntimeBody,
+      RuntimeCollider,
+    ).each(moveToTarget);
+  });
+
+  setupBehavior(() => {
+    query(
+      KillAction,
+      RuntimeCharacterController,
+      RuntimeBody,
+      RuntimeCollider,
+    ).each(killTarget);
   });
 }
 

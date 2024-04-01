@@ -8,6 +8,7 @@ export function castRay(
   collisionGroup?: number,
   maxToi: number = 4,
 ) {
+  console.log({ from, to });
   const { world, RAPIER } = usePhysics();
   const source = toSimulationPoint(getWorldPosition(from));
   const target = getWorldDistance(to, from).norm();
