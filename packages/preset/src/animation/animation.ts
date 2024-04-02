@@ -133,6 +133,10 @@ export function updateAnimation(
   return currentState!;
 }
 
+function keepThreeDecimals(num: number) {
+  return Math.floor(num * 1_000) / 1_000;
+}
+
 export function shouldMoveNextState(
   config: AnimationConfig,
   currentState: string,
@@ -144,11 +148,16 @@ export function shouldMoveNextState(
 
   assertDefined(state);
 
+  const endRotationValue = state.transform.rotation
+    ? degreesToRadians(state.transform.rotation)
+    : undefined;
+
   const finished =
     x === state.transform.x &&
     y === state.transform.y &&
-    (state.transform.rotation
-      ? rotation === degreesToRadians(state.transform.rotation)
+    (endRotationValue
+      ? keepThreeDecimals(rotation as number) ===
+        keepThreeDecimals(endRotationValue)
       : true);
 
   console.log({
