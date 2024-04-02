@@ -1,8 +1,7 @@
 import { beforeStart, on } from "aion-engine";
 import { useECS } from "../ecs.js";
-import { Transform } from "../components.js";
 import { fillText } from "aion-render";
-import { getWorldPosition } from "../index.js";
+import { Transform, getWorldPosition } from "../index.js";
 export type InitDebugOptions = {
   debugEntityID?: boolean;
 };

@@ -8,7 +8,7 @@ export const mat = glMatrix.mat2d;
 
 // export type Matrix = Float32Array;
 
-export function applyInverse(
+export function applyInverseMatrix(
   matrix: Matrix,
   { x, y }: Vector,
   output: Vector = { x: 0, y: 0 },
@@ -26,6 +26,23 @@ export function applyInverse(
   output.y = a * id * y + -b * id * x + (-ty * a + tx * b) * id;
 
   return output;
+}
+
+export function getMatrixRotation(mat: Matrix) {
+  // Extract the rotation component from the transformation matrix
+  const a = mat[0]!;
+  const b = mat[1]!;
+  const c = mat[2]!;
+  const d = mat[3]!;
+
+  // Calculate the rotation angle based on the rotation component
+  if (a || b) {
+    return Math.atan2(b, a); // Return the angle in radians using arctan2
+  } else if (c || d) {
+    return Math.atan2(c, d); // Return the angle in radians using arctan2
+  } else {
+    return 0; // If there is no rotation component, return 0
+  }
 }
 
 // export function getTranslation(matrix: Matrix): Vector {

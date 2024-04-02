@@ -9,13 +9,9 @@ import {
   startScene,
   onSceneExit,
   Body,
-  CharacterController,
   Collider,
   Fill,
   Rect,
-  RuntimeBody,
-  RuntimeCharacterController,
-  RuntimeCollider,
   Stroke,
   Transform,
   createBody,
@@ -31,10 +27,6 @@ import {
   getRectBounds,
   getX,
   getY,
-  createCharacterController,
-  Brain,
-  addChildTo,
-  getWorldPosition,
 } from "aion-preset";
 import {
   Colors,
@@ -43,18 +35,14 @@ import {
   windowCenterY,
   windowWidth,
 } from "aion-render";
-import {
-  OBSTACLE_COLLISION_GROUP,
-  ENEMY_COLLISION_GROUP,
-} from "./castle-defense/collision-groups";
+import { OBSTACLE_COLLISION_GROUP } from "./castle-defense/collision-groups";
 import {
   Resistance,
-  IsEnemy,
   EnemySpawn,
   Floor,
   IsTreasure,
 } from "./castle-defense/components";
-import { createTakeTreasureGoal, setupAI } from "./castle-defense/ai";
+import { setupAI } from "./castle-defense/ai";
 import { createEnemy } from "./castle-defense/enemy";
 
 export const engine = defineEngine(plugins, () => {

@@ -1,6 +1,6 @@
 import { Vec, type Vector } from "aion-core";
 import { defineComponent, f32, type Entity } from "aion-ecs";
-import { getParentOf, mat } from "../index.js";
+import { getMatrixRotation, getParentOf, mat } from "../index.js";
 
 // 0: scaleX, 1: scaleY, 2: rotation, 3: tx, 4:ty
 //
@@ -23,11 +23,11 @@ export function createTransform(
 ): Transform {
   const mat = new Float32Array(5);
 
-  mat[0] = x;
-  mat[1] = y;
+  mat[0] = scaleX;
+  mat[1] = scaleY;
   mat[2] = rotation;
-  mat[3] = scaleX;
-  mat[4] = scaleY;
+  mat[3] = x;
+  mat[4] = y;
 
   return mat;
 }
@@ -152,8 +152,20 @@ export function getLocalRotation(entity: Entity): number {
 }
 export const getRotation = getLocalRotation;
 
+export function getWorldRotation(entity: Entity): number {
+  return getMatrixRotation(getWorldMatrix(entity));
+}
+
+export function getTransformRotation(transform: Transform): number {
+  return transform[2]!;
+}
+
 export function setRotation(entity: Entity, radians: number) {
   Transform[entity]![2]! = radians;
+}
+
+export function setTransformRotation(transform: Transform, radians: number) {
+  transform[2] = radians;
 }
 
 export function rotate(entity: Entity, radians: number) {

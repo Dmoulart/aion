@@ -7,15 +7,15 @@ import {
   setColliderOptions,
   usePhysics,
 } from "./index.js";
-import { Circle, Rect, Transform } from "../components.js";
+import { Circle, Rect } from "../components.js";
 import { useECS } from "../ecs.js";
 import { Vec, type Vector } from "aion-core";
 import type RAPIER from "@dimforge/rapier2d";
 import { on } from "aion-engine";
 import {
+  Transform,
   getWorldPosition,
   getWorldRotation,
-  positionOf,
   setPosition,
   setRotation,
 } from "../basics/transform.js";

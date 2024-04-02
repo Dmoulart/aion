@@ -11,10 +11,10 @@ import {
   f32,
 } from "aion-ecs";
 import { usePhysics } from "./init.js";
-import { Transform } from "../components.js";
 import { Body, Collider, RuntimeBody, RuntimeCollider } from "./components.js";
 import { useECS } from "../ecs.js";
 import RAPIER from "@dimforge/rapier2d-compat";
+import { Transform } from "../index.js";
 
 export const CharacterController = defineComponent({
   offset: f32,

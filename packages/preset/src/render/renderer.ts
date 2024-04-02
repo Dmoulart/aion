@@ -13,7 +13,7 @@ import { useECS } from "../ecs.js";
 import { Rect, Stroke, Fill, Circle } from "../components.js";
 import { not, type Entity } from "aion-ecs";
 import { getProjectionMatrix } from "./camera.js";
-import { Parent, forEachChildOf } from "../index.js";
+import { Parent, Transform, forEachChildOf, type Matrix } from "../index.js";
 import { emit } from "aion-engine";
 
 export function render(camera: Entity) {
@@ -81,10 +81,7 @@ export function draw(ctx: CanvasRenderingContext2D, ent: Entity) {
   postDraw(ctx);
 }
 
-export function preDraw(
-  ctx: CanvasRenderingContext2D,
-  matrix: ArrayLike<number>,
-) {
+export function preDraw(ctx: CanvasRenderingContext2D, matrix: Matrix) {
   // Save the transformation matrix to restore it after drawing
   // @todo: perf
   ctx.save();

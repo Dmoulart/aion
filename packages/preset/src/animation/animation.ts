@@ -1,12 +1,10 @@
 import { assertDefined, lerp } from "aion-core";
 import {
-  type TransformData,
-  createTransform,
-  getLocalRotation,
-  getTransformRotation,
   useECS,
   AnimationComponent,
   degreesToRadians,
+  Transform,
+  getTransformRotation,
   setTransformRotation,
 } from "../index.js";
 import { mat2d } from "gl-matrix";
@@ -74,7 +72,7 @@ export function getAnimationConfig(id: number) {
 export function updateAnimation(
   config: AnimationConfig,
   currentState: string | undefined,
-  output: TransformData,
+  output: Transform,
 ) {
   const hasJustRunAnimation = currentState === undefined;
 
@@ -113,7 +111,7 @@ export function updateAnimation(
 
     const currentRotation = getTransformRotation(output);
 
-    const desiredRotation = degreesToRadians(state.transform.rotation);
+    const desiredRotation = state.transform.rotation;
 
     rotation = lerp(currentRotation, desiredRotation, lerpValue);
 

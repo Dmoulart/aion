@@ -7,7 +7,7 @@ import {
   initPhysics,
   type InitPhysicsOptions,
 } from "./physics/index.js";
-import { Circle, Fill, Rect, Stroke, Transform } from "./components.js";
+import { Circle, Fill, Rect, Stroke } from "./components.js";
 import { on } from "aion-engine";
 import {
   Camera,
@@ -18,6 +18,7 @@ import {
   render,
   type InitDebugOptions,
   initAnimations,
+  Transform,
 } from "./index.js";
 import { debugRender } from "./physics/debug.js";
 

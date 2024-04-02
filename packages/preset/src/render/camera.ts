@@ -1,6 +1,6 @@
 import { bool, defineComponent, f32, type Entity } from "aion-ecs";
 import {
-  applyInverse,
+  applyInverseMatrix,
   mat,
   setPosition,
   useAion,
@@ -8,6 +8,7 @@ import {
   getLocalPosition,
   getWorldPosition,
   getLocalRotation,
+  getWorldRotation,
 } from "../index.js";
 import {
   windowCenterX,
@@ -89,5 +90,5 @@ export function getProjectionMatrix(camera: Entity): Matrix {
 export function screenToWorldPosition(point: Vector) {
   const camera = useCamera();
 
-  return applyInverse(getProjectionMatrix(camera), point);
+  return applyInverseMatrix(getProjectionMatrix(camera), point);
 }

@@ -1,14 +1,13 @@
 import { beforeStart, on } from "aion-engine";
 import { useECS } from "../ecs.js";
 import { onEnterQuery, onExitQuery } from "aion-ecs";
-import { Transform } from "../components.js";
 import {
   AnimationComponent,
   getCurrentAnimationState,
   setCurrentAnimationState,
 } from "./bindings.js";
 import { getAnimationConfig, updateAnimation } from "./animation.js";
-import { getTransform } from "../index.js";
+import { Transform, getTransform } from "../index.js";
 
 export function initAnimations() {
   beforeStart(() => {
