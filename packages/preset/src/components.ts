@@ -1,7 +1,5 @@
 import { defineComponent, f32, i32 } from "aion-ecs";
 
-export const Transform = defineComponent([f32, 6]);
-
 export const Rect = defineComponent({ w: i32, h: i32 });
 
 export const Circle = defineComponent({ r: i32 });
