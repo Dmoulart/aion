@@ -24,7 +24,7 @@ export const CanReach = defineWorldState(
   "CanReach",
   (source: Entity, target: Entity) => {
     // return false;
-    const hit = castRay(source, target, Collider.collisionGroups[source], 18.0);
+    const hit = castRay(source, target, Collider.collisionGroups[source], 50.0);
     if (hit) {
       const hasHitTarget = hit.entity === target;
       if (!hasHitTarget) {
@@ -32,7 +32,10 @@ export const CanReach = defineWorldState(
       }
       return hasHitTarget ? true : [DoesNotExist, hit.entity];
     } else {
-      return false;
+      debugger;
+      // let's consider the stuff is reachable but too far
+      // we'll need to re-planify the actions later
+      return true;
     }
   },
 );
@@ -76,14 +79,14 @@ export const KillAction = defineComponent({
   state: u8,
 });
 
-export const ClearWay = defineAction({
-  effects: CanReach,
-  preconditions: IsAdjacentTo,
-  name: "ClearWay",
-});
-export const ClearWayAction = defineComponent({
-  target: eid,
-});
+// export const ClearWay = defineAction({
+//   effects: CanReach,
+//   preconditions: IsAdjacentTo,
+//   name: "ClearWay",
+// });
+// export const ClearWayAction = defineComponent({
+//   target: eid,
+// });
 
 export function createTakeTreasureGoal(treasure: Entity) {
   const goal = new i32(2);

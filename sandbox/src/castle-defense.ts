@@ -267,7 +267,7 @@ export function createScenes() {
 
           createEnemy({ x: getX(entity), y: getY(entity) }, treasure);
 
-          enemyCreated = true;
+          // enemyCreated = true;
         }
       });
     });
