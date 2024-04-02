@@ -79,31 +79,43 @@ export function setRotation(ent: Entity, rad: number) {
 }
 
 export function setTransformRotation(transform: Float32Array, rad: number) {
-  // Extract the signs of the scaling factors
-  const scaleXSign = Math.sign(transform[0]!);
-  const scaleYSign = Math.sign(transform[3]!);
-
-  // Extract current translation components
+  //@todo:perf directly set the rotation ? is this even possible ?
   const tx = transform[4]!;
   const ty = transform[5]!;
 
-  // Reset rotation component while preserving scale sign
-  transform[0] = Math.cos(rad) * scaleXSign;
-  transform[1] = -Math.sin(rad) * scaleYSign;
-  transform[2] = Math.sin(rad) * scaleXSign;
-  transform[3] = Math.cos(rad) * scaleYSign;
+  mat.identity(transform);
 
-  // // Restore scaling factors
-  // @todo this is buggy
-  const newScaleX = getScaleX(transform);
-  const newScaleY = getScaleY(transform);
-
-  transform[0] = newScaleX * scaleXSign;
-  transform[3] = newScaleY * scaleYSign;
+  mat.rotate(transform, transform, rad);
 
   // Restore translation components
   transform[4] = tx;
   transform[5] = ty;
+
+  // // Extract the signs of the scaling factors
+  // const scaleXSign = Math.sign(transform[0]!);
+  // const scaleYSign = Math.sign(transform[3]!);
+
+  // // Extract current translation components
+  // const tx = transform[4]!;
+  // const ty = transform[5]!;
+
+  // // Reset rotation component while preserving scale sign
+  // transform[0] = Math.cos(rad) * scaleXSign;
+  // transform[1] = -Math.sin(rad) * scaleYSign;
+  // transform[2] = Math.sin(rad) * scaleXSign;
+  // transform[3] = Math.cos(rad) * scaleYSign;
+
+  // // // Restore scaling factors
+  // // @todo this is buggy
+  // const newScaleX = getScaleX(transform);
+  // const newScaleY = getScaleY(transform);
+
+  // transform[0] = newScaleX * scaleXSign;
+  // transform[3] = newScaleY * scaleYSign;
+
+  // // Restore translation components
+  // transform[4] = tx;
+  // transform[5] = ty;
 }
 
 export function rotate(ent: Entity, rad: number) {
