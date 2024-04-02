@@ -94,11 +94,12 @@ export function setTransformRotation(transform: Float32Array, rad: number) {
   transform[3] = Math.cos(rad) * scaleYSign;
 
   // // Restore scaling factors
-  // const newScaleX = getScaleX(transform);
-  // const newScaleY = getScaleY(transform);
+  // @todo this is buggy
+  const newScaleX = getScaleX(transform);
+  const newScaleY = getScaleY(transform);
 
-  // transform[0] = newScaleX * scaleXSign;
-  // transform[3] = newScaleY * scaleYSign;
+  transform[0] = newScaleX * scaleXSign;
+  transform[3] = newScaleY * scaleYSign;
 
   // Restore translation components
   transform[4] = tx;

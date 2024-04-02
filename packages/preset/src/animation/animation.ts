@@ -92,6 +92,7 @@ export function updateAnimation(
   const lerpValue = state.lerp || 1;
 
   let x, y, rotation: number | undefined;
+
   // x
   if (state.transform.x !== undefined) {
     x = lerp(output[4]!, state.transform.x, lerpValue);
@@ -146,9 +147,16 @@ export function shouldMoveNextState(
   const finished =
     x === state.transform.x &&
     y === state.transform.y &&
-    rotation === state.transform.rotation;
+    (state.transform.rotation
+      ? rotation === degreesToRadians(state.transform.rotation)
+      : true);
 
-  console.log({ finished });
+  console.log({
+    finished,
+    rotation,
+    stateRotation: degreesToRadians(state.transform.rotation || 0),
+  });
+
   return finished;
 }
 

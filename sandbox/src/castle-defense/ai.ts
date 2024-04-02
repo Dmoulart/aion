@@ -6,26 +6,19 @@ import {
   RuntimeBody,
   RuntimeCharacterController,
   RuntimeCollider,
-  Transform,
   bindAnimationToComponent,
   castRay,
   defineAction,
   defineAnimationConfig,
   defineBehavior,
   defineWorldState,
-  getBody,
   getFirstChildOf,
   getGravity,
-  getLocalPosition,
   getWorldDistance,
-  setPosition,
-  setRotation,
   toSimulationPoint,
-  updateAnimation,
   useECS,
 } from "aion-preset";
 import { ENEMY_COLLISION_GROUP } from "./collision-groups";
-import { vec } from "aion-core";
 
 export const CanReach = defineWorldState(
   "CanReach",
@@ -142,13 +135,13 @@ export function setupAI() {
           // y: 0,
           rotation: 0,
         },
-        lerp: 1,
+        lerp: 0.5,
       },
       momentum: {
         transform: {
           x: -20,
           // y: 0,
-          // rotation: 90,
+          rotation: 90,
         },
         lerp: 0.5,
       },
