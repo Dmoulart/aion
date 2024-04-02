@@ -1,14 +1,13 @@
 import { bool, defineComponent, f32, type Entity } from "aion-ecs";
 import {
   applyInverse,
-  getTranslation,
-  getWorldPosition,
-  getWorldRotation,
   mat,
-  positionOf,
   setPosition,
   useAion,
   type Matrix,
+  getLocalPosition,
+  getWorldPosition,
+  getLocalRotation,
 } from "../index.js";
 import {
   windowCenterX,
@@ -27,8 +26,13 @@ export function useCamera() {
   return useAion().$camera;
 }
 
-export function getCameraPosition(camera = useCamera()) {
-  return positionOf(camera);
+export function getCameraLocalPosition(camera = useCamera()) {
+  return getLocalPosition(camera);
+}
+export const getCameraPosition = getCameraLocalPosition;
+
+export function getCameraWorldPosition(camera = useCamera()) {
+  return getWorldPosition(camera);
 }
 
 export function setCameraPosition(pos: Vector, camera = useCamera()) {
@@ -40,7 +44,7 @@ export function centerCameraOn(point: Vector, camera = useCamera()) {
 }
 
 export function centerCameraOnEntity(ent: Entity, camera = useCamera()) {
-  centerCameraOn(positionOf(ent), camera);
+  centerCameraOn(getWorldPosition(ent), camera);
 }
 
 export function getZoom(camera = useCamera()) {
@@ -56,7 +60,7 @@ export function setZoom(zoom: number, camera = useCamera()) {
 }
 
 export function getCameraRotation(camera = useCamera()) {
-  return getWorldRotation(camera);
+  return getLocalRotation(camera);
 }
 
 export function getProjectionMatrix(camera: Entity): Matrix {

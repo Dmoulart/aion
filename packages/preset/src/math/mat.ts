@@ -1,9 +1,12 @@
-import { Vec, type Vector } from "aion-core";
+// import { Vec, type Vector } from "aion-core";
 import * as glMatrix from "gl-matrix";
+
+import type { Vector } from "aion-core";
+import type { Matrix } from "../index.js";
 
 export const mat = glMatrix.mat2d;
 
-export type Matrix = Float32Array;
+// export type Matrix = Float32Array;
 
 export function applyInverse(
   matrix: Matrix,
@@ -25,18 +28,18 @@ export function applyInverse(
   return output;
 }
 
-export function getTranslation(matrix: Matrix): Vector {
-  return new Vec(matrix[4], matrix[5]);
-}
+// export function getTranslation(matrix: Matrix): Vector {
+//   return new Vec(matrix[4], matrix[5]);
+// }
 
-export function getScaleX(matrix: Matrix) {
-  const a = matrix[0]!;
-  const b = matrix[1]!;
-  return Math.sqrt(a * a + b * b);
-}
+// export function getScaleX(matrix: Matrix) {
+//   const a = matrix[0]!;
+//   const b = matrix[1]!;
+//   return Math.sqrt(a * a + b * b);
+// }
 
-export function getScaleY(matrix: Matrix) {
-  const c = matrix[2]!;
-  const d = matrix[3]!;
-  return Math.sqrt(c * c + d * d);
-}
+// export function getScaleY(matrix: Matrix) {
+//   const c = matrix[2]!;
+//   const d = matrix[3]!;
+//   return Math.sqrt(c * c + d * d);
+// }

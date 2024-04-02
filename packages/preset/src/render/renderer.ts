@@ -10,7 +10,7 @@ import {
   clear,
 } from "aion-render";
 import { useECS } from "../ecs.js";
-import { Rect, Stroke, Fill, Circle, Transform } from "../components.js";
+import { Rect, Stroke, Fill, Circle } from "../components.js";
 import { not, type Entity } from "aion-ecs";
 import { getProjectionMatrix } from "./camera.js";
 import { Parent, forEachChildOf } from "../index.js";
