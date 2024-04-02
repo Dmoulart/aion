@@ -80,12 +80,13 @@ export function setRotation(ent: Entity, rad: number) {
 
 export function setTransformRotation(transform: Float32Array, rad: number) {
   //@todo:perf directly set the rotation ? is this even possible ?
+  //@todo: sign
   const tx = transform[4]!;
   const ty = transform[5]!;
 
-  mat.identity(transform);
-
-  mat.rotate(transform, transform, rad);
+  // mat.identity(transform);
+  // mat.rotate(transform, transform, rad);
+  mat.fromRotation(transform, rad);
 
   // Restore translation components
   transform[4] = tx;
