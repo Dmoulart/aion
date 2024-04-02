@@ -135,7 +135,7 @@ export function setupAI() {
           // y: 0,
           rotation: 0,
         },
-        lerp: 0.5,
+        lerp: 0.25,
       },
       momentum: {
         transform: {
@@ -143,7 +143,7 @@ export function setupAI() {
           // y: 0,
           rotation: 90,
         },
-        lerp: 0.5,
+        lerp: 0.25,
       },
       estoc: {
         transform: {
@@ -151,7 +151,7 @@ export function setupAI() {
           // y: 0,
           rotation: 60,
         },
-        lerp: 0.5,
+        lerp: 0.25,
       },
     },
   });

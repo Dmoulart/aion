@@ -148,22 +148,49 @@ export function shouldMoveNextState(
 
   assertDefined(state);
 
-  const endRotationValue = state.transform.rotation
-    ? degreesToRadians(state.transform.rotation)
-    : undefined;
+  const endX =
+    x && state.transform.x ? keepThreeDecimals(state.transform.x) : undefined;
 
-  const finished =
-    x === state.transform.x &&
-    y === state.transform.y &&
-    (endRotationValue
-      ? keepThreeDecimals(rotation as number) ===
-        keepThreeDecimals(endRotationValue)
-      : true);
+  const endY =
+    y && state.transform.y ? keepThreeDecimals(state.transform.y) : undefined;
+
+  const endRotation =
+    rotation && state.transform.rotation
+      ? degreesToRadians(state.transform.rotation)
+      : undefined;
+
+  const hasEndedX = endX ? keepThreeDecimals(x as number) - endX < 0.1 : true;
+  const hasEndedY = endY ? keepThreeDecimals(y as number) - endY < 0.1 : true;
+  const hasEndedRotation = endRotation
+    ? keepThreeDecimals(rotation as number) - endRotation < 0.1
+    : true;
+
+  const finished = hasEndedX && hasEndedY && hasEndedRotation;
+
+  // const finished =
+  //   keepThreeDecimals(x) === state.transform.x &&
+  //   y === state.transform.y &&
+  //   (endRotationValue
+  //     ? keepThreeDecimals(rotation as number) ===
+  //       keepThreeDecimals(endRotationValue)
+  //     : true);
+
+  // const finished =
+  //   x === state.transform.x &&
+  //   y === state.transform.y &&
+  //   (endRotationValue
+  //     ? keepThreeDecimals(rotation as number) ===
+  //       keepThreeDecimals(endRotationValue)
+  //     : true);
 
   console.log({
     finished,
-    rotation,
-    stateRotation: degreesToRadians(state.transform.rotation || 0),
+    rotation: keepThreeDecimals(rotation as number),
+    stateRotation: keepThreeDecimals(endRotation as number),
+    x,
+    endX: state.transform.x,
+    y,
+    endY: state.transform.y,
   });
 
   return finished;
