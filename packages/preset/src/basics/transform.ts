@@ -83,10 +83,12 @@ export function setTransformRotation(transform: Float32Array, rad: number) {
   //@todo: sign
   const tx = transform[4]!;
   const ty = transform[5]!;
+  // const tmp = new Float32Array(transform);
 
   // mat.identity(transform);
   // mat.rotate(transform, transform, rad);
   mat.fromRotation(transform, rad);
+  // mat.scale(transform, transform, [getScaleX(tmp), getScaleY(tmp)]);
 
   // Restore translation components
   transform[4] = tx;
