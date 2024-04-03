@@ -17,7 +17,10 @@ import {
 } from "aion-render";
 
 const engine = defineEngine(
-  () => aionPreset(),
+  () =>
+    aionPreset({
+      debugEntityID: true,
+    }),
   () => {
     const { $camera, createRect } = useGame();
 
@@ -42,7 +45,7 @@ const engine = defineEngine(
     });
 
     const witness = createRect({
-      Transform: createTransform(windowCenterX(), windowCenterY()),
+      Transform: createTransform(500, 500),
       Fill: "blue",
       Stroke: "black",
       Rect: {

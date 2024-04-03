@@ -72,7 +72,7 @@ export function aionPreset(options?: AionPresetOptions) {
       default: 1,
       zoom: 1,
     },
-    Transform: createTransform(windowCenterX(), windowCenterY()),
+    Transform: createTransform(0, 0),
   });
 
   on("draw", () => render($camera));

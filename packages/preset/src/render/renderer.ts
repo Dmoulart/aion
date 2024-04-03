@@ -13,7 +13,13 @@ import { useECS } from "../ecs.js";
 import { Rect, Stroke, Fill, Circle } from "../components.js";
 import { not, type Entity } from "aion-ecs";
 import { getProjectionMatrix } from "./camera.js";
-import { Parent, Transform, forEachChildOf, type Matrix } from "../index.js";
+import {
+  Parent,
+  Transform,
+  forEachChildOf,
+  type Matrix,
+  getLocalMatrix,
+} from "../index.js";
 import { emit } from "aion-engine";
 
 export function render(camera: Entity) {
@@ -22,7 +28,7 @@ export function render(camera: Entity) {
   const ctx = getContext2D();
 
   const projectionMatrix = getProjectionMatrix(camera);
-
+  console.log({ projectionMatrix });
   clear();
 
   preDraw(ctx, projectionMatrix);
@@ -46,7 +52,7 @@ export function draw(ctx: CanvasRenderingContext2D, ent: Entity) {
   const { w, h } = Rect;
   const { r } = Circle;
 
-  preDraw(ctx, Transform[ent]!);
+  preDraw(ctx, getLocalMatrix(ent));
 
   beginPath();
 

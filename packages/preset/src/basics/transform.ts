@@ -1,6 +1,7 @@
 import { Vec, type Vector } from "aion-core";
 import { defineComponent, f32, type Entity } from "aion-ecs";
 import { getMatrixRotation, getParentOf, mat } from "../index.js";
+import { mat2d } from "gl-matrix";
 
 // 0: scaleX, 1: scaleY, 2: rotation, 3: tx, 4:ty
 //
@@ -38,15 +39,14 @@ export function getTransformLocalMatrix(transform: Transform): Matrix {
 export const getTransformMatrix = getTransformLocalMatrix;
 
 export function getWorldMatrix(entity: Entity) {
+  debugger;
   let parent = getParentOf(entity);
   const childMatrix = getLocalMatrix(entity);
 
-  if (parent) {
-    while (parent) {
-      let parentMatrix = getLocalMatrix(parent)!;
-      mat.multiply(childMatrix, childMatrix, parentMatrix);
-      parent = getParentOf(parent);
-    }
+  while (parent) {
+    let parentMatrix = getLocalMatrix(parent)!;
+    mat2d.multiply(childMatrix, childMatrix, parentMatrix);
+    parent = getParentOf(parent);
   }
 
   return childMatrix;
@@ -174,23 +174,36 @@ export function rotate(entity: Entity, radians: number) {
 
 export function createMatrixFromTransform(
   transform: Transform,
-  mat: Matrix = new Float32Array(6),
+  mat: Matrix = mat2d.create() as Matrix,
 ): Matrix {
   const [scaleX, scaleY, rotation, x, y] = transform;
 
-  const sin = Math.sin(rotation!);
-  const cos = Math.cos(rotation!);
-
-  mat[0] = scaleX! * cos;
-  mat[1] = scaleX! * sin;
-  mat[2] = scaleY! * -sin;
-  mat[3] = scaleY! * cos;
-
-  mat[4] = x!;
-  mat[5] = y!;
+  mat2d.rotate(mat, mat, rotation!);
+  mat2d.scale(mat, mat, [scaleX!, scaleY!]);
+  mat2d.translate(mat, mat, [x!, y!]);
 
   return mat;
 }
+
+// export function createMatrixFromTransform(
+//   transform: Transform,
+//   mat: Matrix = new Float32Array(6),
+// ): Matrix {
+//   const [scaleX, scaleY, rotation, x, y] = transform;
+
+//   const sin = Math.sin(rotation!);
+//   const cos = Math.cos(rotation!);
+
+//   mat[0] = scaleX! * cos;
+//   mat[1] = scaleX! * sin;
+//   mat[2] = scaleY! * -sin;
+//   mat[3] = scaleY! * cos;
+
+//   mat[4] = x!;
+//   mat[5] = y!;
+
+//   return mat;
+// }
 
 // export function createMatrixFromValues(
 //   x: number,

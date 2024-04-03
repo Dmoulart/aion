@@ -28,6 +28,24 @@ export function applyInverseMatrix(
   return output;
 }
 
+export function inverseMatrix(matrix: Matrix) {
+  const a = matrix[0]!;
+  const b = matrix[1]!;
+  const c = matrix[2]!;
+  const d = matrix[3]!;
+  const tx = matrix[4]!;
+  const ty = matrix[5]!;
+
+  const det = a * d - b * c;
+
+  matrix[0] = d / det;
+  matrix[1] = -b / det;
+  matrix[2] = -c / det;
+  matrix[3] = a / det;
+  matrix[4] = (c * ty - d * tx) / det;
+  matrix[5] = -(a * ty - b * tx) / det;
+}
+
 export function getMatrixRotation(mat: Matrix) {
   // Extract the rotation component from the transformation matrix
   const a = mat[0]!;

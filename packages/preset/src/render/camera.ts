@@ -9,6 +9,7 @@ import {
   getWorldPosition,
   getLocalRotation,
   getWorldRotation,
+  inverseMatrix,
 } from "../index.js";
 import {
   windowCenterX,
@@ -17,6 +18,7 @@ import {
   windowWidth,
 } from "aion-render";
 import type { Vector } from "aion-core";
+import { mat2d } from "gl-matrix";
 
 export const Camera = defineComponent({
   default: bool,
@@ -41,11 +43,16 @@ export function setCameraPosition(pos: Vector, camera = useCamera()) {
 }
 
 export function centerCameraOn(point: Vector, camera = useCamera()) {
+  // const position = { x: 0, y: 0 };
+
+  // position.x = point.x;
+  // position.y = point.y;
+
   setPosition(camera, point);
 }
 
 export function centerCameraOnEntity(ent: Entity, camera = useCamera()) {
-  centerCameraOn(getWorldPosition(ent), camera);
+  centerCameraOn(getLocalPosition(ent), camera);
 }
 
 export function getZoom(camera = useCamera()) {
@@ -77,16 +84,20 @@ export function getProjectionMatrix(camera: Entity): Matrix {
   const viewWidth = windowWidth() / zoom;
   const viewHeight = windowHeight() / zoom;
 
-  const matrix = mat.create();
+  const matrix = mat2d.create();
 
-  mat.scale(matrix, matrix, [zoom, zoom]);
+  mat2d.scale(matrix, matrix, [zoom, zoom]);
 
-  mat.rotate(matrix, matrix, rot);
+  mat2d.rotate(matrix, matrix, rot);
 
-  mat.translate(matrix, matrix, [
+  mat2d.translate(matrix, matrix, [
     -pos.x + viewWidth / 2,
     -pos.y + viewHeight / 2,
   ]);
+
+  // inverseMatrix(matrix as Float32Array);
+
+  // mat.translate(matrix, matrix, [pos.x, pos.y]);
 
   return matrix as Matrix;
 }
