@@ -17,7 +17,7 @@ export function getTransform(entity: Entity): Transform {
 export function createTransform(
   x: number,
   y: number,
-  rotation = 1,
+  rotation = 0,
   scaleX = 1,
   scaleY = 1,
 ): Transform {

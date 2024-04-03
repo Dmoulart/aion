@@ -1,5 +1,5 @@
 import { createECS, components } from "aion-ecs";
-import { initWindow } from "aion-render";
+import { initWindow, windowCenterX, windowCenterY } from "aion-render";
 import { initInputListener } from "aion-input";
 import {
   Body,
@@ -72,7 +72,7 @@ export function aionPreset(options?: AionPresetOptions) {
       default: 1,
       zoom: 1,
     },
-    Transform: createTransform(0, 0),
+    Transform: createTransform(windowCenterX(), windowCenterY()),
   });
 
   on("draw", () => render($camera));

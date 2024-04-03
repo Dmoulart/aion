@@ -67,8 +67,12 @@ export function getCameraRotation(camera = useCamera()) {
 export function getProjectionMatrix(camera: Entity): Matrix {
   const zoom = Camera.zoom[camera]!;
 
-  const pos = getWorldPosition(camera);
-  const rot = getWorldRotation(camera);
+  // const pos = getWorldPosition(camera);
+  // const rot = getWorldRotation(camera);
+  const pos = getLocalPosition(camera);
+  const rot = getLocalRotation(camera);
+
+  console.log({ pos, rot });
 
   const viewWidth = windowWidth() / zoom;
   const viewHeight = windowHeight() / zoom;
