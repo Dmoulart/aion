@@ -103,7 +103,7 @@ export function createEnemy(pos: Vector, target: Entity) {
     leftDirection(),
   );
 
-  // if (comesFromRight) {
-  //   flipX(enemy);
-  // }
+  if (comesFromRight) {
+    flipX(enemy);
+  }
 }

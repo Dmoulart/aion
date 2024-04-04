@@ -13,10 +13,6 @@ export const Transform = defineComponent([f32, 5]);
 
 export type Transform = Float32Array;
 
-export function getTransform(entity: Entity): Transform {
-  return Transform[entity]!;
-}
-
 export function createTransform(
   x: number = 0,
   y: number = 0,
@@ -33,6 +29,10 @@ export function createTransform(
   mat[4] = y;
 
   return mat;
+}
+
+export function getTransform(entity: Entity): Transform {
+  return Transform[entity]!;
 }
 
 export function getTransformLocalMatrix(transform: Transform): Matrix {
@@ -162,16 +162,15 @@ export function flip(entity: Entity) {
 }
 
 export function flipX(entity: Entity) {
-  scale(entity, -1, 1);
+  const transform = Transform[entity]!;
+  transform[0]! *= -1;
 }
 
 export function flipY(entity: Entity) {
-  scale(entity, 1, -1);
+  const transform = Transform[entity]!;
+  transform[1]! *= -1;
 }
 
-/*
- *  Get rotation in radians.
- */
 export function getLocalRotation(entity: Entity): number {
   return Transform[entity]![2]!;
 }
