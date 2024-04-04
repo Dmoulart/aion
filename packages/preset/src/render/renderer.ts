@@ -19,6 +19,7 @@ import {
   forEachChildOf,
   type Matrix,
   getLocalMatrix,
+  getWorldMatrix,
 } from "../index.js";
 import { emit } from "aion-engine";
 
@@ -28,7 +29,7 @@ export function render(camera: Entity) {
   const ctx = getContext2D();
 
   const projectionMatrix = getProjectionMatrix(camera);
-  console.log({ projectionMatrix });
+
   clear();
 
   preDraw(ctx, projectionMatrix);

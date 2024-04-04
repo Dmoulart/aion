@@ -1,15 +1,18 @@
 import { defineEngine, defineLoop, emit, on } from "aion-engine";
 import { direction, getMouse, key } from "aion-input";
 import {
+  addChildTo,
   aionPreset,
   centerCameraOnEntity,
   createTransform,
+  rotate,
   screenToWorldPosition,
   setPosition,
+  setWorldPosition,
   translate,
   zoomBy,
 } from "aion-preset";
-import { setBackgroundColor } from "aion-render";
+import { Colors, setBackgroundColor } from "aion-render";
 
 const engine = defineEngine(
   () =>
@@ -19,7 +22,7 @@ const engine = defineEngine(
   () => {
     const { $camera, createRect } = useGame();
 
-    setBackgroundColor("black");
+    setBackgroundColor(Colors["acapulco:400"]);
 
     defineLoop(() => {
       emit("update");
@@ -41,7 +44,7 @@ const engine = defineEngine(
 
     const witness = createRect({
       Transform: createTransform(500, 500),
-      Fill: "blue",
+      Fill: Colors["shamrock:600"],
       Stroke: "black",
       Rect: {
         w: 100,
@@ -53,7 +56,7 @@ const engine = defineEngine(
 
     const rect = createRect({
       Transform: createTransform(0, 0),
-      Fill: "blue",
+      Fill: Colors["equator:200"],
       Stroke: "black",
       Rect: {
         w: 50,
@@ -61,12 +64,36 @@ const engine = defineEngine(
       },
     });
 
+    const child = createRect({
+      Transform: createTransform(125, 125),
+      Fill: Colors["rhino:800"],
+      Stroke: "black",
+      Rect: {
+        w: 25,
+        h: 25,
+      },
+    });
+
+    const grandChild = createRect({
+      Transform: createTransform(45, 45),
+      Fill: Colors["picton-blue:800"],
+      Stroke: "black",
+      Rect: {
+        w: 45,
+        h: 45,
+      },
+    });
+
+    addChildTo(rect, child);
+    addChildTo(child, grandChild);
+
     on("update", () => {
       const mouse = screenToWorldPosition(getMouse());
 
-      console.log(mouse);
+      setWorldPosition(rect, mouse);
 
-      setPosition(rect, mouse);
+      rotate(child, 0.025);
+      rotate(grandChild, 0.025);
     });
   },
 );

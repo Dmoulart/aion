@@ -39,7 +39,6 @@ export function getTransformLocalMatrix(transform: Transform): Matrix {
 export const getTransformMatrix = getTransformLocalMatrix;
 
 export function getWorldMatrix(entity: Entity) {
-  debugger;
   let parent = getParentOf(entity);
   const childMatrix = getLocalMatrix(entity);
 
@@ -82,6 +81,21 @@ export function setLocalPosition(entity: Entity, { x, y }: Vector): void {
   transform![4] = y;
 }
 export const setPosition = setLocalPosition;
+
+export function setWorldPosition(entity: Entity, position: Vector): void {
+  let parent = getParentOf(entity);
+
+  if (parent) {
+    //@todo perf: matrix calculation is not necessary here I think
+    const parentWorldPosition = getWorldPosition(parent);
+    setLocalPosition(entity, {
+      x: position.x - parentWorldPosition.x,
+      y: position.y - parentWorldPosition.y,
+    });
+  }
+
+  setLocalPosition(entity, position);
+}
 
 export function translate(entity: Entity, { x, y }: Vector): void {
   const transform = Transform[entity]!;
@@ -184,45 +198,3 @@ export function createMatrixFromTransform(
 
   return mat;
 }
-
-// export function createMatrixFromTransform(
-//   transform: Transform,
-//   mat: Matrix = new Float32Array(6),
-// ): Matrix {
-//   const [scaleX, scaleY, rotation, x, y] = transform;
-
-//   const sin = Math.sin(rotation!);
-//   const cos = Math.cos(rotation!);
-
-//   mat[0] = scaleX! * cos;
-//   mat[1] = scaleX! * sin;
-//   mat[2] = scaleY! * -sin;
-//   mat[3] = scaleY! * cos;
-
-//   mat[4] = x!;
-//   mat[5] = y!;
-
-//   return mat;
-// }
-
-// export function createMatrixFromValues(
-//   x: number,
-//   y: number,
-//   rotation: number,
-//   scaleX: number,
-//   scaleY: number,
-//   mat: Matrix = new Float32Array(6),
-// ): Matrix {
-//   const sin = Math.sin(rotation);
-//   const cos = Math.cos(rotation);
-
-//   mat[0] = scaleX * cos;
-//   mat[1] = scaleX * sin;
-//   mat[2] = scaleY * -sin;
-//   mat[3] = scaleY * cos;
-
-//   mat[4] = x;
-//   mat[5] = y;
-
-//   return mat;
-// }
