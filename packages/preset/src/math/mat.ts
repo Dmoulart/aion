@@ -63,6 +63,29 @@ export function getMatrixRotation(mat: Matrix) {
   }
 }
 
+export function multiplyMatrices(first: Matrix, other: Matrix, out = first) {
+  const a = first[0]!;
+  const b = first[1]!;
+  const c = first[2]!;
+  const d = first[3]!;
+  const e = first[4]!;
+  const f = first[5]!;
+
+  const a2 = other[0]!;
+  const b2 = other[1]!;
+  const c2 = other[2]!;
+  const d2 = other[3]!;
+  const e2 = other[4]!;
+  const f2 = other[5]!;
+
+  out[0] = a * a2 + b * c2;
+  out[1] = a * b2 + b * d2;
+  out[2] = c * a2 + d * c2;
+  out[3] = c * b2 + d * d2;
+  out[4] = e * a2 + f * c2 + e2;
+  out[5] = e * b2 + f * d2 + f2;
+}
+
 // export function getTranslation(matrix: Matrix): Vector {
 //   return new Vec(matrix[4], matrix[5]);
 // }

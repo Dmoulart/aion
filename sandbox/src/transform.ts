@@ -92,8 +92,9 @@ const engine = defineEngine(
 
       setWorldPosition(rect, mouse);
 
+      rotate(rect, 0.0125);
       rotate(child, 0.025);
-      rotate(grandChild, 0.025);
+      rotate(grandChild, 0.035);
     });
   },
 );

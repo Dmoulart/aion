@@ -1,15 +1,19 @@
 import { Vec, type Vector } from "aion-core";
 import { defineComponent, f32, type Entity } from "aion-ecs";
-import { getMatrixRotation, getParentOf, mat } from "../index.js";
+import {
+  getMatrixRotation,
+  getParentOf,
+  mat,
+  multiplyMatrices,
+} from "../index.js";
 import { mat2d } from "gl-matrix";
 
-// 0: scaleX, 1: scaleY, 2: rotation, 3: tx, 4:ty
-//
+// 0: scaleX, 1: scaleY, 2: rotation, 3: tx, 4:ty, this is not a matrix !
 export const Transform = defineComponent([f32, 5]);
 
 export type Transform = Float32Array;
 
-export type Matrix = Float32Array; // matrix2D
+export type Matrix = Float32Array;
 
 export function getTransform(entity: Entity): Transform {
   return Transform[entity]!;
@@ -39,20 +43,29 @@ export function getTransformLocalMatrix(transform: Transform): Matrix {
 export const getTransformMatrix = getTransformLocalMatrix;
 
 export function getWorldMatrix(entity: Entity) {
-  let parent = getParentOf(entity);
   const childMatrix = getLocalMatrix(entity);
 
-  while (parent) {
-    let parentMatrix = getLocalMatrix(parent)!;
-    mat2d.multiply(childMatrix, childMatrix, parentMatrix);
-    parent = getParentOf(parent);
+  let parent = getParentOf(entity);
+  if (parent) {
+    let parentMatrix: Matrix = createIdentityMatrix();
+
+    while (parent) {
+      parentMatrix = getLocalMatrix(parent, parentMatrix)!;
+
+      multiplyMatrices(childMatrix, getLocalMatrix(parent, parentMatrix));
+
+      parent = getParentOf(parent);
+    }
   }
 
   return childMatrix;
 }
 
-export function getLocalMatrix(entity: Entity): Matrix {
-  return createMatrixFromTransform(getTransform(entity));
+export function getLocalMatrix(
+  entity: Entity,
+  out: Matrix = createIdentityMatrix(),
+): Matrix {
+  return createMatrixFromTransform(getTransform(entity), out);
 }
 export const getMatrix = getTransformLocalMatrix;
 
@@ -186,26 +199,24 @@ export function rotate(entity: Entity, radians: number) {
   Transform[entity]![2]! += radians;
 }
 
+export const createIdentityMatrix: () => Matrix = mat2d.create as () => Matrix;
+
 export function createMatrixFromTransform(
   transform: Transform,
-  mat: Matrix = mat2d.create() as Matrix,
+  out: Matrix = createIdentityMatrix(),
 ): Matrix {
   const [scaleX, scaleY, rotation, x, y] = transform;
-
-  // mat2d.rotate(mat, mat, rotation!);
-  // mat2d.scale(mat, mat, [scaleX!, scaleY!]);
-  // mat2d.translate(mat, mat, [x!, y!]);
 
   const sin = Math.sin(rotation!);
   const cos = Math.cos(rotation!);
 
-  mat[4] = x!;
-  mat[5] = y!;
+  out[4] = x!;
+  out[5] = y!;
 
-  mat[0] = scaleX! * cos;
-  mat[1] = scaleX! * sin;
-  mat[2] = scaleY! * -sin;
-  mat[3] = scaleY! * cos;
+  out[0] = scaleX! * cos;
+  out[1] = scaleX! * sin;
+  out[2] = scaleY! * -sin;
+  out[3] = scaleY! * cos;
 
-  return mat;
+  return out;
 }

@@ -1,6 +1,6 @@
 import { beforeStart, on } from "aion-engine";
 import { useECS } from "../ecs.js";
-import { fillText } from "aion-render";
+import { fillText, font, strokeStyle, strokeText } from "aion-render";
 import { Transform, getWorldPosition } from "../index.js";
 export type InitDebugOptions = {
   debugEntityID?: boolean;
@@ -13,7 +13,9 @@ export function initDebug(options?: InitDebugOptions) {
       on("render", () => {
         ecs.query(Transform).each((ent) => {
           const pos = getWorldPosition(ent);
-          fillText(ent.toString(), pos.x, pos.y, "red");
+          font("bold 48px Helvetica");
+          fillText(ent.toString(), pos.x, pos.y, "white");
+          strokeText(ent.toString(), pos.x, pos.y, "black");
         });
       });
     });
