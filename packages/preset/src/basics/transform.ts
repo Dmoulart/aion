@@ -9,7 +9,7 @@ export const Transform = defineComponent([f32, 5]);
 
 export type Transform = Float32Array;
 
-export type Matrix = Float32Array;
+export type Matrix = Float32Array; // matrix2D
 
 export function getTransform(entity: Entity): Transform {
   return Transform[entity]!;
@@ -192,9 +192,20 @@ export function createMatrixFromTransform(
 ): Matrix {
   const [scaleX, scaleY, rotation, x, y] = transform;
 
-  mat2d.rotate(mat, mat, rotation!);
-  mat2d.scale(mat, mat, [scaleX!, scaleY!]);
-  mat2d.translate(mat, mat, [x!, y!]);
+  // mat2d.rotate(mat, mat, rotation!);
+  // mat2d.scale(mat, mat, [scaleX!, scaleY!]);
+  // mat2d.translate(mat, mat, [x!, y!]);
+
+  const sin = Math.sin(rotation!);
+  const cos = Math.cos(rotation!);
+
+  mat[4] = x!;
+  mat[5] = y!;
+
+  mat[0] = scaleX! * cos;
+  mat[1] = scaleX! * sin;
+  mat[2] = scaleY! * -sin;
+  mat[3] = scaleY! * cos;
 
   return mat;
 }
