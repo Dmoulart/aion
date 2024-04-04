@@ -4,6 +4,7 @@ import {
   aionPreset,
   centerCameraOnEntity,
   createTransform,
+  screenToWorldPosition,
   setPosition,
   translate,
   zoomBy,
@@ -61,7 +62,7 @@ const engine = defineEngine(
     });
 
     on("update", () => {
-      const mouse = getMouse();
+      const mouse = screenToWorldPosition(getMouse());
 
       console.log(mouse);
 

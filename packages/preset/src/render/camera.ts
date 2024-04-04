@@ -66,7 +66,10 @@ export function getCameraRotation(camera = useCamera()) {
   return getLocalRotation(camera);
 }
 
-export function getProjectionMatrix(camera: Entity): Matrix {
+export function getProjectionMatrix(
+  camera: Entity,
+  matrix = mat2d.create(),
+): Matrix {
   const zoom = Camera.zoom[camera]!;
 
   const pos = getWorldPosition(camera);
@@ -74,8 +77,6 @@ export function getProjectionMatrix(camera: Entity): Matrix {
 
   const viewWidth = windowWidth() / zoom;
   const viewHeight = windowHeight() / zoom;
-
-  const matrix = mat2d.create();
 
   mat2d.scale(matrix, matrix, [zoom, zoom]);
 
