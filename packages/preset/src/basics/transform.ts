@@ -16,8 +16,8 @@ export function getTransform(entity: Entity): Transform {
 }
 
 export function createTransform(
-  x: number,
-  y: number,
+  x: number = 0,
+  y: number = 0,
   rotation = 0,
   scaleX = 1,
   scaleY = 1,
@@ -64,8 +64,8 @@ export function getLocalPosition(entity: Entity): Vec {
 export const getPosition = getLocalPosition;
 
 export function getWorldPosition(entity: Entity): Vec {
-  const transform = getWorldMatrix(entity);
-  return new Vec(transform![3]!, transform[4]!);
+  const mat = getWorldMatrix(entity);
+  return new Vec(mat![4]!, mat[5]!);
 }
 
 export function getX(entity: Entity): number {

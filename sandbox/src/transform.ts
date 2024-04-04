@@ -2,19 +2,13 @@ import { defineEngine, defineLoop, emit, on } from "aion-engine";
 import { direction, getMouse, key } from "aion-input";
 import {
   aionPreset,
-  centerCameraOn,
   centerCameraOnEntity,
   createTransform,
   setPosition,
   translate,
   zoomBy,
 } from "aion-preset";
-import {
-  setBackgroundColor,
-  windowCenterX,
-  windowCenterY,
-  windowWidth,
-} from "aion-render";
+import { setBackgroundColor } from "aion-render";
 
 const engine = defineEngine(
   () =>

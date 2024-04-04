@@ -43,16 +43,11 @@ export function setCameraPosition(pos: Vector, camera = useCamera()) {
 }
 
 export function centerCameraOn(point: Vector, camera = useCamera()) {
-  // const position = { x: 0, y: 0 };
-
-  // position.x = point.x;
-  // position.y = point.y;
-
   setPosition(camera, point);
 }
 
 export function centerCameraOnEntity(ent: Entity, camera = useCamera()) {
-  centerCameraOn(getLocalPosition(ent), camera);
+  centerCameraOn(getWorldPosition(ent), camera);
 }
 
 export function getZoom(camera = useCamera()) {
@@ -74,12 +69,8 @@ export function getCameraRotation(camera = useCamera()) {
 export function getProjectionMatrix(camera: Entity): Matrix {
   const zoom = Camera.zoom[camera]!;
 
-  // const pos = getWorldPosition(camera);
-  // const rot = getWorldRotation(camera);
-  const pos = getLocalPosition(camera);
-  const rot = getLocalRotation(camera);
-
-  console.log({ pos, rot });
+  const pos = getWorldPosition(camera);
+  const rot = getWorldRotation(camera);
 
   const viewWidth = windowWidth() / zoom;
   const viewHeight = windowHeight() / zoom;
@@ -94,10 +85,6 @@ export function getProjectionMatrix(camera: Entity): Matrix {
     -pos.x + viewWidth / 2,
     -pos.y + viewHeight / 2,
   ]);
-
-  // inverseMatrix(matrix as Float32Array);
-
-  // mat.translate(matrix, matrix, [pos.x, pos.y]);
 
   return matrix as Matrix;
 }
