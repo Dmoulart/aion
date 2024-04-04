@@ -54,7 +54,7 @@ export const engine = defineEngine(plugins, () => {
     emit("draw");
   });
 
-  setBackgroundColor("rgba(156, 156, 156, 0.8)");
+  setBackgroundColor(Colors["rhino:950"]);
 
   setZoom(0.7);
   centerCameraOnEntity(getFloor());
@@ -124,8 +124,8 @@ export function createScenes() {
         h: 500,
         w: 50,
       },
-      Fill: "grey",
-      Stroke: "white",
+      Fill: Colors["cornflower:800"],
+      Stroke: "black",
       Collider: createCollider({
         auto: 1,
         collisionGroups: OBSTACLE_COLLISION_GROUP,
@@ -145,8 +145,8 @@ export function createScenes() {
             h: Rect.h[player],
             w: Rect.w[player],
           },
-          Fill: Colors["cornflower:600"],
-          Stroke: "white",
+          Fill: Colors["cornflower:800"],
+          Stroke: "black",
           Collider: createCollider({
             auto: 1,
             collisionGroups: OBSTACLE_COLLISION_GROUP,
@@ -175,8 +175,8 @@ export function createScenes() {
         h: 50,
         w: 50,
       },
-      Fill: "yellow",
-      Stroke: "white",
+      Fill: Colors["fuchsia-blue:700"],
+      Stroke: "black",
       Collider: createCollider({
         auto: 1,
         collisionGroups: OBSTACLE_COLLISION_GROUP,
@@ -198,8 +198,8 @@ export function createScenes() {
             h: Rect.h[player],
             w: Rect.w[player],
           },
-          Fill: "yellow",
-          Stroke: "white",
+          Fill: Colors["fuchsia-blue:700"],
+          Stroke: "black",
           Collider: createCollider({
             auto: 1,
             collisionGroups: OBSTACLE_COLLISION_GROUP,
@@ -265,7 +265,7 @@ export function createScenes() {
 export function plugins() {
   const preset = aionPreset({
     renderDebug: true,
-    debugEntityID: true,
+    debugEntityID: false,
   });
 
   // @todo: find a better way to keep a reference to an entity
@@ -285,8 +285,8 @@ export function plugins() {
         h: 10,
         w: windowWidth() * 1,
       },
-      Fill: Colors["acapulco:400"],
-      Stroke: "white",
+      Fill: Colors["rhino:900"],
+      Stroke: "black",
       Collider: createCollider({
         auto: 1,
         collisionGroups: OBSTACLE_COLLISION_GROUP,

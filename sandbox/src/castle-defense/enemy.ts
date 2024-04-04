@@ -1,4 +1,4 @@
-import { Vector, leftDirection, rightDirection } from "aion-core";
+import { Vector, leftDirection } from "aion-core";
 import { Entity } from "aion-ecs";
 import {
   Transform,
@@ -103,7 +103,7 @@ export function createEnemy(pos: Vector, target: Entity) {
     leftDirection(),
   );
 
-  if (comesFromRight) {
-    flipX(enemy);
-  }
+  // if (comesFromRight) {
+  //   flipX(enemy);
+  // }
 }
