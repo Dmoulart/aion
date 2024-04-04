@@ -1,12 +1,10 @@
-// import { Vec, type Vector } from "aion-core";
-import * as glMatrix from "gl-matrix";
+import { mat2d } from "gl-matrix";
 
 import type { Vector } from "aion-core";
-import type { Matrix } from "../index.js";
 
-export const mat = glMatrix.mat2d;
+export type Matrix = Float32Array;
 
-// export type Matrix = Float32Array;
+export const createIdentityMatrix = mat2d.create as () => Matrix;
 
 export function applyInverseMatrix(
   matrix: Matrix,

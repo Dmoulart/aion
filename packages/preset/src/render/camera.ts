@@ -1,7 +1,6 @@
 import { bool, defineComponent, f32, type Entity } from "aion-ecs";
 import {
   applyInverseMatrix,
-  mat,
   setPosition,
   useAion,
   type Matrix,

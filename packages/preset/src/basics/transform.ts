@@ -1,19 +1,17 @@
 import { Vec, type Vector } from "aion-core";
 import { defineComponent, f32, type Entity } from "aion-ecs";
 import {
+  createIdentityMatrix,
   getMatrixRotation,
   getParentOf,
-  mat,
   multiplyMatrices,
 } from "../index.js";
-import { mat2d } from "gl-matrix";
+import type { Matrix } from "../index.js";
 
 // 0: scaleX, 1: scaleY, 2: rotation, 3: tx, 4:ty, this is not a matrix !
 export const Transform = defineComponent([f32, 5]);
 
 export type Transform = Float32Array;
-
-export type Matrix = Float32Array;
 
 export function getTransform(entity: Entity): Transform {
   return Transform[entity]!;
@@ -198,8 +196,6 @@ export function setTransformRotation(transform: Transform, radians: number) {
 export function rotate(entity: Entity, radians: number) {
   Transform[entity]![2]! += radians;
 }
-
-export const createIdentityMatrix: () => Matrix = mat2d.create as () => Matrix;
 
 export function createMatrixFromTransform(
   transform: Transform,
