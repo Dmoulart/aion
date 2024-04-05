@@ -20,7 +20,7 @@ export function createTransform(
   scaleX = 1,
   scaleY = 1,
 ): Transform {
-  const mat = new Float32Array(5);
+  const mat = createIdentityMatrix();
 
   mat[0] = scaleX;
   mat[1] = scaleY;
@@ -186,10 +186,6 @@ export function getTransformRotation(transform: Transform): number {
 
 export function setRotation(entity: Entity, radians: number) {
   Transform[entity]![2]! = radians;
-}
-
-export function setTransformRotation(transform: Transform, radians: number) {
-  transform[2] = radians;
 }
 
 export function rotate(entity: Entity, radians: number) {
