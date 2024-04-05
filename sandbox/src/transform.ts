@@ -1,4 +1,4 @@
-import { defineEngine, defineLoop, emit, on } from "aion-engine";
+import { defineEngine, defineLoop, emit, on, once } from "aion-engine";
 import { direction, getMouse, key } from "aion-input";
 import {
   addChildTo,
@@ -22,7 +22,7 @@ const engine = defineEngine(
   () => {
     const { $camera, createRect } = useGame();
 
-    setBackgroundColor(Colors["mine-shaft:950"]);
+    setBackgroundColor("black");
 
     defineLoop(() => {
       emit("update");
@@ -66,7 +66,7 @@ const engine = defineEngine(
 
     let parent = rect;
 
-    for (let i = 0; i < 900; i++) {
+    for (let i = 0; i < 1000; i++) {
       const child = createRect({
         Transform: createTransform(50 + i * 5, 50 + i * 5),
         Fill: "white",
