@@ -59,3 +59,10 @@ export function forEachChildOf(parent: Entity, cb: (ent: Entity) => void) {
     }
   }
 }
+
+export function traverseChildren(entity: Entity, cb: (ent: Entity) => void) {
+  forEachChildOf(entity, (child) => {
+    traverseChildren(child, cb);
+    cb(child);
+  });
+}

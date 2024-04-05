@@ -7,9 +7,9 @@ import {
   createTransform,
   rotate,
   screenToWorldPosition,
-  setPosition,
   setWorldPosition,
   translate,
+  traverseChildren,
   zoomBy,
 } from "aion-preset";
 import { Colors, setBackgroundColor } from "aion-render";
@@ -17,12 +17,12 @@ import { Colors, setBackgroundColor } from "aion-render";
 const engine = defineEngine(
   () =>
     aionPreset({
-      debugEntityID: true,
+      debugEntityID: false,
     }),
   () => {
     const { $camera, createRect } = useGame();
 
-    setBackgroundColor(Colors["acapulco:400"]);
+    setBackgroundColor(Colors["mine-shaft:950"]);
 
     defineLoop(() => {
       emit("update");
@@ -64,28 +64,23 @@ const engine = defineEngine(
       },
     });
 
-    const child = createRect({
-      Transform: createTransform(125, 125),
-      Fill: Colors["rhino:800"],
-      Stroke: "black",
-      Rect: {
-        w: 25,
-        h: 25,
-      },
-    });
+    let parent = rect;
 
-    const grandChild = createRect({
-      Transform: createTransform(45, 45),
-      Fill: Colors["picton-blue:800"],
-      Stroke: "black",
-      Rect: {
-        w: 45,
-        h: 45,
-      },
-    });
+    for (let i = 0; i < 900; i++) {
+      const child = createRect({
+        Transform: createTransform(50 + i * 5, 50 + i * 5),
+        Fill: "white",
+        Stroke: "black",
+        Rect: {
+          w: 25,
+          h: 25,
+        },
+      });
 
-    addChildTo(rect, child);
-    addChildTo(child, grandChild);
+      addChildTo(parent, child);
+
+      parent = child;
+    }
 
     on("update", () => {
       const mouse = screenToWorldPosition(getMouse());
@@ -93,8 +88,10 @@ const engine = defineEngine(
       setWorldPosition(rect, mouse);
 
       rotate(rect, 0.0125);
-      rotate(child, 0.025);
-      rotate(grandChild, 0.035);
+
+      traverseChildren(rect, (child) => {
+        rotate(child, 0.00125);
+      });
     });
   },
 );
