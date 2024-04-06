@@ -1,4 +1,4 @@
-import { assert, assertDefined, millitimestamp } from "aion-core";
+import { assert, assertDefined, memo, millitimestamp } from "aion-core";
 import { useECS, AnimationComponent } from "../index.js";
 import {
   onEnterQuery,
@@ -10,15 +10,6 @@ import {
 export type AnimationConfig = {
   steps: AnimationStates;
 };
-
-export type AnimationInfos = {
-  steps: Record<string, AnimationState>;
-};
-
-// export type AnimationInfo = {
-//   startAt: number;
-//   nextStepName: string;
-// };
 
 export type AnimationStates = Record<string, AnimationState> & {
   initial: AnimationState;
@@ -35,11 +26,17 @@ export type AnimationUpdate = {
   value: number;
 };
 
+export type AnimationInfos = Record<string, AnimationInfo>;
+export type AnimationInfo = {
+  startAt: number;
+  nextStepName: string;
+};
+
 let nextAnimationID = 0;
 
 const ANIMATIONS: Array<AnimationConfig> = [];
 // // animations cached informations
-// const ANIMATIONS_INFOS: Array<AnimationInfos> = [];
+const ANIMATIONS_INFOS: Array<AnimationInfos> = [];
 
 export function defineAnimationConfig(config: AnimationConfig) {
   const id = nextAnimationID++;
@@ -66,6 +63,7 @@ export function updateAnimation(
   currentTime: number,
   subject: Entity,
 ) {
+  console.time("animate");
   const stepName = getAnimationStepAtTime(animation, currentTime)!;
 
   let nextStepName = getNextStep(animation, stepName);
@@ -91,6 +89,7 @@ export function updateAnimation(
 
     update.set(subject, value);
   }
+  console.timeEnd("animate");
 }
 
 export function getNextStep(config: AnimationConfig, currentState: string) {

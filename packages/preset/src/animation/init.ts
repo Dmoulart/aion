@@ -22,15 +22,12 @@ export function initAnimations() {
       let frames = 0;
       query(AnimationComponent).each((entity) => {
         const config = getAnimation(entity);
+
         let time = getAnimationCurrentTime(entity);
+
         if (time >= getAnimationDuration(config)) {
-          console.log("frames duration", frames);
           time = 0;
-          frames = 0;
-          AnimationComponent.startTime[entity] = millitimestamp();
         }
-        // console.log({ time });
-        frames++;
         updateAnimation(config, time, entity);
       });
     });
