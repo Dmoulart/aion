@@ -8,6 +8,7 @@ import {
 } from "aion-ecs";
 
 export type AnimationConfig = {
+  id: number;
   steps: AnimationStates;
 };
 
@@ -36,16 +37,18 @@ let nextAnimationID = 0;
 
 const ANIMATIONS: Array<AnimationConfig> = [];
 // // animations cached informations
-const ANIMATIONS_INFOS: Array<AnimationInfos> = [];
-
-export function defineAnimationConfig(config: AnimationConfig) {
+// const ANIMATIONS_INFOS: Array<AnimationInfos> = [];
+//@todo cache this make this function returns another type of object with easier property access
+export function defineAnimationConfig(config: Omit<AnimationConfig, "id">) {
   const id = nextAnimationID++;
 
   if (!config.steps.initial) {
     throw new Error("You must define the animation's config initial state");
   }
 
-  ANIMATIONS[id] = config;
+  (config as AnimationConfig).id = id;
+
+  ANIMATIONS[id] = config as AnimationConfig;
 
   return id;
 }
@@ -92,26 +95,26 @@ export function updateAnimation(
   console.timeEnd("animate");
 }
 
-export function getNextStep(config: AnimationConfig, currentState: string) {
-  const state = config.steps[currentState];
+export function getNextStep(config: AnimationConfig, currentStep: string) {
+  const step = config.steps[currentStep];
 
-  assertDefined(state);
+  assertDefined(step);
 
-  const states = Object.keys(config.steps);
+  const steps = Object.keys(config.steps);
 
-  const index = states.findIndex((state) => state === currentState);
+  const index = steps.findIndex((state) => state === currentStep);
 
-  let nextState: string;
+  let nextStep: string;
 
   if (index === -1) {
     throw new Error("unknown state");
-  } else if (index === states.length - 1) {
-    nextState = states[0]!;
+  } else if (index === steps.length - 1) {
+    nextStep = steps[0]!;
   } else {
-    nextState = states[index + 1]!;
+    nextStep = steps[index + 1]!;
   }
 
-  return nextState;
+  return nextStep;
 }
 
 export function getPreviousStep(config: AnimationConfig, currentState: string) {

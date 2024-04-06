@@ -1,7 +1,7 @@
 type AnyFunction = (...args: any[]) => any;
 type Cache<T extends AnyFunction> = {
   get: (...args: Parameters<T>) => ReturnType<T>;
-  set: (value: ReturnType<T>) => void;
+  set: (value: ReturnType<T>, ...args: Parameters<T>) => void;
 };
 
 export function memo<T extends AnyFunction>(fn: T, cache: Cache<T>): T {
@@ -11,8 +11,8 @@ export function memo<T extends AnyFunction>(fn: T, cache: Cache<T>): T {
     if (result !== undefined) {
       return result;
     } else {
-      const result = fn(args);
-      cache.set(result);
+      const result = fn(...args);
+      cache.set(result, ...args);
       return result;
     }
   }) as T;

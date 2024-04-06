@@ -19,7 +19,6 @@ export function initAnimations() {
     });
 
     on("update", () => {
-      let frames = 0;
       query(AnimationComponent).each((entity) => {
         const config = getAnimation(entity);
 
@@ -27,7 +26,9 @@ export function initAnimations() {
 
         if (time >= getAnimationDuration(config)) {
           time = 0;
+          AnimationComponent.startTime[entity] = millitimestamp();
         }
+
         updateAnimation(config, time, entity);
       });
     });
