@@ -82,8 +82,16 @@ export function getX(entity: Entity): number {
   return Transform[entity]![3]!;
 }
 
+export function getTransformX(transform: Transform): number {
+  return transform[3]!!;
+}
+
 export function getY(entity: Entity): number {
   return Transform[entity]![4]!;
+}
+
+export function getTransformY(transform: Transform): number {
+  return transform[4]!!;
 }
 
 export function setLocalPosition(entity: Entity, { x, y }: Vector): void {
@@ -118,8 +126,16 @@ export function setX(entity: Entity, x: number) {
   Transform[entity]![3]! = x;
 }
 
+export function setTransformX(transform: Transform, x: number) {
+  transform[3]! = x;
+}
+
 export function setY(entity: Entity, y: number) {
   Transform[entity]![4]! = y;
+}
+
+export function setTransformY(transform: Transform, y: number) {
+  transform[4]! = y;
 }
 
 export function getLocalScale(entity: Entity): Vec {
@@ -186,6 +202,10 @@ export function getTransformRotation(transform: Transform): number {
 
 export function setRotation(entity: Entity, radians: number) {
   Transform[entity]![2]! = radians;
+}
+
+export function setTransformRotation(transform: Transform, radians: number) {
+  transform[2]! = radians;
 }
 
 export function rotate(entity: Entity, radians: number) {

@@ -2,16 +2,17 @@ import { assertDefined, lerp } from "aion-core";
 import {
   useECS,
   AnimationComponent,
-  degreesToRadians,
   Transform,
   getTransformRotation,
   setTransformRotation,
+  setTransformX,
+  setTransformY,
+  getTransformX,
+  getTransformY,
 } from "../index.js";
-import { mat2d } from "gl-matrix";
 import {
   onEnterQuery,
   type Component,
-  query,
   onExitQuery,
   type Entity,
 } from "aion-ecs";
@@ -25,6 +26,7 @@ export type AnimationState = {
     rotation?: number;
     //@todo scale ?
   };
+  time: number;
   lerp?: number;
   onEnter?: () => void;
   onExit?: () => void;
@@ -74,7 +76,7 @@ export function updateAnimation(
   currentState: string | undefined,
   output: Transform,
 ) {
-  const hasJustRunAnimation = currentState === undefined;
+  const hasJustRunAnimation = !currentState;
 
   if (hasJustRunAnimation) {
     config.states.initial.onEnter?.();
@@ -90,19 +92,19 @@ export function updateAnimation(
   const lerpValue = state.lerp || 1;
 
   let x, y, rotation: number | undefined;
-
+  debugger;
   // x
   if (state.transform.x !== undefined) {
-    x = lerp(output[4]!, state.transform.x, lerpValue);
+    x = lerp(getTransformX(output), state.transform.x, lerpValue);
 
-    output[4] = x;
+    setTransformX(output, x);
   }
 
   // y
   if (state.transform.y !== undefined) {
-    y = lerp(output[5]!, state.transform.y, lerpValue);
+    y = lerp(getTransformY(output), state.transform.y, lerpValue);
 
-    output[5] = y;
+    setTransformY(output, y);
   }
 
   //rot
@@ -146,24 +148,25 @@ export function shouldMoveNextState(
 
   assertDefined(state);
 
-  const endX =
-    x && state.transform.x ? keepThreeDecimals(state.transform.x) : undefined;
+  const endX = x !== undefined && state.transform.x !== undefined;
 
-  const endY =
-    y && state.transform.y ? keepThreeDecimals(state.transform.y) : undefined;
+  const hasEndedX = endX ? state.transform.x === x : true;
 
-  const endRotation =
-    rotation && state.transform.rotation
-      ? degreesToRadians(state.transform.rotation)
-      : undefined;
+  const endY = y !== undefined && state.transform.y !== undefined;
 
-  const hasEndedX = endX ? keepThreeDecimals(x as number) - endX < 0.1 : true;
-  const hasEndedY = endY ? keepThreeDecimals(y as number) - endY < 0.1 : true;
-  const hasEndedRotation = endRotation
-    ? keepThreeDecimals(rotation as number) - endRotation < 0.1
-    : true;
+  const hasEndedY = endY ? state.transform.y === y : true;
 
-  const finished = hasEndedX && hasEndedY && hasEndedRotation;
+  console.log(x, state.transform.x);
+  console.log(y, state.transform.y);
+
+  // const endRotation =
+  //   rotation !== undefined && state.transform.rotation !== undefined;
+
+  // const hasEndedRotation = endRotation
+  //   ? keepThreeDecimals(rotation as number) - endRotation < 0.1
+  //   : true;
+
+  const finished = hasEndedX && hasEndedY;
 
   // const finished =
   //   keepThreeDecimals(x) === state.transform.x &&
@@ -181,15 +184,15 @@ export function shouldMoveNextState(
   //       keepThreeDecimals(endRotationValue)
   //     : true);
 
-  console.log({
-    finished,
-    rotation: keepThreeDecimals(rotation as number),
-    stateRotation: keepThreeDecimals(endRotation as number),
-    x,
-    endX: state.transform.x,
-    y,
-    endY: state.transform.y,
-  });
+  // console.log({
+  //   finished,
+  //   rotation: keepThreeDecimals(rotation as number),
+  //   stateRotation: keepThreeDecimals(endRotation as number),
+  //   x,
+  //   endX: state.transform.x,
+  //   y,
+  //   endY: state.transform.y,
+  // });
 
   return finished;
 }
@@ -224,10 +227,11 @@ export function bindAnimationToComponent(
   const { query, attach, detach } = useECS();
 
   const onComponentAdded = onEnterQuery(query(component));
+
   onComponentAdded((entity) => {
     const target = getTargetEntity(entity);
     AnimationComponent.animation[target] = animationID;
-    AnimationComponent.currentState[target] = "initial";
+    AnimationComponent.currentState[target] = "";
     attach(AnimationComponent, target);
   });
 
@@ -238,10 +242,16 @@ export function bindAnimationToComponent(
     detach(AnimationComponent, target);
   });
 }
-// export function runAnimation(
-//   animationID: number,
-//   id: number = nextAnimationInstanceID++,
-// ) {
-//   ANIMATIONS_INSTANCES[id] =
 
-// }
+export function attachAnimationTo(
+  entity: Entity,
+  animationID: number,
+  initialState = "initial",
+) {
+  const { attach } = useECS();
+
+  AnimationComponent.animation[entity] = animationID;
+  AnimationComponent.currentState[entity] = initialState;
+
+  attach(AnimationComponent, entity);
+}
