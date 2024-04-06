@@ -27,28 +27,27 @@ export type AnimationUpdate = {
   value: number;
 };
 
-export type AnimationInfos = Record<string, AnimationInfo>;
-export type AnimationInfo = {
-  startAt: number;
-  nextStepName: string;
-};
+// export type AnimationInfos = Record<string, AnimationInfo>;
+// export type AnimationInfo = {
+//   startAt: number;
+//   nextStepName: string;
+// };
+// // animations cached informations
+// const ANIMATIONS_INFOS: Array<AnimationInfos> = [];
 
 let nextAnimationID = 0;
 
 const ANIMATIONS: Array<AnimationConfig> = [];
-// // animations cached informations
-// const ANIMATIONS_INFOS: Array<AnimationInfos> = [];
+
 //@todo cache this make this function returns another type of object with easier property access
-export function defineAnimationConfig(config: Omit<AnimationConfig, "id">) {
+export function defineAnimationConfig(config: AnimationConfig) {
   const id = nextAnimationID++;
 
   if (!config.steps.initial) {
     throw new Error("You must define the animation's config initial state");
   }
 
-  (config as AnimationConfig).id = id;
-
-  ANIMATIONS[id] = config as AnimationConfig;
+  ANIMATIONS[id] = config;
 
   return id;
 }
@@ -66,7 +65,6 @@ export function updateAnimation(
   currentTime: number,
   subject: Entity,
 ) {
-  console.time("animate");
   const stepName = getAnimationStepAtTime(animation, currentTime)!;
 
   let nextStepName = getNextStep(animation, stepName);
@@ -92,7 +90,6 @@ export function updateAnimation(
 
     update.set(subject, value);
   }
-  console.timeEnd("animate");
 }
 
 export function getNextStep(config: AnimationConfig, currentStep: string) {
