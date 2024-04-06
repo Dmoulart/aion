@@ -73,14 +73,33 @@ export function updateAnimation(
   for (const id in step.updates) {
     const update = step.updates[id]!;
 
-    const distance = nextStep.updates[id]!.value! - update.value;
+    const baseValue = update.value;
+    const targetValue = nextStep.updates[id]!.value!;
+
+    const distance = targetValue - baseValue;
+    const sign = Math.sign(distance);
 
     const frames = 60 / step.time;
 
     const increment = distance / frames;
-    console.log(increment);
 
-    const to = () => update.get(subject) + increment;
+    const to = () => {
+      const stepValue = update.get(subject) + increment;
+      if (sign === 1) {
+        return stepValue > targetValue // coorection
+          ? targetValue
+          : stepValue;
+      } else {
+        return stepValue < targetValue // coorection
+          ? targetValue
+          : stepValue;
+      }
+
+      // const stepValue = update.get(subject) + increment;
+      // return stepValue > targetValue // coorection
+      //   ? targetValue
+      //   : stepValue;
+    };
 
     update.set(subject, to);
   }
