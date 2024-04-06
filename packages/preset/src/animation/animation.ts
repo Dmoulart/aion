@@ -66,7 +66,8 @@ export function updateAnimation(
   subject: Entity,
 ) {
   const stepName = getAnimationStepAtTime(config, currentTime)!;
-  const nextStep = config.steps[getNextStep(config, stepName)]!;
+  let nextStepName = getNextStep(config, stepName);
+  const nextStep = config.steps[nextStepName]!;
 
   const step = config.steps[stepName]!;
 
@@ -102,6 +103,21 @@ export function updateAnimation(
     };
 
     update.set(subject, to);
+  }
+  const animationDuration = getAnimationDuration(config);
+  const nextStepStartTime = getAnimationStepStartTime(config, nextStepName);
+
+  const willMoveNextStep =
+    (nextStepName !== "initial" &&
+      nextStepStartTime - currentTime <= 60 / step.time) ||
+    animationDuration - currentTime <= 60 / step.time;
+
+  if (willMoveNextStep) {
+    console.log("will move next step");
+    for (const id in nextStep.updates) {
+      const update = nextStep.updates[id];
+      update?.set(subject, () => update.value);
+    }
   }
 }
 
