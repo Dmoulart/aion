@@ -78,46 +78,26 @@ export function updateAnimation(
     const targetValue = nextStep.updates[id]!.value!;
 
     const distance = targetValue - baseValue;
+
     const sign = Math.sign(distance);
 
-    const frames = 60 / step.time;
+    if (sign === -1) {
+      debugger;
+    }
 
-    const increment = distance / frames;
+    const unit = distance / (step.time * 1000);
 
     const to = () => {
-      const stepValue = update.get(subject) + increment;
-      if (sign === 1) {
-        return stepValue > targetValue // coorection
-          ? targetValue
-          : stepValue;
-      } else {
-        return stepValue < targetValue // coorection
-          ? targetValue
-          : stepValue;
-      }
-
-      // const stepValue = update.get(subject) + increment;
-      // return stepValue > targetValue // coorection
-      //   ? targetValue
-      //   : stepValue;
+      console.log(
+        unit * getElaspedTimeSinceStepStart(config, stepName, currentTime),
+      );
+      return (
+        baseValue +
+        unit * getElaspedTimeSinceStepStart(config, stepName, currentTime)
+      );
     };
 
     update.set(subject, to);
-  }
-  const animationDuration = getAnimationDuration(config);
-  const nextStepStartTime = getAnimationStepStartTime(config, nextStepName);
-
-  const willMoveNextStep =
-    (nextStepName !== "initial" &&
-      nextStepStartTime - currentTime <= 60 / step.time) ||
-    animationDuration - currentTime <= 60 / step.time;
-
-  if (willMoveNextStep) {
-    console.log("will move next step");
-    for (const id in nextStep.updates) {
-      const update = nextStep.updates[id];
-      update?.set(subject, () => update.value);
-    }
   }
 }
 
@@ -189,18 +169,29 @@ export function getAnimationStepStartTime(
   animation: AnimationConfig,
   step: string,
 ) {
+  if (step === "initial") return 0;
+
   let startTime = 0;
 
   for (const stepName in animation.steps) {
     const state = animation.steps[stepName]!;
-    startTime += state.time * 1000;
 
     if (step === stepName) {
       break;
     }
+
+    startTime += state.time * 1000;
   }
 
   return startTime;
+}
+
+export function getElaspedTimeSinceStepStart(
+  animation: AnimationConfig,
+  step: string,
+  time: number,
+) {
+  return time - getAnimationStepStartTime(animation, step);
 }
 
 export function getAnimationDuration(animation: AnimationConfig) {

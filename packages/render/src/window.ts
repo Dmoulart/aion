@@ -63,6 +63,11 @@ export function createWindow(options?: CreateWindowOptions) {
   canvas.width = parent.clientWidth;
   canvas.height = parent.clientHeight;
 
+  window.addEventListener("resize", () => {
+    canvas.width = parent.clientWidth;
+    canvas.height = parent.clientHeight;
+  });
+
   return {
     canvas,
     ctx,

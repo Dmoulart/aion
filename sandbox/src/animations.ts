@@ -159,7 +159,6 @@ const engine = defineEngine(
     attachAnimationTo(rect, MoveAnimation);
 
     on("update", () => {
-      debugger;
       // const mouse = screenToWorldPosition(getMouse());
       // setWorldPosition(rect, mouse);
     });
