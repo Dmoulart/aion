@@ -8,10 +8,12 @@ import {
   defineAnimationConfig,
   degreesToRadians,
   getRotation,
+  getScaleX,
   getX,
   getY,
   setPosition,
   setRotation,
+  setScaleX,
   setX,
   setY,
   translate,
@@ -85,13 +87,18 @@ const engine = defineEngine(
               set: (subject, to) => setY(subject, to()),
               value: 0,
             },
-            // rotation: {
-            //   get: (subject) => getRotation(subject),
-            //   set: (subject, to) => setRotation(subject, to()),
-            //   value: 0,
-            // },
+            rotation: {
+              get: (subject) => getRotation(subject),
+              set: (subject, to) => setRotation(subject, to()),
+              value: 0,
+            },
+            scaleX: {
+              get: (subject) => getScaleX(subject),
+              set: (subject, to) => setScaleX(subject, to()),
+              value: 1,
+            },
           },
-          time: 1,
+          time: 3,
         },
         right: {
           updates: {
@@ -105,13 +112,18 @@ const engine = defineEngine(
               set: (subject, to) => setY(subject, to()),
               value: 0,
             },
-            // rotation: {
-            //   get: (subject) => getRotation(subject),
-            //   set: (subject, to) => setRotation(subject, to()),
-            //   value: degreesToRadians(90),
-            // },
+            rotation: {
+              get: (subject) => getRotation(subject),
+              set: (subject, to) => setRotation(subject, to()),
+              value: degreesToRadians(90),
+            },
+            scaleX: {
+              get: (subject) => getScaleX(subject),
+              set: (subject, to) => setScaleX(subject, to()),
+              value: 2,
+            },
           },
-          time: 1,
+          time: 0.5,
         },
         up: {
           updates: {
@@ -125,11 +137,16 @@ const engine = defineEngine(
               set: (subject, to) => setY(subject, to()),
               value: -250,
             },
-            // rotation: {
-            //   get: (subject) => getRotation(subject),
-            //   set: (subject, to) => setRotation(subject, to()),
-            //   value: degreesToRadians(180),
-            // },
+            rotation: {
+              get: (subject) => getRotation(subject),
+              set: (subject, to) => setRotation(subject, to()),
+              value: degreesToRadians(180),
+            },
+            scaleX: {
+              get: (subject) => getScaleX(subject),
+              set: (subject, to) => setScaleX(subject, to()),
+              value: 0.5,
+            },
           },
           time: 1,
         },
@@ -145,13 +162,18 @@ const engine = defineEngine(
               set: (subject, to) => setY(subject, to()),
               value: -250,
             },
-            // rotation: {
-            //   get: (subject) => getRotation(subject),
-            //   set: (subject, to) => setRotation(subject, to()),
-            //   value: degreesToRadians(220),
-            // },
+            rotation: {
+              get: (subject) => getRotation(subject),
+              set: (subject, to) => setRotation(subject, to()),
+              value: degreesToRadians(220),
+            },
+            scaleX: {
+              get: (subject) => getScaleX(subject),
+              set: (subject, to) => setScaleX(subject, to()),
+              value: 0.2,
+            },
           },
-          time: 1,
+          time: 0.2,
         },
       },
     });

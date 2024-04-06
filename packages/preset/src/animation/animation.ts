@@ -7,8 +7,6 @@ import {
   type Entity,
 } from "aion-ecs";
 
-// export type AnimationTransform = [number, number, number]; //x,y,rot
-
 export type AnimationState = {
   updates: Record<
     string,
@@ -29,11 +27,6 @@ export type AnimationStates = Record<string, AnimationState> & {
 
 export type AnimationConfig = {
   steps: AnimationStates;
-};
-
-export type AnimationInstance = {
-  animationID: number;
-  state?: string;
 };
 
 let nextAnimationID = 0;
@@ -66,7 +59,9 @@ export function updateAnimation(
   subject: Entity,
 ) {
   const stepName = getAnimationStepAtTime(config, currentTime)!;
+
   let nextStepName = getNextStep(config, stepName);
+
   const nextStep = config.steps[nextStepName]!;
 
   const step = config.steps[stepName]!;
@@ -88,9 +83,6 @@ export function updateAnimation(
     const unit = distance / (step.time * 1000);
 
     const to = () => {
-      console.log(
-        unit * getElaspedTimeSinceStepStart(config, stepName, currentTime),
-      );
       return (
         baseValue +
         unit * getElaspedTimeSinceStepStart(config, stepName, currentTime)
