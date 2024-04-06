@@ -16,6 +16,7 @@ import {
   degreesToRadians,
   getFirstChildOf,
   getGravity,
+  getLastChildOf,
   getWorldDistance,
   toSimulationPoint,
   useECS,
@@ -171,7 +172,7 @@ export function setupAI() {
 
   bindAnimationToComponent(AttackAnimation, KillAction, (entity) => {
     // @todo: this is not right
-    const sword = getFirstChildOf(entity)!;
+    const sword = getLastChildOf(entity)!;
     return sword;
   });
 

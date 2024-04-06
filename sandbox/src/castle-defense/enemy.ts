@@ -9,7 +9,6 @@ import {
   Body,
   CharacterController,
   Brain,
-  Circle,
   createTransform,
   createCollider,
   createBody,
@@ -19,14 +18,15 @@ import {
   usePhysics,
   singleton,
   getApproximateDirection,
-  scale,
-  rotate,
-  degreesToRadians,
   flipX,
+  useAion,
+  degreesToRadians,
 } from "aion-preset";
 import { createTakeTreasureGoal } from "./ai";
 import { ENEMY_COLLISION_GROUP } from "./collision-groups";
 import { IsEnemy } from "./components";
+import { useGame } from "../castle-defense";
+import { Colors } from "aion-render";
 
 export const useEnemyPrefabs = singleton(() => {
   const $ecs = useECS();
@@ -97,6 +97,50 @@ export function createEnemy(pos: Vector, target: Entity) {
     }),
   });
 
+  const { createRect, createCircle } = useAion();
+
+  // eye
+  addChildTo(
+    enemy,
+    createCircle({
+      Transform: createTransform(-7, -10),
+      Circle: {
+        r: 2,
+      },
+      Fill: Colors["mine-shaft:900"],
+      Stroke: "black",
+    }),
+  );
+
+  // eyebrow
+  addChildTo(
+    enemy,
+    createRect({
+      Transform: createTransform(-10, -20, degreesToRadians(30)),
+      Rect: {
+        w: 5,
+        h: 10,
+      },
+      Fill: Colors["mine-shaft:900"],
+      Stroke: "black",
+    }),
+  );
+
+  // mouth
+  addChildTo(
+    enemy,
+    createRect({
+      Transform: createTransform(-7, 5),
+      Rect: {
+        w: 10,
+        h: 2,
+      },
+      Fill: Colors["mine-shaft:900"],
+      Stroke: "black",
+    }),
+  );
+
+  //sword
   addChildTo(enemy, sword);
 
   const comesFromRight = getApproximateDirection(enemy, target).equals(

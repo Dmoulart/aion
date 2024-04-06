@@ -79,7 +79,6 @@ export function initPhysicsSystems() {
       const body = RuntimeBody[ent]!;
 
       setPosition(ent, fromSimulationPoint(body.translation()));
-      console.log("body rot", body.rotation());
       setRotation(ent, body.rotation());
     });
   });

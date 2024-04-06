@@ -9,7 +9,7 @@ import {
 } from "aion-ecs";
 import { useECS } from "../ecs.js";
 
-export const Children = defineComponent({ list: [eid, 3], length: u32 });
+export const Children = defineComponent({ list: [eid, 10], length: u32 });
 export const Parent = defineComponent(eid);
 
 export function hasParent(entity: Entity) {
@@ -41,13 +41,17 @@ export function addChildTo(parent: Entity, child: Entity) {
 
   const childIndex = Children.length[parent]++;
 
-  assert(childIndex < 3, "Children limit overflow");
+  assert(childIndex < 10, "Children limit overflow");
 
   Children.list[parent]![childIndex] = child;
 }
 
 export function getFirstChildOf(parent: Entity) {
   return Children.list[parent]![0];
+}
+
+export function getLastChildOf(parent: Entity) {
+  return Children.list[parent]![Children.length[parent]! - 1];
 }
 
 export function forEachChildOf(parent: Entity, cb: (ent: Entity) => void) {
