@@ -8,7 +8,6 @@ import {
 } from "aion-ecs";
 
 export type AnimationConfig = {
-  id: number;
   steps: AnimationStates;
 };
 
