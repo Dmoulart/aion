@@ -60,28 +60,11 @@ export function getAnimationConfig(id: number) {
   return config;
 }
 
-const setValueDirectly = (value: number) => {
-  return value;
-};
-
 export function updateAnimation(
   config: AnimationConfig,
   currentTime: number,
   subject: Entity,
 ) {
-  // const hasJustStartedAnimation = currentTime === 0;
-
-  // let stepName: string = "initial";
-
-  // if (hasJustStartedAnimation) {
-  //   const initial = config.steps.initial;
-  //   initial.onEnter?.();
-
-  //   initial.updates.forEach((update) => update.set(subject, setValueDirectly));
-  //   console.log(stepName);
-  //   return;
-  // }
-
   const stepName = getAnimationStepAtTime(config, currentTime)!;
   const nextStep = config.steps[getNextStep(config, stepName)]!;
 

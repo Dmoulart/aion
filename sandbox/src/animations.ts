@@ -6,9 +6,12 @@ import {
   centerCameraOnEntity,
   createTransform,
   defineAnimationConfig,
+  degreesToRadians,
+  getRotation,
   getX,
   getY,
   setPosition,
+  setRotation,
   setX,
   setY,
   translate,
@@ -46,6 +49,16 @@ const engine = defineEngine(
       }
     });
 
+    const witness = createRect({
+      Transform: createTransform(0, 0),
+      Fill: Colors["picton-blue:400"],
+      Stroke: "black",
+      Rect: {
+        w: 100,
+        h: 100,
+      },
+    });
+
     const rect = createRect({
       Transform: createTransform(0, 0),
       Fill: Colors["shamrock:600"],
@@ -72,6 +85,11 @@ const engine = defineEngine(
               set: (subject, to) => setY(subject, to()),
               value: 0,
             },
+            // rotation: {
+            //   get: (subject) => getRotation(subject),
+            //   set: (subject, to) => setRotation(subject, to()),
+            //   value: 0,
+            // },
           },
           time: 1,
         },
@@ -84,9 +102,14 @@ const engine = defineEngine(
             },
             y: {
               get: (subject) => getY(subject),
-              set: (subject, to) => setY(subject, to(0)),
+              set: (subject, to) => setY(subject, to()),
               value: 0,
             },
+            // rotation: {
+            //   get: (subject) => getRotation(subject),
+            //   set: (subject, to) => setRotation(subject, to()),
+            //   value: degreesToRadians(90),
+            // },
           },
           time: 1,
         },
@@ -102,6 +125,11 @@ const engine = defineEngine(
               set: (subject, to) => setY(subject, to()),
               value: -250,
             },
+            // rotation: {
+            //   get: (subject) => getRotation(subject),
+            //   set: (subject, to) => setRotation(subject, to()),
+            //   value: degreesToRadians(180),
+            // },
           },
           time: 1,
         },
@@ -114,9 +142,14 @@ const engine = defineEngine(
             },
             y: {
               get: (subject) => getY(subject),
-              set: (subject, to) => setY(subject, to(-250)),
+              set: (subject, to) => setY(subject, to()),
               value: -250,
             },
+            // rotation: {
+            //   get: (subject) => getRotation(subject),
+            //   set: (subject, to) => setRotation(subject, to()),
+            //   value: degreesToRadians(220),
+            // },
           },
           time: 1,
         },
