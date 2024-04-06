@@ -76,7 +76,7 @@ export function createEnemy(pos: Vector, target: Entity) {
     },
 
     Fill: "white",
-    Stroke: "blue",
+    Stroke: "black",
     Brain: {
       goal: createTakeTreasureGoal(target),
     },
@@ -116,7 +116,7 @@ export function createEnemy(pos: Vector, target: Entity) {
   addChildTo(
     enemy,
     createRect({
-      Transform: createTransform(-10, -20, degreesToRadians(30)),
+      Transform: createTransform(-10, -20, degreesToRadians(20)),
       Rect: {
         w: 5,
         h: 10,

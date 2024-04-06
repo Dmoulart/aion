@@ -44,7 +44,7 @@ import {
 } from "./castle-defense/components";
 import { setupAI } from "./castle-defense/ai";
 import { createEnemy } from "./castle-defense/enemy";
-import { millitimestamp } from "aion-core";
+import { lerp, millitimestamp, zero } from "aion-core";
 
 export const engine = defineEngine(plugins, () => {
   const { $camera, getFloor } = useGame();
