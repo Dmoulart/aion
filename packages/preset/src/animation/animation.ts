@@ -7,31 +7,39 @@ import {
   type Entity,
 } from "aion-ecs";
 
-export type AnimationState = {
-  updates: Record<
-    string,
-    {
-      get: (subject: Entity) => number;
-      set: (subject: Entity, to: () => number) => void;
-      value: number;
-    }
-  >;
-  time: number;
-  onEnter?: () => void;
-  onExit?: () => void;
+export type AnimationConfig = {
+  steps: AnimationStates;
 };
+
+export type AnimationInfos = {
+  steps: Record<string, AnimationState>;
+};
+
+// export type AnimationInfo = {
+//   startAt: number;
+//   nextStepName: string;
+// };
 
 export type AnimationStates = Record<string, AnimationState> & {
   initial: AnimationState;
 };
 
-export type AnimationConfig = {
-  steps: AnimationStates;
+export type AnimationState = {
+  updates: Record<string, AnimationUpdate>;
+  duration: number;
+};
+
+export type AnimationUpdate = {
+  get: (subject: Entity) => number;
+  set: (subject: Entity, value: number) => void;
+  value: number;
 };
 
 let nextAnimationID = 0;
 
 const ANIMATIONS: Array<AnimationConfig> = [];
+// // animations cached informations
+// const ANIMATIONS_INFOS: Array<AnimationInfos> = [];
 
 export function defineAnimationConfig(config: AnimationConfig) {
   const id = nextAnimationID++;
@@ -54,42 +62,34 @@ export function getAnimationConfig(id: number) {
 }
 
 export function updateAnimation(
-  config: AnimationConfig,
+  animation: AnimationConfig,
   currentTime: number,
   subject: Entity,
 ) {
-  const stepName = getAnimationStepAtTime(config, currentTime)!;
+  const stepName = getAnimationStepAtTime(animation, currentTime)!;
 
-  let nextStepName = getNextStep(config, stepName);
+  let nextStepName = getNextStep(animation, stepName);
 
-  const nextStep = config.steps[nextStepName]!;
+  const nextStep = animation.steps[nextStepName]!;
 
-  const step = config.steps[stepName]!;
+  const step = animation.steps[stepName]!;
 
   for (const id in step.updates) {
     const update = step.updates[id]!;
 
     const baseValue = update.value;
+
     const targetValue = nextStep.updates[id]!.value!;
 
     const distance = targetValue - baseValue;
 
-    const sign = Math.sign(distance);
+    const frame = distance / (step.duration * 1000);
 
-    if (sign === -1) {
-      debugger;
-    }
+    const value =
+      baseValue +
+      frame * getElaspedTimeSinceStepStart(animation, stepName, currentTime);
 
-    const unit = distance / (step.time * 1000);
-
-    const to = () => {
-      return (
-        baseValue +
-        unit * getElaspedTimeSinceStepStart(config, stepName, currentTime)
-      );
-    };
-
-    update.set(subject, to);
+    update.set(subject, value);
   }
 }
 
@@ -146,7 +146,7 @@ export function getAnimationStepAtTime(
 
   for (const stateName in animation.steps) {
     const state = animation.steps[stateName]!;
-    duration += state.time * 1000;
+    duration += state.duration * 1000;
 
     if (time <= duration) {
       currentState = stateName;
@@ -172,7 +172,7 @@ export function getAnimationStepStartTime(
       break;
     }
 
-    startTime += state.time * 1000;
+    startTime += state.duration * 1000;
   }
 
   return startTime;
@@ -191,7 +191,7 @@ export function getAnimationDuration(animation: AnimationConfig) {
 
   for (const stateName in animation.steps) {
     const state = animation.steps[stateName]!;
-    duration += state.time * 1000;
+    duration += state.duration * 1000;
   }
 
   return duration;
