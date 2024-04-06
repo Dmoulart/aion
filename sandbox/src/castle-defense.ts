@@ -44,6 +44,7 @@ import {
 } from "./castle-defense/components";
 import { setupAI } from "./castle-defense/ai";
 import { createEnemy } from "./castle-defense/enemy";
+import { millitimestamp } from "aion-core";
 
 export const engine = defineEngine(plugins, () => {
   const { $camera, getFloor } = useGame();
@@ -239,14 +240,16 @@ export function createScenes() {
     });
 
     const { query } = useECS();
+
     let enemyCreated = false;
+
     return on("update", () => {
       query(Transform, EnemySpawn).each((entity) => {
         if (enemyCreated) return;
         const frequency = EnemySpawn.frequency[entity]!;
         const lastSpawn = EnemySpawn.lastSpawn[entity]!;
 
-        const now = performance.now();
+        const now = millitimestamp();
 
         const secondsSinceLastSpawn = (now - lastSpawn) / 1000;
 

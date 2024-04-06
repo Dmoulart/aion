@@ -200,15 +200,14 @@ export function bindAnimationToComponent(
   component: Component,
   getTargetEntity: (entity: Entity) => Entity = (entity) => entity,
 ) {
-  const { query, attach, detach } = useECS();
+  const { query, detach } = useECS();
 
   const onComponentAdded = onEnterQuery(query(component));
 
   onComponentAdded((entity) => {
     const target = getTargetEntity(entity);
-    AnimationComponent.animation[target] = animationID;
-    AnimationComponent.startTime[target] = millitimestamp();
-    attach(AnimationComponent, target);
+
+    attachAnimationTo(target, animationID);
   });
 
   const onComponentRemoved = onExitQuery(query(component));

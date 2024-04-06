@@ -21,7 +21,7 @@ export const BASIC_UPDATES = {
 } as const;
 
 export function animate(
-  config: Record<keyof typeof BASIC_UPDATES, number>,
+  config: Partial<Record<keyof typeof BASIC_UPDATES, number>>,
 ): Record<string, AnimationUpdate> {
   const updates: Record<string, AnimationUpdate> = {};
 
@@ -30,7 +30,7 @@ export function animate(
       ...BASIC_UPDATES[key as keyof typeof BASIC_UPDATES],
     } as AnimationUpdate;
 
-    update.value = config[key as keyof typeof BASIC_UPDATES];
+    update.value = config[key as keyof typeof BASIC_UPDATES]!;
 
     updates[key] = update;
   }

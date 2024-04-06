@@ -6,6 +6,7 @@ import {
   RuntimeBody,
   RuntimeCharacterController,
   RuntimeCollider,
+  animate,
   bindAnimationToComponent,
   castRay,
   defineAction,
@@ -133,28 +134,25 @@ export function setupAI() {
   const AttackAnimation = defineAnimationConfig({
     steps: {
       initial: {
-        transform: {
+        updates: animate({
           x: 0,
-          // y: 0,
-          rotation: 0,
-        },
-        lerp: 0.25,
+          y: 0,
+        }),
+        duration: 0.5,
       },
       momentum: {
-        transform: {
-          x: -20,
-          // y: 0,
-          rotation: 90,
-        },
-        lerp: 0.25,
+        updates: animate({
+          x: -50,
+          y: 0,
+        }),
+        duration: 0.5,
       },
       estoc: {
-        transform: {
-          x: 20,
-          // y: 0,
-          rotation: 60,
-        },
-        lerp: 0.25,
+        updates: animate({
+          x: 50,
+          y: 0,
+        }),
+        duration: 0.5,
       },
     },
   });
