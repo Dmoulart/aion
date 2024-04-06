@@ -54,6 +54,19 @@ export function getLastChildOf(parent: Entity) {
   return Children.list[parent]![Children.length[parent]! - 1];
 }
 
+export function findChild(
+  parent: Entity,
+  predicate: (entity: Entity) => boolean,
+) {
+  for (const child of Children.list[parent]!) {
+    if (predicate(child)) {
+      return child;
+    }
+  }
+
+  return undefined;
+}
+
 export function forEachChildOf(parent: Entity, cb: (ent: Entity) => void) {
   if (hasChildren(parent)) {
     for (const child of Children.list[parent]!) {

@@ -1,5 +1,5 @@
 import { Vector, leftDirection } from "aion-core";
-import { Entity } from "aion-ecs";
+import { Entity, defineComponent } from "aion-ecs";
 import {
   Transform,
   Rect,
@@ -25,8 +25,10 @@ import {
 import { createTakeTreasureGoal } from "./ai";
 import { ENEMY_COLLISION_GROUP } from "./collision-groups";
 import { IsEnemy } from "./components";
-import { useGame } from "../castle-defense";
 import { Colors } from "aion-render";
+
+const Weapon = defineComponent({});
+const EyeBrow = defineComponent({});
 
 export const useEnemyPrefabs = singleton(() => {
   const $ecs = useECS();
@@ -48,6 +50,7 @@ export const useEnemyPrefabs = singleton(() => {
     Rect,
     Fill,
     Stroke,
+    Weapon,
   });
 
   return { Enemy, Sword };
@@ -55,6 +58,8 @@ export const useEnemyPrefabs = singleton(() => {
 
 export function createEnemy(pos: Vector, target: Entity) {
   const { Sword, Enemy } = useEnemyPrefabs();
+
+  const { attach } = useECS();
 
   const { RAPIER } = usePhysics();
 
@@ -112,19 +117,18 @@ export function createEnemy(pos: Vector, target: Entity) {
     }),
   );
 
-  // eyebrow
-  addChildTo(
-    enemy,
-    createRect({
-      Transform: createTransform(-10, -20, degreesToRadians(20)),
-      Rect: {
-        w: 5,
-        h: 10,
-      },
-      Fill: Colors["mine-shaft:900"],
-      Stroke: "black",
-    }),
-  );
+  const eyebrow = createRect({
+    Transform: createTransform(-8, -20, degreesToRadians(-30)),
+    Rect: {
+      w: 10,
+      h: 5,
+    },
+    Fill: Colors["mine-shaft:900"],
+    Stroke: "black",
+  });
+
+  attach(EyeBrow, eyebrow);
+  addChildTo(enemy, eyebrow);
 
   // mouth
   addChildTo(
