@@ -177,18 +177,14 @@ export function setupAI() {
   });
 
   const killTarget = defineBehavior(Kill, KillAction, (entity: Entity) => {
-    console.log("kill !");
-
+    // console.log("kill !");
     // // updateAnimation(AttackAnimation, undefined, Transform[entity]!);
-
     // // momentum
     // if (KillAction.state[entity] === 0) {
     //   const body = getBody(entity);
-
     //   // @todo: this is not right
     //   const sword = getFirstChildOf(entity)!;
     //   const swordPosition = vec(getLocalPosition(sword));
-
     //   setPosition(sword, swordPosition.lerp(vec(-20, 0), 0.1));
     //   // setRotation(sword, )
     //   // body.setLinvel()
