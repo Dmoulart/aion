@@ -122,6 +122,16 @@ export function translate(entity: Entity, { x, y }: Vector): void {
   transform![4] += y;
 }
 
+export function translateX(entity: Entity, x: number): void {
+  const transform = Transform[entity]!;
+  transform![3] += x;
+}
+
+export function translateY(entity: Entity, x: number): void {
+  const transform = Transform[entity]!;
+  transform![3] += x;
+}
+
 export function setX(entity: Entity, x: number) {
   Transform[entity]![3]! = x;
 }

@@ -131,7 +131,7 @@ export function setupAI() {
   });
 
   const AttackAnimation = defineAnimationConfig({
-    states: {
+    steps: {
       initial: {
         transform: {
           x: 0,

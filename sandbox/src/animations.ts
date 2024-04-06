@@ -6,7 +6,14 @@ import {
   centerCameraOnEntity,
   createTransform,
   defineAnimationConfig,
+  getX,
+  getY,
+  setPosition,
+  setX,
+  setY,
   translate,
+  translateX,
+  translateY,
   zoomBy,
 } from "aion-preset";
 import { Colors, setBackgroundColor } from "aion-render";
@@ -19,7 +26,7 @@ const engine = defineEngine(
   () => {
     const { $camera, createRect } = useGame();
 
-    setBackgroundColor("black");
+    setBackgroundColor(Colors["rhino:200"]);
 
     defineLoop(() => {
       emit("update");
@@ -52,41 +59,65 @@ const engine = defineEngine(
     centerCameraOnEntity(rect);
 
     const MoveAnimation = defineAnimationConfig({
-      states: {
+      steps: {
         initial: {
-          transform: {
-            x: 0,
-            y: 0,
-            // rotation: 0,
+          updates: {
+            x: {
+              get: (subject) => getX(subject),
+              set: (subject, to) => setX(subject, to()),
+              value: 0,
+            },
+            y: {
+              get: (subject) => getY(subject),
+              set: (subject, to) => setY(subject, to()),
+              value: 0,
+            },
           },
-          // lerp: 0.25,
           time: 1,
         },
         right: {
-          transform: {
-            x: 50,
-            y: 0,
-            // rotation: 0,
+          updates: {
+            x: {
+              get: (subject) => getX(subject),
+              set: (subject, to) => setX(subject, to()),
+              value: 250,
+            },
+            y: {
+              get: (subject) => getY(subject),
+              set: (subject, to) => setY(subject, to(0)),
+              value: 0,
+            },
           },
-          // lerp: 0.25,
           time: 1,
         },
         up: {
-          transform: {
-            x: 50,
-            y: -50,
-            // rotation: 0,
+          updates: {
+            x: {
+              get: (subject) => getX(subject),
+              set: (subject, to) => setX(subject, to()),
+              value: 250,
+            },
+            y: {
+              get: (subject) => getY(subject),
+              set: (subject, to) => setY(subject, to()),
+              value: -250,
+            },
           },
-          // lerp: 0.25,
           time: 1,
         },
         upLeft: {
-          transform: {
-            x: 0,
-            y: -50,
-            // rotation: 0,
+          updates: {
+            x: {
+              get: (subject) => getX(subject),
+              set: (subject, to) => setX(subject, to()),
+              value: 0,
+            },
+            y: {
+              get: (subject) => getY(subject),
+              set: (subject, to) => setY(subject, to(-250)),
+              value: -250,
+            },
           },
-          // lerp: 0.25,
           time: 1,
         },
       },

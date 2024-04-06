@@ -1,34 +1,36 @@
 import { beforeStart, on } from "aion-engine";
 import { useECS } from "../ecs.js";
-import { onEnterQuery, onExitQuery } from "aion-ecs";
+import { onEnterQuery } from "aion-ecs";
 import {
   AnimationComponent,
-  getCurrentAnimationState,
-  setCurrentAnimationState,
+  getAnimation,
+  getAnimationCurrentTime,
 } from "./bindings.js";
-import { getAnimationConfig, updateAnimation } from "./animation.js";
-import { Transform, getTransform } from "../index.js";
+import { getAnimationDuration, updateAnimation } from "./animation.js";
+import { millitimestamp } from "aion-core";
 
 export function initAnimations() {
   beforeStart(() => {
     const { query } = useECS();
-    const onAnimationStart = onEnterQuery(query(AnimationComponent, Transform));
+    const onAnimationStart = onEnterQuery(query(AnimationComponent));
+
     onAnimationStart((entity) => {
-      AnimationComponent.currentState[entity] = "initial";
+      AnimationComponent.startTime[entity] = millitimestamp();
     });
 
     on("update", () => {
-      query(AnimationComponent, Transform).each((entity) => {
-        const config = getAnimationConfig(
-          AnimationComponent.animation[entity]!,
-        );
+      query(AnimationComponent).each((entity) => {
+        const config = getAnimation(entity);
 
-        const state = getCurrentAnimationState(entity);
-        console.log("state", state);
+        let time = getAnimationCurrentTime(entity);
 
-        const nextState = updateAnimation(config, state, getTransform(entity));
+        if (time >= getAnimationDuration(config)) {
+          time = 0;
+          AnimationComponent.startTime[entity] = millitimestamp();
+        }
 
-        setCurrentAnimationState(entity, nextState);
+        console.log({ time });
+        updateAnimation(config, time, entity);
       });
     });
   });

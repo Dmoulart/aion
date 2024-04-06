@@ -1,14 +1,27 @@
-import { defineComponent, u32, type Entity } from "aion-ecs";
+import { defineComponent, u32, type Entity, f32 } from "aion-ecs";
+import { getAnimationConfig, getAnimationStepAtTime } from "./animation.js";
+import { millitimestamp } from "aion-core";
 
 export const AnimationComponent = defineComponent({
   animation: u32,
-  currentState: () => Array<string>(),
+  startTime: f32,
 });
 
-export function getCurrentAnimationState(entity: Entity) {
-  return AnimationComponent.currentState[entity]!;
+export function getAnimationCurrentTime(entity: Entity) {
+  return millitimestamp() - AnimationComponent.startTime[entity]!;
 }
 
-export function setCurrentAnimationState(entity: Entity, state: string) {
-  AnimationComponent.currentState[entity] = state;
+export function getAnimation(entity: Entity) {
+  return getAnimationConfig(AnimationComponent.animation[entity]!);
+}
+
+export function getAnimationCurrentStep(entity: Entity) {
+  const animation = getAnimation(entity);
+  const time = getAnimationCurrentTime(entity);
+
+  return getAnimationStepAtTime(animation, time);
+}
+
+export function setAnimationStartTime(entity: Entity, time: number) {
+  AnimationComponent.startTime[entity] = time;
 }
