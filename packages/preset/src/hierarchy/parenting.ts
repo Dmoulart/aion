@@ -54,7 +54,7 @@ export function getLastChildOf(parent: Entity) {
   return Children.list[parent]![Children.length[parent]! - 1];
 }
 
-export function findChild(
+export function findChildOf(
   parent: Entity,
   predicate: (entity: Entity) => boolean,
 ) {

@@ -14,14 +14,14 @@ import {
   defineBehavior,
   defineWorldState,
   degreesToRadians,
-  getFirstChildOf,
+  findChildOf,
   getGravity,
-  getLastChildOf,
   getWorldDistance,
   toSimulationPoint,
   useECS,
 } from "aion-preset";
 import { ENEMY_COLLISION_GROUP } from "./collision-groups";
+import { Weapon } from "./enemy";
 
 export const CanReach = defineWorldState(
   "CanReach",
@@ -61,23 +61,23 @@ export const DoesNotExist = defineWorldState(
   },
 );
 
-export const MoveTo = defineAction({
+export const MoveToAction = defineAction({
   effects: IsAdjacentTo,
   preconditions: CanReach,
   name: "MoveTo",
 });
 
-export const MoveToAction = defineComponent({
+export const MoveToOrder = defineComponent({
   target: eid,
 });
 
-export const Kill = defineAction({
+export const KillAction = defineAction({
   effects: DoesNotExist,
   preconditions: IsAdjacentTo,
   name: "Kill",
 });
 
-export const KillAction = defineComponent({
+export const KillOrder = defineComponent({
   target: eid,
   state: u8,
 });
@@ -99,14 +99,14 @@ export function createTakeTreasureGoal(treasure: Entity) {
 }
 
 export function setupAI() {
-  const { query } = useECS();
+  const { query, has } = useECS();
 
   const moveToTarget = defineBehavior(
-    MoveTo,
     MoveToAction,
+    MoveToOrder,
     (entity: Entity) => {
       const controller = RuntimeCharacterController[entity]!;
-      const movement = getWorldDistance(MoveToAction.target[entity], entity)
+      const movement = getWorldDistance(MoveToOrder.target[entity], entity)
         .norm()
         .scale(10)
         .add(getGravity());
@@ -126,7 +126,7 @@ export function setupAI() {
 
   setupBehavior(() => {
     query(
-      MoveToAction,
+      MoveToOrder,
       RuntimeCharacterController,
       RuntimeBody,
       RuntimeCollider,
@@ -159,24 +159,14 @@ export function setupAI() {
         }),
         duration: 1,
       },
-      // estoc: {
-      //   updates: animate({
-      //     x: 10,
-      //     y: -20,
-      //     rotation: degreesToRadians(-30),
-      //   }),
-      //   duration: 0.25,
-      // },
     },
   });
 
-  bindAnimationToComponent(AttackAnimation, KillAction, (entity) => {
-    // @todo: this is not right
-    const sword = getLastChildOf(entity)!;
-    return sword;
+  bindAnimationToComponent(AttackAnimation, KillOrder, (entity) => {
+    return findChildOf(entity, (child) => has(Weapon, child))!;
   });
 
-  const killTarget = defineBehavior(Kill, KillAction, (entity: Entity) => {
+  const killTarget = defineBehavior(KillAction, KillOrder, (entity: Entity) => {
     // console.log("kill !");
     // // updateAnimation(AttackAnimation, undefined, Transform[entity]!);
     // // momentum
@@ -192,7 +182,7 @@ export function setupAI() {
 
   setupBehavior(() => {
     query(
-      MoveToAction,
+      MoveToOrder,
       RuntimeCharacterController,
       RuntimeBody,
       RuntimeCollider,
@@ -201,7 +191,7 @@ export function setupAI() {
 
   setupBehavior(() => {
     query(
-      KillAction,
+      KillOrder,
       RuntimeCharacterController,
       RuntimeBody,
       RuntimeCollider,

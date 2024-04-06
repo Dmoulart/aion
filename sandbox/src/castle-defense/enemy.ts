@@ -27,8 +27,8 @@ import { ENEMY_COLLISION_GROUP } from "./collision-groups";
 import { IsEnemy } from "./components";
 import { Colors } from "aion-render";
 
-const Weapon = defineComponent({});
-const EyeBrow = defineComponent({});
+export const Weapon = defineComponent({});
+export const EyeBrow = defineComponent({});
 
 export const useEnemyPrefabs = singleton(() => {
   const $ecs = useECS();
