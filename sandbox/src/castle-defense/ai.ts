@@ -13,6 +13,7 @@ import {
   defineAnimationConfig,
   defineBehavior,
   defineWorldState,
+  degreesToRadians,
   getFirstChildOf,
   getGravity,
   getWorldDistance,
@@ -135,25 +136,36 @@ export function setupAI() {
     steps: {
       initial: {
         updates: animate({
-          x: 0,
-          y: 0,
+          x: 10,
+          y: -20,
+          rotation: 0,
         }),
         duration: 0.5,
       },
       momentum: {
         updates: animate({
-          x: -50,
+          x: 20,
           y: 0,
+          rotation: degreesToRadians(-90),
         }),
-        duration: 0.5,
+        duration: 0.1,
       },
       estoc: {
         updates: animate({
-          x: 50,
-          y: 0,
+          x: -20,
+          y: -10,
+          rotation: degreesToRadians(-45),
         }),
-        duration: 0.5,
+        duration: 1,
       },
+      // estoc: {
+      //   updates: animate({
+      //     x: 10,
+      //     y: -20,
+      //     rotation: degreesToRadians(-30),
+      //   }),
+      //   duration: 0.25,
+      // },
     },
   });
 

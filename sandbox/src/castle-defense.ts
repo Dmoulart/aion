@@ -267,7 +267,7 @@ export function createScenes() {
 
 export function plugins() {
   const preset = aionPreset({
-    renderDebug: true,
+    renderDebug: false,
     debugEntityID: false,
   });
 
