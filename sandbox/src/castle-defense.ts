@@ -31,7 +31,7 @@ import {
   useECS,
   usePhysics,
   aionPreset,
-  getRectBounds,
+  getRectWorldBounds,
   getX,
   getY,
   Collision,
@@ -40,6 +40,9 @@ import {
   getWorldPosition,
   getRectWidth,
   getRectHeight,
+  castRay,
+  getRectBottomCenter,
+  getRectWorldBottomCenter,
 } from "aion-preset";
 import {
   Colors,
@@ -60,7 +63,7 @@ import {
 } from "./castle-defense/components";
 import { setupAI } from "./castle-defense/ai";
 import { createEnemy } from "./castle-defense/enemy";
-import { millitimestamp, vec } from "aion-core";
+import { downDirection, millitimestamp, vec } from "aion-core";
 import { usePrefabs } from "./castle-defense/prefabs";
 import { createWall } from "./castle-defense/wall";
 
@@ -118,41 +121,20 @@ export function createScenes() {
     $ecs.attach(Blueprint, blueprint);
 
     return on("update", () => {
-      const { x, y } = screenToWorldPosition(getMouse());
+      const mouse = screenToWorldPosition(getMouse());
 
-      setBodyPosition(blueprint, { x, y });
+      const result = castRay(mouse, downDirection(), undefined, 20);
 
-      {
-        const distance = getWorldDistance(blueprint, getFloor());
-        // const w = getRectWidth(getFloor());
-        // const h = getRectHeight(getFloor());
-        const p = vec({ x, y }).sub(distance);
-        // const p = distance.sub(vec({ x, y }));
-        console.log({ distance });
-        once("render", () => {
-          rect(p.x, p.y, 50, 50).fill("yellow");
-        });
+      if (result) {
+        const { point } = result;
+        point.y -= getRectHeight(blueprint) / 2;
+        setBodyPosition(blueprint, point);
 
-        const result = $physics.world.projectPoint(
-          p,
-          true,
-          undefined,
-          undefined,
-          getRuntimeCollider(blueprint),
-        );
+        if (click()) {
+          createWall(point.x, point.y);
 
-        console.log({ result });
-        if (result?.point) {
-          once("render", () => {
-            rect(result.point.x, result.point.y, 50, 50).stroke("pink");
-          });
+          wallNumber++;
         }
-      }
-
-      if (click()) {
-        createWall(x, y);
-
-        wallNumber++;
       }
 
       if (wallNumber === 4) {
@@ -301,5 +283,5 @@ export function plugins() {
 
 export function getFloorBounds() {
   const { getFloor } = useGame();
-  return getRectBounds(getFloor());
+  return getRectWorldBounds(getFloor());
 }

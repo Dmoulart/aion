@@ -1,25 +1,34 @@
 import type { Entity } from "aion-ecs";
 import { getWorldPosition, getWorldDistance, usePhysics } from "../index.js";
 import { fromSimulationPoint, toSimulationPoint } from "./bindings.js";
+import type { Vector } from "aion-core";
 
 export function castRay(
-  from: Entity,
-  to: Entity,
+  from: Entity | Vector,
+  to: Entity | Vector, // entity position or direction
   collisionGroup?: number,
   maxToi: number = 4,
 ) {
   const { world, RAPIER } = usePhysics();
-  const source = toSimulationPoint(getWorldPosition(from));
-  const target = getWorldDistance(to, from).norm();
-  const ray = new RAPIER.Ray(source, target);
 
-  const hit = world.castRay(
-    ray,
-    maxToi,
-    false,
-    undefined,
-    collisionGroup, // don't intersect with enemies'
-  );
+  const fromEntity = typeof from === "number";
+  const toEntity = typeof to === "number";
+
+  const origin = fromEntity
+    ? toSimulationPoint(getWorldPosition(from))
+    : toSimulationPoint(from);
+
+  let target: Vector;
+  if (toEntity && fromEntity) {
+    target = getWorldDistance(to, from).norm();
+  } else if (toEntity) {
+    target = getWorldPosition(to);
+  } else {
+    target = to;
+  }
+
+  const ray = new RAPIER.Ray(origin, target);
+  const hit = world.castRay(ray, maxToi, false, undefined, collisionGroup);
 
   if (hit != null) {
     // The first collider hit has the handle `hit.colliderHandle` and it hit after

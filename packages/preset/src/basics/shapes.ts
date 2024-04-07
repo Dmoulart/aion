@@ -2,7 +2,7 @@ import type { Entity } from "aion-ecs";
 import { Rect } from "../components.js";
 import { getWorldPosition } from "./transform.js";
 
-export function getRectBounds(entity: Entity) {
+export function getRectWorldBounds(entity: Entity) {
   const position = getWorldPosition(entity);
 
   const width = Rect.w[entity]!;

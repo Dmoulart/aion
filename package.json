@@ -19,5 +19,8 @@
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "2d-geometry": "^2.1.0"
   }
 }
