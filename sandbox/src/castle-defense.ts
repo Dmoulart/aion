@@ -1,4 +1,4 @@
-import { Entity } from "aion-ecs";
+import { Entity, onEnterQuery, onExitQuery } from "aion-ecs";
 import { beforeStart, defineEngine, defineLoop, emit, on } from "aion-engine";
 import { click, direction, getMouse, key } from "aion-input";
 import {
@@ -27,6 +27,7 @@ import {
   getRectBounds,
   getX,
   getY,
+  Collision,
 } from "aion-preset";
 import {
   Colors,
@@ -44,7 +45,7 @@ import {
 } from "./castle-defense/components";
 import { setupAI } from "./castle-defense/ai";
 import { createEnemy } from "./castle-defense/enemy";
-import { lerp, millitimestamp, zero } from "aion-core";
+import { millitimestamp } from "aion-core";
 
 export const engine = defineEngine(plugins, () => {
   const { $camera, getFloor } = useGame();
@@ -87,9 +88,6 @@ engine.run();
 export function createScenes() {
   const { $ecs } = useGame();
   const { RAPIER } = usePhysics();
-
-  // const onCollisionStart = onEnterQuery($ecs.query(Collision));
-  // const onCollisionEnd = onExitQuery($ecs.query(Collision));
 
   const Wall = $ecs.prefab({
     Transform,
