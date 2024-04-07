@@ -84,6 +84,11 @@ export function intersects(ent: Entity) {
 
 //   return colliders;
 // }
+
+export function getRuntimeCollider(entity: Entity) {
+  return RuntimeCollider[entity]!;
+}
+
 export function defineCollisionGroup() {
   let membership = 0;
   let filter = 0;

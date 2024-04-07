@@ -27,6 +27,8 @@ import {
   getRectBounds,
   getX,
   getY,
+  Collision,
+  getRuntimeCollider,
 } from "aion-preset";
 import {
   Colors,
@@ -41,10 +43,13 @@ import {
   Floor,
   IsTreasure,
   Health,
+  Blueprint,
 } from "./castle-defense/components";
 import { setupAI } from "./castle-defense/ai";
 import { createEnemy } from "./castle-defense/enemy";
 import { millitimestamp } from "aion-core";
+import { usePrefabs } from "./castle-defense/prefabs";
+import { createWall } from "./castle-defense/wall";
 
 export const engine = defineEngine(plugins, () => {
   const { $camera, getFloor } = useGame();
@@ -88,81 +93,30 @@ export function createScenes() {
   const { $ecs } = useGame();
   const { RAPIER } = usePhysics();
 
-  const Treasure = $ecs.prefab({
-    Transform,
-    Rect,
-    Fill,
-    Stroke,
-    Collider,
-    Body,
-    IsTreasure,
-  });
-
-  const SpawnPoint = $ecs.prefab({
-    Transform,
-    EnemySpawn,
-  });
+  const { Treasure, SpawnPoint } = usePrefabs();
 
   defineScene("build-castle", () => {
-    const { $ecs, $physics } = useGame();
-    const { RAPIER } = $physics;
-
-    const Wall = $ecs.prefab({
-      Transform,
-      Rect,
-      Fill,
-      Stroke,
-      Collider,
-      Body,
-      Health,
-    });
+    const { $ecs } = useGame();
 
     let wallNumber = 0;
 
-    const player = Wall({
-      Transform: createTransform(0, 0),
-      Rect: {
-        h: 500,
-        w: 50,
-      },
-      Fill: Colors["cornflower:800"],
-      Stroke: "black",
-      Collider: createCollider({
-        auto: 1,
-        collisionGroups: OBSTACLE_COLLISION_GROUP,
-      }),
-      Health: 1000,
-    });
+    const blueprint = createWall();
+
+    $ecs.attach(Blueprint, blueprint);
 
     return on("update", () => {
       const { x, y } = screenToWorldPosition(getMouse());
 
-      setBodyPosition(player, { x, y });
+      setBodyPosition(blueprint, { x, y });
 
       if (click()) {
-        Wall({
-          Transform: createTransform(x, y),
-          Rect: {
-            h: Rect.h[player],
-            w: Rect.w[player],
-          },
-          Fill: Colors["cornflower:800"],
-          Stroke: "black",
-          Collider: createCollider({
-            auto: 1,
-            collisionGroups: OBSTACLE_COLLISION_GROUP,
-          }),
-          Body: createBody({
-            type: RAPIER.RigidBodyType.Fixed,
-          }),
-          Health: 1000,
-        });
+        createWall(x, y);
 
         wallNumber++;
       }
 
       if (wallNumber === 4) {
-        $ecs.remove(player);
+        $ecs.remove(blueprint);
         exitCurrentScene();
       }
     });

@@ -8,3 +8,4 @@ export const EnemySpawn = defineComponent({
 });
 export const IsEnemy = defineComponent({});
 export const IsTreasure = defineComponent({});
+export const Blueprint = defineComponent({});
