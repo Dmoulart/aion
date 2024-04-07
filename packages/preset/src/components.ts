@@ -6,8 +6,16 @@ export function getRectWidth(entity: Entity) {
   return Rect.w[entity]!;
 }
 
+export function getRectHalfWidth(entity: Entity) {
+  return Rect.w[entity]! / 2;
+}
+
 export function getRectHeight(entity: Entity) {
   return Rect.h[entity]!;
+}
+
+export function getRectHalfHeight(entity: Entity) {
+  return Rect.h[entity]! / 2;
 }
 
 export const Circle = defineComponent({ r: i32 });
