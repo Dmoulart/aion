@@ -1,14 +1,6 @@
 import { Vector, leftDirection } from "aion-core";
 import { Entity, defineComponent } from "aion-ecs";
 import {
-  Transform,
-  Rect,
-  Fill,
-  Stroke,
-  Collider,
-  Body,
-  CharacterController,
-  Brain,
   createTransform,
   createCollider,
   createBody,
@@ -16,7 +8,6 @@ import {
   addChildTo,
   useECS,
   usePhysics,
-  singleton,
   getApproximateDirection,
   flipX,
   useAion,
@@ -29,6 +20,8 @@ import { usePrefabs } from "./prefabs";
 
 export const Weapon = defineComponent({});
 export const EyeBrow = defineComponent({});
+
+export const SWORDS: Array<number> = [];
 
 export function createEnemy(pos: Vector, target: Entity) {
   const { Sword, Enemy } = usePrefabs();
@@ -45,7 +38,15 @@ export function createEnemy(pos: Vector, target: Entity) {
       h: 50,
       w: 5,
     },
+    Collider: createCollider({
+      auto: 1,
+      isSensor: 1,
+    }),
+    Body: createBody({
+      type: RAPIER.RigidBodyType.KinematicPositionBased,
+    }),
   });
+  SWORDS.push(sword);
 
   const enemy = Enemy({
     Transform: createTransform(pos.x, pos.y),
@@ -53,7 +54,6 @@ export function createEnemy(pos: Vector, target: Entity) {
       h: 50,
       w: 25,
     },
-
     Fill: "white",
     Stroke: "black",
     Brain: {

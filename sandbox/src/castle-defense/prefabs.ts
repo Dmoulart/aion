@@ -10,7 +10,13 @@ import {
   singleton,
   useECS,
 } from "aion-preset";
-import { IsTreasure, EnemySpawn, Health, IsEnemy } from "./components";
+import {
+  IsTreasure,
+  EnemySpawn,
+  Health,
+  IsEnemy,
+  Building,
+} from "./components";
 import { Weapon } from "./enemy";
 
 export const usePrefabs = singleton(() => {
@@ -39,6 +45,7 @@ export const usePrefabs = singleton(() => {
     Collider,
     Body,
     Health,
+    Building,
   });
 
   const Enemy = prefab({
@@ -59,6 +66,8 @@ export const usePrefabs = singleton(() => {
     Fill,
     Stroke,
     Weapon,
+    Collider,
+    Body,
   });
 
   return { Treasure, SpawnPoint, Wall, Enemy, Sword };

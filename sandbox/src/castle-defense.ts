@@ -1,4 +1,4 @@
-import { Entity } from "aion-ecs";
+import { Entity, onEnterQuery } from "aion-ecs";
 import {
   beforeStart,
   defineEngine,
@@ -61,9 +61,11 @@ import {
   IsTreasure,
   Health,
   Blueprint,
+  Building,
+  Destroyable,
 } from "./castle-defense/components";
 import { setupAI } from "./castle-defense/ai";
-import { createEnemy } from "./castle-defense/enemy";
+import { SWORDS, createEnemy } from "./castle-defense/enemy";
 import { downDirection, millitimestamp, vec } from "aion-core";
 import { usePrefabs } from "./castle-defense/prefabs";
 import { createWall } from "./castle-defense/wall";
@@ -203,7 +205,7 @@ export function createScenes() {
     SpawnPoint({
       EnemySpawn: {
         frequency: 2,
-        lastSpawn: performance.now(),
+        lastSpawn: millitimestamp(),
       },
       Transform: createTransform(left, top - 25),
     });
@@ -211,7 +213,7 @@ export function createScenes() {
     SpawnPoint({
       EnemySpawn: {
         frequency: 2,
-        lastSpawn: performance.now(),
+        lastSpawn: millitimestamp(),
       },
       Transform: createTransform(right, top - 25),
     });
@@ -219,6 +221,16 @@ export function createScenes() {
     const { query } = useECS();
 
     let enemyCreated = false;
+
+    const onBuildingDamaged = onEnterQuery(query(Destroyable, Collision));
+    const onCollision = onEnterQuery(query(Collision));
+    onCollision((entity) => {
+      console.log(entity);
+      console.log("is sword", SWORDS.includes(entity));
+    });
+    onBuildingDamaged((entity) => {
+      console.log("bim", entity);
+    });
 
     return on("update", () => {
       query(Transform, EnemySpawn).each((entity) => {
@@ -234,8 +246,6 @@ export function createScenes() {
           EnemySpawn.lastSpawn[entity] = now;
 
           createEnemy({ x: getX(entity), y: getY(entity) }, treasure);
-
-          // enemyCreated = true;
         }
       });
     });
@@ -244,7 +254,7 @@ export function createScenes() {
 
 export function plugins() {
   const preset = aionPreset({
-    renderDebug: false,
+    renderDebug: true,
     debugEntityID: false,
   });
 
