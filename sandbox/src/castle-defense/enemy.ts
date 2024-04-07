@@ -24,40 +24,14 @@ import {
 } from "aion-preset";
 import { createTakeTreasureGoal } from "./ai";
 import { ENEMY_COLLISION_GROUP } from "./collision-groups";
-import { IsEnemy } from "./components";
 import { Colors } from "aion-render";
+import { usePrefabs } from "./prefabs";
 
 export const Weapon = defineComponent({});
 export const EyeBrow = defineComponent({});
 
-export const useEnemyPrefabs = singleton(() => {
-  const $ecs = useECS();
-
-  const Enemy = $ecs.prefab({
-    Transform,
-    Rect,
-    Fill,
-    Stroke,
-    Collider,
-    Body,
-    CharacterController,
-    IsEnemy,
-    Brain,
-  });
-
-  const Sword = $ecs.prefab({
-    Transform,
-    Rect,
-    Fill,
-    Stroke,
-    Weapon,
-  });
-
-  return { Enemy, Sword };
-});
-
 export function createEnemy(pos: Vector, target: Entity) {
-  const { Sword, Enemy } = useEnemyPrefabs();
+  const { Sword, Enemy } = usePrefabs();
 
   const { attach } = useECS();
 

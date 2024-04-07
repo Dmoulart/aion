@@ -11,6 +11,7 @@ import { usePrefabs } from "./prefabs";
 export function createWall(x: number = 0, y: number = 0, h = 500, w = 50) {
   const { RAPIER } = usePhysics();
   const { Wall } = usePrefabs();
+
   return Wall({
     Transform: createTransform(x, y),
     Rect: {
