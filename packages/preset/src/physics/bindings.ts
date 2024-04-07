@@ -7,23 +7,26 @@ import {
   setColliderOptions,
   usePhysics,
 } from "./index.js";
+import type RAPIER from "@dimforge/rapier2d-compat";
 import { Circle, Rect } from "../components.js";
 import { useECS } from "../ecs.js";
 import { Vec, type Vector } from "aion-core";
-import type RAPIER from "@dimforge/rapier2d";
 import { on } from "aion-engine";
 import {
   Transform,
+  getLocalPosition,
+  getLocalRotation,
   getWorldPosition,
   getWorldRotation,
   setPosition,
   setRotation,
 } from "../basics/transform.js";
-import { setBodyOptions } from "./bodies.js";
+import { getRuntimeBody, setBodyOptions } from "./bodies.js";
+import { findNearestAncestorWithComponent } from "../index.js";
 
 export function initPhysicsSystems() {
   const { world, RAPIER } = usePhysics();
-  const { query, attach } = useECS();
+  const { query, attach, has } = useECS();
 
   const onCreatedBody = onEnterQuery(query(Transform, Body, not(RuntimeBody)));
 
@@ -45,11 +48,22 @@ export function initPhysicsSystems() {
   });
 
   const onCreatedCollider = onEnterQuery(
-    query(Transform, Collider, RuntimeBody, not(RuntimeCollider)),
+    query(Transform, Collider, not(RuntimeCollider)),
   );
 
   onCreatedCollider((ent) => {
-    let body = RuntimeBody[ent];
+    let body = getRuntimeBody(ent);
+
+    if (!body) {
+      const ancestorWithBody = findNearestAncestorWithComponent(
+        ent,
+        RuntimeBody,
+      );
+
+      if (ancestorWithBody) {
+        body = getRuntimeBody(ancestorWithBody);
+      }
+    }
 
     const auto = Collider.auto[ent];
 
@@ -64,8 +78,8 @@ export function initPhysicsSystems() {
     setColliderOptions(colliderDesc, ent);
 
     const collider = world.createCollider(colliderDesc, body);
-    collider.setTranslation(toSimulationPoint(getWorldPosition(ent)));
-    collider.setRotation(getWorldRotation(ent));
+    collider.setTranslation(toSimulationPoint(getLocalPosition(ent)));
+    collider.setRotation(getLocalRotation(ent));
 
     RuntimeCollider[ent] = collider;
 

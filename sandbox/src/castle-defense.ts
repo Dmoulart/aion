@@ -1,12 +1,5 @@
 import { Entity, onEnterQuery } from "aion-ecs";
-import {
-  beforeStart,
-  defineEngine,
-  defineLoop,
-  emit,
-  on,
-  once,
-} from "aion-engine";
+import { beforeStart, defineEngine, defineLoop, emit, on } from "aion-engine";
 import { click, direction, getMouse, key } from "aion-input";
 import {
   translate,
@@ -15,11 +8,7 @@ import {
   setZoom,
   startScene,
   onSceneExit,
-  Body,
-  Collider,
-  Fill,
   Rect,
-  Stroke,
   Transform,
   createBody,
   createCollider,
@@ -27,7 +16,7 @@ import {
   defineScene,
   exitCurrentScene,
   screenToWorldPosition,
-  setBodyPosition,
+  setRuntimeBodyPosition,
   useECS,
   usePhysics,
   aionPreset,
@@ -35,20 +24,11 @@ import {
   getX,
   getY,
   Collision,
-  getRuntimeCollider,
-  getWorldDistance,
-  getWorldPosition,
-  getRectWidth,
-  getRectHeight,
   castRay,
-  getRectBottomCenter,
-  getRectWorldBottomCenter,
   getRectHalfHeight,
 } from "aion-preset";
 import {
   Colors,
-  fillRect,
-  rect,
   setBackgroundColor,
   windowCenterX,
   windowCenterY,
@@ -58,15 +38,12 @@ import { OBSTACLE_COLLISION_GROUP } from "./castle-defense/collision-groups";
 import {
   EnemySpawn,
   Floor,
-  IsTreasure,
-  Health,
   Blueprint,
-  Building,
   Destroyable,
 } from "./castle-defense/components";
 import { setupAI } from "./castle-defense/ai";
 import { SWORDS, createEnemy } from "./castle-defense/enemy";
-import { downDirection, millitimestamp, vec } from "aion-core";
+import { downDirection, millitimestamp } from "aion-core";
 import { usePrefabs } from "./castle-defense/prefabs";
 import { createWall } from "./castle-defense/wall";
 
@@ -131,7 +108,7 @@ export function createScenes() {
       if (result) {
         const { point } = result;
         point.y -= getRectHalfHeight(blueprint);
-        setBodyPosition(blueprint, point);
+        setRuntimeBodyPosition(blueprint, point);
 
         if (click()) {
           createWall(point.x, point.y);
@@ -169,7 +146,7 @@ export function createScenes() {
     const cleanup = on("update", () => {
       const { x, y } = screenToWorldPosition(getMouse());
 
-      setBodyPosition(player, { x, y });
+      setRuntimeBodyPosition(player, { x, y });
 
       if (click()) {
         treasure = Treasure({

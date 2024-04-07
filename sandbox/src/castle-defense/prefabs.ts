@@ -67,7 +67,6 @@ export const usePrefabs = singleton(() => {
     Stroke,
     Weapon,
     Collider,
-    Body,
   });
 
   return { Treasure, SpawnPoint, Wall, Enemy, Sword };

@@ -6,6 +6,7 @@ import {
   type Entity,
   i32,
   u32,
+  type Component,
 } from "aion-ecs";
 import { useECS } from "../ecs.js";
 
@@ -26,6 +27,41 @@ export function hasChildren(entity: Entity) {
 
 export function getParentOf(child: Entity) {
   return Parent[child];
+}
+
+export function findNearestAncestorOf(
+  entity: Entity,
+  predicate: (ancestor: Entity) => boolean,
+) {
+  let parent = getParentOf(entity);
+
+  while (parent) {
+    if (predicate(parent)) {
+      return parent;
+    }
+
+    parent = getParentOf(entity);
+  }
+
+  return undefined;
+}
+
+export function findNearestAncestorWithComponent(
+  entity: Entity,
+  component: Component,
+) {
+  const { has } = useECS();
+  let parent = getParentOf(entity);
+
+  while (parent) {
+    if (has(component, parent)) {
+      return parent;
+    }
+
+    parent = getParentOf(entity);
+  }
+
+  return undefined;
 }
 
 export function addChildTo(parent: Entity, child: Entity) {

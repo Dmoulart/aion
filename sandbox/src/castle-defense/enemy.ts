@@ -42,9 +42,6 @@ export function createEnemy(pos: Vector, target: Entity) {
       auto: 1,
       isSensor: 1,
     }),
-    Body: createBody({
-      type: RAPIER.RigidBodyType.KinematicPositionBased,
-    }),
   });
   SWORDS.push(sword);
 

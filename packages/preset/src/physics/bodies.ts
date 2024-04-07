@@ -73,14 +73,14 @@ export function setBodyOptions(bodyDesc: RAPIER.RigidBodyDesc, entity: Entity) {
   bodyDesc.setDominanceGroup(Body.dominanceGroup[entity]!);
 }
 
-export function setBodyPosition(entity: Entity, position: Vector) {
+export function setRuntimeBodyPosition(entity: Entity, position: Vector) {
   setPosition(entity, position);
 
-  const body = getBody(entity);
+  const body = getRuntimeBody(entity);
 
   body.setTranslation(position, false);
 }
 
-export function getBody(entity: Entity) {
+export function getRuntimeBody(entity: Entity) {
   return RuntimeBody[entity]!;
 }
