@@ -40,7 +40,7 @@ export function initPhysics(options?: InitPhysicsOptions) {
 
       if (bodyA) {
         const entityA = bodyA.userData;
-
+        debugger;
         if (entityA) {
           started
             ? attach(Collision, entityA as number)

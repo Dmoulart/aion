@@ -38,4 +38,3 @@ defineAction({
 });
 
 const plan = planify(1, [DoesNotExist, 2]);
-console.log(plan);

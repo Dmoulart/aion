@@ -32,8 +32,6 @@ export function defineBehavior(
     if (result !== true) {
       //@todo remove components in another system ?
       once("update", () => {
-        console.log("ACTION Aborted");
-
         detach(component, entity);
 
         PlanComponent[entity]!.shift();
@@ -53,8 +51,6 @@ export function defineBehavior(
       //@todo remove components in another system ?
       // removing component in the current system make the all things wacky
       once("update", () => {
-        console.log("ACTION Done");
-
         detach(component, entity);
 
         PlanComponent[entity]!.shift();
@@ -69,9 +65,9 @@ export function beginNextAction(entity: Entity) {
   const nextAction = PlanComponent[entity]![0];
 
   if (nextAction) {
-    console.info("begin next action for entity", entity);
+    // console.info("begin next action for entity", entity);
     addBehavior(entity, nextAction);
   } else {
-    console.info("no next action for entity", entity);
+    // console.info("no next action for entity", entity);
   }
 }
