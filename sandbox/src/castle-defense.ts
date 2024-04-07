@@ -43,6 +43,7 @@ import {
   castRay,
   getRectBottomCenter,
   getRectWorldBottomCenter,
+  getRectHalfHeight,
 } from "aion-preset";
 import {
   Colors,
@@ -112,7 +113,7 @@ export function createScenes() {
   const { Treasure, SpawnPoint } = usePrefabs();
 
   defineScene("build-castle", () => {
-    const { $ecs, $physics, getFloor } = useGame();
+    const { $ecs } = useGame();
 
     let wallNumber = 0;
 
@@ -127,7 +128,7 @@ export function createScenes() {
 
       if (result) {
         const { point } = result;
-        point.y -= getRectHeight(blueprint) / 2;
+        point.y -= getRectHalfHeight(blueprint);
         setBodyPosition(blueprint, point);
 
         if (click()) {
