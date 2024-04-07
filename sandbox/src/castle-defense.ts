@@ -1,4 +1,4 @@
-import { Entity, onEnterQuery, onExitQuery } from "aion-ecs";
+import { Entity } from "aion-ecs";
 import { beforeStart, defineEngine, defineLoop, emit, on } from "aion-engine";
 import { click, direction, getMouse, key } from "aion-input";
 import {
@@ -27,7 +27,6 @@ import {
   getRectBounds,
   getX,
   getY,
-  Collision,
 } from "aion-preset";
 import {
   Colors,
@@ -38,10 +37,10 @@ import {
 } from "aion-render";
 import { OBSTACLE_COLLISION_GROUP } from "./castle-defense/collision-groups";
 import {
-  Resistance,
   EnemySpawn,
   Floor,
   IsTreasure,
+  Health,
 } from "./castle-defense/components";
 import { setupAI } from "./castle-defense/ai";
 import { createEnemy } from "./castle-defense/enemy";
@@ -89,16 +88,6 @@ export function createScenes() {
   const { $ecs } = useGame();
   const { RAPIER } = usePhysics();
 
-  const Wall = $ecs.prefab({
-    Transform,
-    Rect,
-    Fill,
-    Stroke,
-    Collider,
-    Body,
-    Resistance,
-  });
-
   const Treasure = $ecs.prefab({
     Transform,
     Rect,
@@ -115,6 +104,19 @@ export function createScenes() {
   });
 
   defineScene("build-castle", () => {
+    const { $ecs, $physics } = useGame();
+    const { RAPIER } = $physics;
+
+    const Wall = $ecs.prefab({
+      Transform,
+      Rect,
+      Fill,
+      Stroke,
+      Collider,
+      Body,
+      Health,
+    });
+
     let wallNumber = 0;
 
     const player = Wall({
@@ -129,7 +131,7 @@ export function createScenes() {
         auto: 1,
         collisionGroups: OBSTACLE_COLLISION_GROUP,
       }),
-      Resistance: 100,
+      Health: 1000,
     });
 
     return on("update", () => {
@@ -153,7 +155,7 @@ export function createScenes() {
           Body: createBody({
             type: RAPIER.RigidBodyType.Fixed,
           }),
-          Resistance: 10,
+          Health: 1000,
         });
 
         wallNumber++;
