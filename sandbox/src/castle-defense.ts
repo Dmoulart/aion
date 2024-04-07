@@ -1,5 +1,12 @@
 import { Entity } from "aion-ecs";
-import { beforeStart, defineEngine, defineLoop, emit, on } from "aion-engine";
+import {
+  beforeStart,
+  defineEngine,
+  defineLoop,
+  emit,
+  on,
+  once,
+} from "aion-engine";
 import { click, direction, getMouse, key } from "aion-input";
 import {
   translate,
@@ -29,9 +36,15 @@ import {
   getY,
   Collision,
   getRuntimeCollider,
+  getWorldDistance,
+  getWorldPosition,
+  getRectWidth,
+  getRectHeight,
 } from "aion-preset";
 import {
   Colors,
+  fillRect,
+  rect,
   setBackgroundColor,
   windowCenterX,
   windowCenterY,
@@ -47,7 +60,7 @@ import {
 } from "./castle-defense/components";
 import { setupAI } from "./castle-defense/ai";
 import { createEnemy } from "./castle-defense/enemy";
-import { millitimestamp } from "aion-core";
+import { millitimestamp, vec } from "aion-core";
 import { usePrefabs } from "./castle-defense/prefabs";
 import { createWall } from "./castle-defense/wall";
 
@@ -96,7 +109,7 @@ export function createScenes() {
   const { Treasure, SpawnPoint } = usePrefabs();
 
   defineScene("build-castle", () => {
-    const { $ecs } = useGame();
+    const { $ecs, $physics, getFloor } = useGame();
 
     let wallNumber = 0;
 
@@ -108,6 +121,33 @@ export function createScenes() {
       const { x, y } = screenToWorldPosition(getMouse());
 
       setBodyPosition(blueprint, { x, y });
+
+      {
+        const distance = getWorldDistance(blueprint, getFloor());
+        // const w = getRectWidth(getFloor());
+        // const h = getRectHeight(getFloor());
+        const p = vec({ x, y }).sub(distance);
+        // const p = distance.sub(vec({ x, y }));
+        console.log({ distance });
+        once("render", () => {
+          rect(p.x, p.y, 50, 50).fill("yellow");
+        });
+
+        const result = $physics.world.projectPoint(
+          p,
+          true,
+          undefined,
+          undefined,
+          getRuntimeCollider(blueprint),
+        );
+
+        console.log({ result });
+        if (result?.point) {
+          once("render", () => {
+            rect(result.point.x, result.point.y, 50, 50).stroke("pink");
+          });
+        }
+      }
 
       if (click()) {
         createWall(x, y);
