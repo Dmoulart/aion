@@ -69,17 +69,16 @@ export function addChildTo(parent: Entity, child: Entity) {
 
   assert(!hasComponent(world, Parent, child), "Child already has a parent");
 
-  attach(Parent, child);
-
   Parent[child] = parent;
-
-  attach(Children, parent);
 
   const childIndex = Children.length[parent]++;
 
   assert(childIndex < 10, "Children limit overflow");
 
   Children.list[parent]![childIndex] = child;
+
+  attach(Parent, child);
+  attach(Children, parent);
 }
 
 export function getFirstChildOf(parent: Entity) {
@@ -94,6 +93,7 @@ export function findChildOf(
   parent: Entity,
   predicate: (entity: Entity) => boolean,
 ) {
+  // wtf holy shit check children lenght
   for (const child of Children.list[parent]!) {
     if (predicate(child)) {
       return child;
@@ -105,7 +105,9 @@ export function findChildOf(
 
 export function forEachChildOf(parent: Entity, cb: (ent: Entity) => void) {
   if (hasChildren(parent)) {
+    // wtf holy shit check children lenght
     for (const child of Children.list[parent]!) {
+      // wtf holy shit lol
       if (child > 0) {
         cb(child);
       }
@@ -113,9 +115,9 @@ export function forEachChildOf(parent: Entity, cb: (ent: Entity) => void) {
   }
 }
 
-export function traverseChildren(entity: Entity, cb: (ent: Entity) => void) {
+export function traverseDescendants(entity: Entity, cb: (ent: Entity) => void) {
   forEachChildOf(entity, (child) => {
-    traverseChildren(child, cb);
+    traverseDescendants(child, cb);
     cb(child);
   });
 }

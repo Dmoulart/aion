@@ -1,11 +1,29 @@
 import RAPIER from "@dimforge/rapier2d-compat";
 import { useAion } from "../ctx.js";
-import { fromSimulationPoint, initPhysicsSystems } from "./bindings.js";
+import {
+  fromSimulationPoint,
+  initPhysicsSystems,
+  toSimulationPoint,
+} from "./bindings.js";
 import { beforeStart, on } from "aion-engine";
 import { useECS } from "../ecs.js";
-import { Collision, RuntimeBody } from "./components.js";
+import { Collision, RuntimeBody, RuntimeCollider } from "./components.js";
 import { initCharacterControllerSystem } from "./character-controller.js";
-import { Transform, setWorldPosition, setWorldRotation } from "../index.js";
+import {
+  Transform,
+  Body,
+  getRuntimeCollider,
+  getWorldPosition,
+  getWorldRotation,
+  setWorldPosition,
+  setWorldRotation,
+  Parent,
+  findNearestAncestorWithComponent,
+  getRuntimeBody,
+  getLocalPosition,
+  getLocalRotation,
+} from "../index.js";
+import { none, not } from "aion-ecs";
 
 await RAPIER.init();
 
@@ -29,8 +47,7 @@ export function initPhysics(options?: InitPhysicsOptions) {
   on("update", () => {
     const { attach, detach, query } = useECS();
 
-    // sync body with transform
-
+    // sync body with transform /!\
     // query(RuntimeCollider, not(RuntimeBody), Transform).each((ent) => {
     //   const collider = getRuntimeCollider(ent);
 
@@ -51,6 +68,29 @@ export function initPhysics(options?: InitPhysicsOptions) {
     //     collider.setRotation(worldRotation);
     //   }
     // });
+    // child colliders controlled by bodies up in the hierarchy
+    query(RuntimeCollider, none(Body, RuntimeBody), Transform, Parent).each(
+      (ent) => {
+        debugger;
+        const collider = getRuntimeCollider(ent);
+        const body = collider.parent();
+
+        if (body) {
+          const worldPosition = getWorldPosition(ent).round();
+          const worldRotation = getWorldRotation(ent);
+
+          if (!worldPosition.equals(collider.translation())) {
+            collider.setTranslationWrtParent(
+              toSimulationPoint(getLocalPosition(ent)),
+            );
+          }
+
+          if (worldRotation !== collider.rotation()) {
+            collider.setRotationWrtParent(getLocalRotation(ent));
+          }
+        }
+      },
+    );
 
     // Step the simulation forward.
     world.step(eventQueue);

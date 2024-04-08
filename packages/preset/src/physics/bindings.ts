@@ -22,11 +22,16 @@ import {
   setRotation,
 } from "../basics/transform.js";
 import { getRuntimeBody, setBodyOptions } from "./bodies.js";
-import { Parent, findNearestAncestorWithComponent } from "../index.js";
+import {
+  Children,
+  Parent,
+  findNearestAncestorWithComponent,
+  traverseDescendants,
+} from "../index.js";
 
 export function initPhysicsSystems() {
   const { world, RAPIER } = usePhysics();
-  const { query, attach } = useECS();
+  const { query, attach, has } = useECS();
 
   const onCreatedBody = onEnterQuery(query(Transform, Body, not(RuntimeBody)));
 
@@ -47,11 +52,11 @@ export function initPhysicsSystems() {
     attach(RuntimeBody, ent);
   });
 
-  const onCreatedColliderAndRuntimeBody = onEnterQuery(
+  const onCreatedColliderWithRuntimeBody = onEnterQuery(
     query(Transform, Collider, RuntimeBody, not(RuntimeCollider)),
   );
 
-  onCreatedColliderAndRuntimeBody((ent) => {
+  onCreatedColliderWithRuntimeBody((ent) => {
     let body = getRuntimeBody(ent);
 
     const auto = Collider.auto[ent];
@@ -76,40 +81,78 @@ export function initPhysicsSystems() {
     attach(RuntimeCollider, ent);
   });
 
-  const onCreatedChildCollider = onEnterQuery(
-    query(Transform, Collider, Parent, none(Body, RuntimeCollider)),
+  const onCreatedBodyWithChildren = onEnterQuery(
+    query(Transform, RuntimeBody, Children),
   );
 
-  onCreatedChildCollider((entity) => {
-    const ancestorWithBody = findNearestAncestorWithComponent(
-      entity,
-      RuntimeBody,
-    );
+  onCreatedBodyWithChildren((entity) => {
+    const body = getRuntimeBody(entity);
     debugger;
 
-    if (!ancestorWithBody) {
-      console.info("cannot find an ancestor with body");
-    }
+    traverseDescendants(entity, (ent) => {
+      debugger;
+      if (has(Collider, entity)) {
+        debugger;
+        const auto = Collider.auto[ent];
 
-    const body = getRuntimeBody(ancestorWithBody!);
+        if (!auto) {
+          throw new Error("not implemented");
+        }
 
-    const collidersDesc = createColliderDesc(entity);
+        const collidersDesc = createColliderDesc(ent);
 
-    const colliderDesc = collidersDesc[0]!;
+        const colliderDesc = collidersDesc[0]!;
 
-    setColliderOptions(colliderDesc, entity);
+        setColliderOptions(colliderDesc, ent);
 
-    const collider = world.createCollider(colliderDesc, body);
+        const collider = world.createCollider(colliderDesc, body);
 
-    collider.setTranslationWrtParent(
-      toSimulationPoint(getLocalPosition(entity)),
-    );
-    collider.setRotationWrtParent(getLocalRotation(entity));
+        collider.setTranslationWrtParent(
+          toSimulationPoint(getLocalPosition(ent)),
+        );
 
-    RuntimeCollider[entity] = collider;
+        collider.setRotationWrtParent(getLocalRotation(ent));
 
-    attach(RuntimeCollider, entity);
+        RuntimeCollider[ent] = collider;
+
+        attach(RuntimeCollider, ent);
+      }
+    });
   });
+
+  // const onCreatedChildCollider = onEnterQuery(
+  //   query(Transform, Collider, Parent, none(Body, RuntimeCollider)),
+  // );
+
+  // onCreatedChildCollider((entity) => {
+  //   const ancestorWithBody = findNearestAncestorWithComponent(
+  //     entity,
+  //     RuntimeBody,
+  //   );
+
+  //   if (!ancestorWithBody) {
+  //     console.info("cannot find an ancestor with body");
+  //   }
+
+  //   const body = getRuntimeBody(ancestorWithBody!);
+
+  //   const collidersDesc = createColliderDesc(entity);
+
+  //   const colliderDesc = collidersDesc[0]!;
+
+  //   setColliderOptions(colliderDesc, entity);
+
+  //   const collider = world.createCollider(colliderDesc, body);
+
+  //   collider.setTranslationWrtParent(
+  //     toSimulationPoint(getLocalPosition(entity)),
+  //   );
+  //   collider.setRotationWrtParent(getLocalRotation(entity));
+
+  //   RuntimeCollider[entity] = collider;
+
+  //   attach(RuntimeCollider, entity);
+  // });
 
   // on("update", () => {
   //   const { query } = useECS();
