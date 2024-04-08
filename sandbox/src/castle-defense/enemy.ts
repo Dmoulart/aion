@@ -74,6 +74,9 @@ export function createEnemy(pos: Vector, target: Entity) {
 
   const { createRect, createCircle } = useAion();
 
+  //sword
+  addChildTo(enemy, sword);
+
   // eye
   addChildTo(
     enemy,
@@ -113,9 +116,6 @@ export function createEnemy(pos: Vector, target: Entity) {
       Stroke: "black",
     }),
   );
-
-  //sword
-  addChildTo(enemy, sword);
 
   const comesFromRight = getApproximateDirection(enemy, target).equals(
     leftDirection(),

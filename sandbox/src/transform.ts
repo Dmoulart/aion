@@ -9,7 +9,7 @@ import {
   screenToWorldPosition,
   setWorldPosition,
   translate,
-  traverseChildren,
+  traverseDescendants,
   zoomBy,
 } from "aion-preset";
 import { Colors, setBackgroundColor } from "aion-render";
@@ -89,7 +89,7 @@ const engine = defineEngine(
 
       rotate(rect, 0.0125);
 
-      traverseChildren(rect, (child) => {
+      traverseDescendants(rect, (child) => {
         rotate(child, 0.00125);
       });
     });

@@ -203,7 +203,6 @@ export function createScenes() {
     const onCollision = onEnterQuery(query(Collision));
     onCollision((entity) => {
       console.log(entity);
-      console.log("is sword", SWORDS.includes(entity));
     });
     onBuildingDamaged((entity) => {
       console.log("bim", entity);
