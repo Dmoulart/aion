@@ -43,7 +43,6 @@ export function createEnemy(pos: Vector, target: Entity) {
       isSensor: 1,
     }),
   });
-  SWORDS.push(sword);
 
   const enemy = Enemy({
     Transform: createTransform(pos.x, pos.y),

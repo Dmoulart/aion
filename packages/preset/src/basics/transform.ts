@@ -214,7 +214,7 @@ export function getTransformRotation(transform: Transform): number {
 export function setLocalRotation(entity: Entity, radians: number) {
   Transform[entity]![2]! = radians;
 }
-export const setRotation = getLocalRotation;
+export const setRotation = setLocalRotation;
 
 export function setWorldRotation(entity: Entity, radians: number) {
   const parent = getParentOf(entity);

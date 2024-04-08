@@ -3,19 +3,9 @@ import { useAion } from "../ctx.js";
 import { fromSimulationPoint, initPhysicsSystems } from "./bindings.js";
 import { beforeStart, on } from "aion-engine";
 import { useECS } from "../ecs.js";
-import { Collision, RuntimeBody, RuntimeCollider } from "./components.js";
+import { Collision, RuntimeBody } from "./components.js";
 import { initCharacterControllerSystem } from "./character-controller.js";
-import {
-  Transform,
-  getRuntimeCollider,
-  getWorldPosition,
-  getWorldRotation,
-  setPosition,
-  setRotation,
-  setWorldPosition,
-  setWorldRotation,
-} from "../index.js";
-import { not } from "aion-ecs";
+import { Transform, setWorldPosition, setWorldRotation } from "../index.js";
 
 await RAPIER.init();
 
@@ -41,27 +31,26 @@ export function initPhysics(options?: InitPhysicsOptions) {
 
     // sync body with transform
 
-    query(RuntimeCollider, not(RuntimeBody), Transform).each((ent) => {
-      const collider = getRuntimeCollider(ent);
+    // query(RuntimeCollider, not(RuntimeBody), Transform).each((ent) => {
+    //   const collider = getRuntimeCollider(ent);
 
-      // rounding is bad for perfs. compare local positions ?
-      const worldPosition = getWorldPosition(ent).round();
-      const worldRotation = getWorldRotation(ent);
+    //   // rounding is bad for perfs. compare local positions ?
+    //   const worldPosition = getWorldPosition(ent).round();
+    //   const worldRotation = getWorldRotation(ent);
 
-      const colliderTranslation = fromSimulationPoint(
-        collider.translation(),
-      ).round();
-      const colliderRotation = collider.rotation();
+    //   const colliderTranslation = fromSimulationPoint(
+    //     collider.translation(),
+    //   ).round();
+    //   const colliderRotation = collider.rotation();
 
-      if (!worldPosition.equals(colliderTranslation)) {
-        debugger;
-        collider.setTranslation(worldPosition);
-      }
+    //   if (!worldPosition.equals(colliderTranslation)) {
+    //     collider.setTranslation(worldPosition);
+    //   }
 
-      if (worldRotation !== colliderRotation) {
-        collider.setRotation(worldRotation);
-      }
-    });
+    //   if (worldRotation !== colliderRotation) {
+    //     collider.setRotation(worldRotation);
+    //   }
+    // });
 
     // Step the simulation forward.
     world.step(eventQueue);
