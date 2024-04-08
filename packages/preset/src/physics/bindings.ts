@@ -26,7 +26,7 @@ import { findNearestAncestorWithComponent } from "../index.js";
 
 export function initPhysicsSystems() {
   const { world, RAPIER } = usePhysics();
-  const { query, attach, has } = useECS();
+  const { query, attach } = useECS();
 
   const onCreatedBody = onEnterQuery(query(Transform, Body, not(RuntimeBody)));
 
@@ -53,12 +53,9 @@ export function initPhysicsSystems() {
 
   onCreatedCollider((ent) => {
     let body = getRuntimeBody(ent);
-
+    let ancestorWithBody: Entity | undefined;
     if (!body) {
-      const ancestorWithBody = findNearestAncestorWithComponent(
-        ent,
-        RuntimeBody,
-      );
+      ancestorWithBody = findNearestAncestorWithComponent(ent, RuntimeBody);
 
       if (ancestorWithBody) {
         body = getRuntimeBody(ancestorWithBody);
@@ -78,24 +75,25 @@ export function initPhysicsSystems() {
     setColliderOptions(colliderDesc, ent);
 
     const collider = world.createCollider(colliderDesc, body);
-    collider.setTranslation(toSimulationPoint(getLocalPosition(ent)));
-    collider.setRotation(getLocalRotation(ent));
+    collider.setTranslation(toSimulationPoint(getWorldPosition(ent)));
+
+    collider.setRotation(getWorldRotation(ent));
 
     RuntimeCollider[ent] = collider;
 
     attach(RuntimeCollider, ent);
   });
 
-  on("update", () => {
-    const { query } = useECS();
+  // on("update", () => {
+  //   const { query } = useECS();
 
-    query(RuntimeBody, Transform).each((ent) => {
-      const body = RuntimeBody[ent]!;
+  //   query(RuntimeBody, Transform).each((ent) => {
+  //     const body = RuntimeBody[ent]!;
 
-      setPosition(ent, fromSimulationPoint(body.translation()));
-      setRotation(ent, body.rotation());
-    });
-  });
+  //     setPosition(ent, fromSimulationPoint(body.translation()));
+  //     setRotation(ent, body.rotation());
+  //   });
+  // });
 }
 
 function createColliderDesc(ent: Entity): RAPIER.ColliderDesc[] {

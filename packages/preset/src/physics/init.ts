@@ -1,10 +1,21 @@
 import RAPIER from "@dimforge/rapier2d-compat";
 import { useAion } from "../ctx.js";
-import { initPhysicsSystems } from "./bindings.js";
+import { fromSimulationPoint, initPhysicsSystems } from "./bindings.js";
 import { beforeStart, on } from "aion-engine";
 import { useECS } from "../ecs.js";
-import { Collision } from "./components.js";
+import { Collision, RuntimeBody, RuntimeCollider } from "./components.js";
 import { initCharacterControllerSystem } from "./character-controller.js";
+import {
+  Transform,
+  getRuntimeCollider,
+  getWorldPosition,
+  getWorldRotation,
+  setPosition,
+  setRotation,
+  setWorldPosition,
+  setWorldRotation,
+} from "../index.js";
+import { not } from "aion-ecs";
 
 await RAPIER.init();
 
@@ -26,10 +37,42 @@ export function initPhysics(options?: InitPhysicsOptions) {
   const eventQueue = new RAPIER.EventQueue(true);
 
   on("update", () => {
-    const { attach, detach } = useECS();
+    const { attach, detach, query } = useECS();
+
+    // sync body with transform
+
+    query(RuntimeCollider, not(RuntimeBody), Transform).each((ent) => {
+      const collider = getRuntimeCollider(ent);
+
+      // rounding is bad for perfs. compare local positions ?
+      const worldPosition = getWorldPosition(ent).round();
+      const worldRotation = getWorldRotation(ent);
+
+      const colliderTranslation = fromSimulationPoint(
+        collider.translation(),
+      ).round();
+      const colliderRotation = collider.rotation();
+
+      if (!worldPosition.equals(colliderTranslation)) {
+        debugger;
+        collider.setTranslation(worldPosition);
+      }
+
+      if (worldRotation !== colliderRotation) {
+        collider.setRotation(worldRotation);
+      }
+    });
 
     // Step the simulation forward.
     world.step(eventQueue);
+
+    // sync transform with body
+    query(RuntimeBody, Transform).each((ent) => {
+      const body = RuntimeBody[ent]!;
+
+      setWorldPosition(ent, fromSimulationPoint(body.translation()));
+      setWorldRotation(ent, body.rotation());
+    });
 
     eventQueue.drainCollisionEvents((handle1, handle2, started) => {
       const colliderA = world.getCollider(handle1);
@@ -40,7 +83,6 @@ export function initPhysics(options?: InitPhysicsOptions) {
 
       if (bodyA) {
         const entityA = bodyA.userData;
-        debugger;
         if (entityA) {
           started
             ? attach(Collision, entityA as number)

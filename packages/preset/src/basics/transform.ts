@@ -4,6 +4,7 @@ import {
   createIdentityMatrix,
   getMatrixRotation,
   getParentOf,
+  hasParent,
   multiplyMatrices,
 } from "../index.js";
 import type { Matrix } from "../index.js";
@@ -210,8 +211,19 @@ export function getTransformRotation(transform: Transform): number {
   return transform[2]!;
 }
 
-export function setRotation(entity: Entity, radians: number) {
+export function setLocalRotation(entity: Entity, radians: number) {
   Transform[entity]![2]! = radians;
+}
+export const setRotation = getLocalRotation;
+
+export function setWorldRotation(entity: Entity, radians: number) {
+  const parent = getParentOf(entity);
+
+  if (parent) {
+    Transform[entity]![2]! = radians - getWorldRotation(parent);
+  } else {
+    Transform[entity]![2]! = radians;
+  }
 }
 
 export function setTransformRotation(transform: Transform, radians: number) {
