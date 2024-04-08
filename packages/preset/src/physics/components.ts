@@ -1,5 +1,5 @@
 import RAPIER from "@dimforge/rapier2d-compat";
-import { bool, defineComponent, f32, i32, u16, u8 } from "aion-ecs";
+import { bool, defineComponent, eid, f32, i32, u16, u8 } from "aion-ecs";
 
 export const Collider = defineComponent({
   auto: bool,
@@ -61,6 +61,8 @@ export const Body = defineComponent({
 
 export const RuntimeBody = defineComponent(() => new Array<RAPIER.RigidBody>());
 
-export const Collision = defineComponent({});
+export const Collision = defineComponent({
+  with: eid,
+});
 
 export const Contact = defineComponent({});

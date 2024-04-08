@@ -200,10 +200,8 @@ export function createScenes() {
     let enemyCreated = false;
 
     const onBuildingDamaged = onEnterQuery(query(Destroyable, Collision));
-    const onCollision = onEnterQuery(query(Collision));
-    onCollision((entity) => {
-      console.log(entity);
-    });
+    // const onCollision = onEnterQuery(query(Collision));
+
     onBuildingDamaged((entity) => {
       console.log("bim", entity);
     });

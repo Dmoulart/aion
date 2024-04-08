@@ -23,7 +23,7 @@ import {
   getLocalPosition,
   getLocalRotation,
 } from "../index.js";
-import { none, not } from "aion-ecs";
+import { none, not, type Entity } from "aion-ecs";
 
 await RAPIER.init();
 
@@ -69,9 +69,9 @@ export function initPhysics(options?: InitPhysicsOptions) {
     //   }
     // });
     // child colliders controlled by bodies up in the hierarchy
+    //@todo we only support child controlled by body up one level in the hierarchy
     query(RuntimeCollider, none(Body, RuntimeBody), Transform, Parent).each(
       (ent) => {
-        debugger;
         const collider = getRuntimeCollider(ent);
         const body = collider.parent();
 
@@ -110,23 +110,28 @@ export function initPhysics(options?: InitPhysicsOptions) {
       const bodyA = colliderA.parent();
       const bodyB = colliderB.parent();
 
-      if (bodyA) {
-        const entityA = bodyA.userData;
-        if (entityA) {
-          started
-            ? attach(Collision, entityA as number)
-            : detach(Collision, entityA as number);
+      const entityA = bodyA?.userData as Entity;
+      const entityB = bodyB?.userData as Entity;
+
+      if (entityA) {
+        if (started) {
+          attach(Collision, entityA);
+        } else {
+          detach(Collision, entityA);
         }
       }
 
-      if (bodyB) {
-        const entityB = bodyB.userData;
-
-        if (entityB) {
-          started
-            ? attach(Collision, entityB as number)
-            : detach(Collision, entityB as number);
+      if (entityB) {
+        if (started) {
+          attach(Collision, entityB);
+        } else {
+          detach(Collision, entityB);
         }
+      }
+
+      if (entityA && entityB) {
+        Collision.with[entityA] = entityB;
+        Collision.with[entityB] = entityA;
       }
     });
   });

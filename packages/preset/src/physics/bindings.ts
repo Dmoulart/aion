@@ -85,14 +85,12 @@ export function initPhysicsSystems() {
     query(Transform, RuntimeBody, Children),
   );
 
+  // attach children colliders
   onCreatedBodyWithChildren((entity) => {
     const body = getRuntimeBody(entity);
-    debugger;
 
     traverseDescendants(entity, (ent) => {
-      debugger;
       if (has(Collider, entity)) {
-        debugger;
         const auto = Collider.auto[ent];
 
         if (!auto) {

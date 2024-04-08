@@ -41,6 +41,7 @@ export function createEnemy(pos: Vector, target: Entity) {
     Collider: createCollider({
       auto: 1,
       isSensor: 1,
+      collisionGroups: ENEMY_COLLISION_GROUP,
     }),
   });
 
