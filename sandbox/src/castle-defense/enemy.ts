@@ -43,6 +43,7 @@ export function createEnemy(pos: Vector, target: Entity) {
       isSensor: 1,
       collisionGroups: ENEMY_COLLISION_GROUP,
     }),
+    Weapon: {},
   });
 
   const enemy = Enemy({

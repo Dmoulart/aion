@@ -26,6 +26,8 @@ import {
   Collision,
   castRay,
   getRectHalfHeight,
+  getCollidedEntity,
+  setFillColor,
 } from "aion-preset";
 import {
   Colors,
@@ -42,7 +44,7 @@ import {
   Destroyable,
 } from "./castle-defense/components";
 import { setupAI } from "./castle-defense/ai";
-import { SWORDS, createEnemy } from "./castle-defense/enemy";
+import { SWORDS, Weapon, createEnemy } from "./castle-defense/enemy";
 import { downDirection, millitimestamp } from "aion-core";
 import { usePrefabs } from "./castle-defense/prefabs";
 import { createWall } from "./castle-defense/wall";
@@ -195,7 +197,7 @@ export function createScenes() {
       Transform: createTransform(right, top - 25),
     });
 
-    const { query } = useECS();
+    const { query, has } = useECS();
 
     let enemyCreated = false;
 
@@ -203,7 +205,8 @@ export function createScenes() {
     // const onCollision = onEnterQuery(query(Collision));
 
     onBuildingDamaged((entity) => {
-      console.log("bim", entity);
+      const attacker = getCollidedEntity(entity);
+      setFillColor(attacker, "red");
     });
 
     return on("update", () => {

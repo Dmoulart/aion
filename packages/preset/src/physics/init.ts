@@ -24,6 +24,7 @@ import {
   getLocalRotation,
 } from "../index.js";
 import { none, not, type Entity } from "aion-ecs";
+import { handleCollisionEvent } from "./collisions.js";
 
 await RAPIER.init();
 
@@ -103,37 +104,7 @@ export function initPhysics(options?: InitPhysicsOptions) {
       setWorldRotation(ent, body.rotation());
     });
 
-    eventQueue.drainCollisionEvents((handle1, handle2, started) => {
-      const colliderA = world.getCollider(handle1);
-      const colliderB = world.getCollider(handle2);
-
-      const bodyA = colliderA.parent();
-      const bodyB = colliderB.parent();
-
-      const entityA = bodyA?.userData as Entity;
-      const entityB = bodyB?.userData as Entity;
-
-      if (entityA) {
-        if (started) {
-          attach(Collision, entityA);
-        } else {
-          detach(Collision, entityA);
-        }
-      }
-
-      if (entityB) {
-        if (started) {
-          attach(Collision, entityB);
-        } else {
-          detach(Collision, entityB);
-        }
-      }
-
-      if (entityA && entityB) {
-        Collision.with[entityA] = entityB;
-        Collision.with[entityB] = entityA;
-      }
-    });
+    eventQueue.drainCollisionEvents(handleCollisionEvent);
   });
 
   return { RAPIER, world };
