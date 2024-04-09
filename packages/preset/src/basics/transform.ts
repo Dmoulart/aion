@@ -70,7 +70,7 @@ export const getMatrix = getTransformLocalMatrix;
 
 export function getLocalPosition(entity: Entity): Vec {
   const transform = Transform[entity]!;
-  return new Vec(transform![3]!, transform[4]!);
+  return new Vec(transform[3]!, transform[4]!);
 }
 export const getPosition = getLocalPosition;
 
@@ -84,7 +84,7 @@ export function getX(entity: Entity): number {
 }
 
 export function getTransformX(transform: Transform): number {
-  return transform[3]!!;
+  return transform[3]!;
 }
 
 export function getY(entity: Entity): number {
@@ -92,13 +92,13 @@ export function getY(entity: Entity): number {
 }
 
 export function getTransformY(transform: Transform): number {
-  return transform[4]!!;
+  return transform[4]!;
 }
 
 export function setLocalPosition(entity: Entity, { x, y }: Vector): void {
   const transform = Transform[entity]!;
-  transform![3] = x;
-  transform![4] = y;
+  transform[3] = x;
+  transform[4] = y;
 }
 export const setPosition = setLocalPosition;
 
@@ -151,7 +151,7 @@ export function setTransformY(transform: Transform, y: number) {
 
 export function getLocalScale(entity: Entity): Vec {
   const transform = Transform[entity]!;
-  return new Vec(transform![0]!, transform[1]!);
+  return new Vec(transform[0]!, transform[1]!);
 }
 export const getScale = getLocalScale;
 
@@ -177,11 +177,11 @@ export function scale(entity: Entity, x: number, y = x) {
 }
 
 export function setScaleX(entity: Entity, x: number) {
-  Transform[entity]![0]! = x;
+  Transform[entity]![0] = x;
 }
 
 export function setScaleY(entity: Entity, y: number) {
-  Transform[entity]![1]! = y;
+  Transform[entity]![1] = y;
 }
 
 export function flip(entity: Entity) {
@@ -190,7 +190,7 @@ export function flip(entity: Entity) {
 
 export function flipX(entity: Entity) {
   const transform = Transform[entity]!;
-  transform[0]! *= -1;
+  transform[0] *= -1;
 }
 
 export function flipY(entity: Entity) {
@@ -220,18 +220,18 @@ export function setWorldRotation(entity: Entity, radians: number) {
   const parent = getParentOf(entity);
 
   if (parent) {
-    Transform[entity]![2]! = radians - getWorldRotation(parent);
+    Transform[entity]![2] = radians - getWorldRotation(parent);
   } else {
-    Transform[entity]![2]! = radians;
+    Transform[entity]![2] = radians;
   }
 }
 
 export function setTransformRotation(transform: Transform, radians: number) {
-  transform[2]! = radians;
+  transform[2] = radians;
 }
 
 export function rotate(entity: Entity, radians: number) {
-  Transform[entity]![2]! += radians;
+  Transform[entity]![2] += radians;
 }
 
 export function createMatrixFromTransform(

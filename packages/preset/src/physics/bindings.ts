@@ -11,13 +11,18 @@ import { useECS } from "../ecs.js";
 import { Vec, type Vector } from "aion-core";
 import {
   Transform,
+  getLocalMatrix,
   getLocalPosition,
   getLocalRotation,
   getWorldPosition,
   getWorldRotation,
 } from "../basics/transform.js";
 import { getRuntimeBody, setBodyOptions } from "./bodies.js";
-import { Children, traverseDescendants } from "../index.js";
+import {
+  Children,
+  getMatrixTranslation,
+  traverseDescendants,
+} from "../index.js";
 
 export function initPhysicsSystems() {
   const { world, RAPIER } = usePhysics();
@@ -69,6 +74,9 @@ export function initPhysicsSystems() {
     traverseDescendants(entity, (ent) => {
       if (has(Collider, entity)) {
         const collider = createRuntimeCollider(ent, world, body);
+
+        // const mat = getLocalMatrix(ent);
+        // const position = getMatrixTranslation(mat); // take scale into account
 
         collider.setTranslationWrtParent(
           toSimulationPoint(getLocalPosition(ent)),

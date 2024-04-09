@@ -1,6 +1,6 @@
 import { mat2d } from "gl-matrix";
 
-import type { Vector } from "aion-core";
+import { Vec, type Vector } from "aion-core";
 
 export type Matrix = Float32Array;
 
@@ -84,9 +84,9 @@ export function multiplyMatrices(first: Matrix, other: Matrix, out = first) {
   out[5] = e * b2 + f * d2 + f2;
 }
 
-// export function getTranslation(matrix: Matrix): Vector {
-//   return new Vec(matrix[4], matrix[5]);
-// }
+export function getMatrixTranslation(matrix: Matrix): Vector {
+  return new Vec(matrix[4], matrix[5]);
+}
 
 // export function getScaleX(matrix: Matrix) {
 //   const a = matrix[0]!;
