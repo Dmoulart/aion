@@ -202,11 +202,9 @@ export function createScenes() {
     let enemyCreated = false;
 
     const onBuildingDamaged = onEnterQuery(query(Destroyable, Collision));
-    // const onCollision = onEnterQuery(query(Collision));
 
     onBuildingDamaged((entity) => {
-      const attacker = getCollidedEntity(entity);
-      setFillColor(attacker, "red");
+      setFillColor(getCollidedEntity(entity), "red");
     });
 
     return on("update", () => {

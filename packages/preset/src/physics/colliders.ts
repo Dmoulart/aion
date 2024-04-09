@@ -1,7 +1,6 @@
 import type { Entity, PrefabInstanceOptions } from "aion-ecs";
 import { Collider, RuntimeCollider } from "./components.js";
 import RAPIER from "@dimforge/rapier2d-compat";
-import { usePhysics } from "./init.js";
 
 // @todo: these seems to be the defaults of RAPIER but it does not work.
 // Collider init is not ideal
