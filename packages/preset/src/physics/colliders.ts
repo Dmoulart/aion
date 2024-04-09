@@ -1,4 +1,4 @@
-import type { Entity, PrefabInstanceOptions } from "aion-ecs";
+import { SparseSet, type Entity, type PrefabInstanceOptions } from "aion-ecs";
 import { Collider, RuntimeCollider } from "./components.js";
 import RAPIER from "@dimforge/rapier2d-compat";
 
@@ -66,6 +66,20 @@ export function setColliderOptions(
   // colliderDesc.setSolverGroups(Collider.solverGroups[entity]!); !!!
   colliderDesc.setFrictionCombineRule(Collider.frictionCombineRule[entity]!);
   // colliderDesc.rotationsEnabled = Boolean(Collider.rotationsEnabled[entity]!);
+}
+
+export const COLLIDERS_HANDLE_TO_ENTITY_ID = new Map<number, Entity>();
+
+export function mapColliderHandleToEntity(handle: number, entity: Entity) {
+  COLLIDERS_HANDLE_TO_ENTITY_ID.set(handle, entity);
+}
+
+export function unmapColliderHandleToEntity(handle: number) {
+  COLLIDERS_HANDLE_TO_ENTITY_ID.delete(handle);
+}
+
+export function getColliderEntity(handle: number): Entity {
+  return COLLIDERS_HANDLE_TO_ENTITY_ID.get(handle)!;
 }
 
 export function getRuntimeCollider(entity: Entity) {

@@ -3,6 +3,7 @@ import { Body, RuntimeBody } from "./components.js";
 import RAPIER from "@dimforge/rapier2d-compat";
 import type { Vector } from "aion-core";
 import { setPosition } from "../index.js";
+
 // @todo type crap
 const DEFAULT_BODIES_OPTIONS: PrefabInstanceOptions<{
   Body: typeof Body;
@@ -83,4 +84,8 @@ export function setRuntimeBodyPosition(entity: Entity, position: Vector) {
 
 export function getRuntimeBody(entity: Entity) {
   return RuntimeBody[entity]!;
+}
+
+export function getRuntimeBodyEntity(body: RAPIER.RigidBody) {
+  return body.userData as Entity;
 }

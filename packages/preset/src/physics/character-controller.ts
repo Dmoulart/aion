@@ -58,6 +58,13 @@ export function createCharacterController(
   };
 }
 
+export function setRuntimeCharacterController(
+  entity: Entity,
+  controller: RAPIER.KinematicCharacterController,
+) {
+  RuntimeCharacterController[entity] = controller;
+}
+
 export function initCharacterControllerSystem() {
   const { world } = usePhysics();
   const { query, attach } = useECS();
@@ -81,7 +88,7 @@ export function initCharacterControllerSystem() {
 
     setCharacterControllerOptions(ent, controller);
 
-    RuntimeCharacterController[ent] = controller;
+    setRuntimeCharacterController(ent, controller);
 
     attach(RuntimeCharacterController, ent);
   });

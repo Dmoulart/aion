@@ -4,6 +4,7 @@ import {
   Collider,
   RuntimeBody,
   RuntimeCollider,
+  mapColliderHandleToEntity,
   setColliderOptions,
   usePhysics,
 } from "./index.js";
@@ -65,6 +66,8 @@ export function initPhysicsSystems() {
 
     const collider = world.createCollider(colliderDesc, body);
 
+    mapColliderHandleToEntity(collider.handle, ent);
+
     collider.setTranslation(toSimulationPoint(getWorldPosition(ent)));
     collider.setRotation(getWorldRotation(ent));
 
@@ -103,57 +106,14 @@ export function initPhysicsSystems() {
 
         collider.setRotationWrtParent(getLocalRotation(ent));
 
+        mapColliderHandleToEntity(collider.handle, ent);
+
         RuntimeCollider[ent] = collider;
 
         attach(RuntimeCollider, ent);
       }
     });
   });
-
-  // const onCreatedChildCollider = onEnterQuery(
-  //   query(Transform, Collider, Parent, none(Body, RuntimeCollider)),
-  // );
-
-  // onCreatedChildCollider((entity) => {
-  //   const ancestorWithBody = findNearestAncestorWithComponent(
-  //     entity,
-  //     RuntimeBody,
-  //   );
-
-  //   if (!ancestorWithBody) {
-  //     console.info("cannot find an ancestor with body");
-  //   }
-
-  //   const body = getRuntimeBody(ancestorWithBody!);
-
-  //   const collidersDesc = createColliderDesc(entity);
-
-  //   const colliderDesc = collidersDesc[0]!;
-
-  //   setColliderOptions(colliderDesc, entity);
-
-  //   const collider = world.createCollider(colliderDesc, body);
-
-  //   collider.setTranslationWrtParent(
-  //     toSimulationPoint(getLocalPosition(entity)),
-  //   );
-  //   collider.setRotationWrtParent(getLocalRotation(entity));
-
-  //   RuntimeCollider[entity] = collider;
-
-  //   attach(RuntimeCollider, entity);
-  // });
-
-  // on("update", () => {
-  //   const { query } = useECS();
-
-  //   query(RuntimeBody, Transform).each((ent) => {
-  //     const body = RuntimeBody[ent]!;
-
-  //     setPosition(ent, fromSimulationPoint(body.translation()));
-  //     setRotation(ent, body.rotation());
-  //   });
-  // });
 }
 
 function createColliderDesc(ent: Entity): RAPIER.ColliderDesc[] {
