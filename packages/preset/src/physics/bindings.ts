@@ -1,4 +1,4 @@
-import { onEnterQuery, not, type Entity, none } from "aion-ecs";
+import { onEnterQuery, not, type Entity } from "aion-ecs";
 import {
   Body,
   Collider,
@@ -10,24 +10,16 @@ import {
 import type RAPIER from "@dimforge/rapier2d-compat";
 import { Circle, Rect } from "../components.js";
 import { useECS } from "../ecs.js";
-import { Vec, assert, type Vector } from "aion-core";
-import { on } from "aion-engine";
+import { Vec, type Vector } from "aion-core";
 import {
   Transform,
   getLocalPosition,
   getLocalRotation,
   getWorldPosition,
   getWorldRotation,
-  setPosition,
-  setRotation,
 } from "../basics/transform.js";
 import { getRuntimeBody, setBodyOptions } from "./bodies.js";
-import {
-  Children,
-  Parent,
-  findNearestAncestorWithComponent,
-  traverseDescendants,
-} from "../index.js";
+import { Children, traverseDescendants } from "../index.js";
 
 export function initPhysicsSystems() {
   const { world, RAPIER } = usePhysics();

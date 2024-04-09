@@ -5,7 +5,6 @@ import {
   onEnterQuery,
   onExitQuery,
   type Entity,
-  i32,
   bool,
   type PrefabInstanceOptions,
   f32,
