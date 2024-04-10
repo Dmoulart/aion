@@ -207,6 +207,11 @@ export function bindAnimationToComponent(
   onComponentAdded((entity) => {
     const target = getTargetEntity(entity);
 
+    if (!target) {
+      console.error("animation : targeted entity not found");
+      return;
+    }
+
     attachAnimationTo(target, animationID);
   });
 
@@ -214,6 +219,7 @@ export function bindAnimationToComponent(
 
   onComponentRemoved((entity) => {
     const target = getTargetEntity(entity);
+
     detach(AnimationComponent, target);
   });
 }

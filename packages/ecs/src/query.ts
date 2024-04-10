@@ -159,8 +159,7 @@ export function createQuery(...terms: QueryTerm[]): Query {
     each(fn: (eid: Entity, index: number) => void) {
       for (let i = 0; i < this.archetypes.length; i++) {
         const ents = this.archetypes[i]!.entities.dense;
-        const len = ents.length;
-        for (let j = 0; j < len; j++) {
+        for (let j = 0; j < ents.length; j++) {
           fn(ents[j]!, j);
         }
       }

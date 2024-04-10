@@ -4,7 +4,7 @@ import { Collision } from "./components.js";
 import { usePhysics } from "./init.js";
 import { getColliderEntity } from "./colliders.js";
 
-export function getCollidedEntity(entity: Entity) {
+export function getCollidingEntity(entity: Entity) {
   return Collision.with[entity]!;
 }
 

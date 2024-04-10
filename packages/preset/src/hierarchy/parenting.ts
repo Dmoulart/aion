@@ -89,12 +89,22 @@ export function getLastChildOf(parent: Entity) {
   return Children.list[parent]![Children.length[parent]! - 1];
 }
 
+export function getChildrenCount(entity: Entity) {
+  return Children.length[entity]!;
+}
+
+export function getChildren(entity: Entity) {
+  return Children.list[entity]!;
+}
+
 export function findChildOf(
   parent: Entity,
   predicate: (entity: Entity) => boolean,
 ) {
-  // wtf holy shit check children lenght
-  for (const child of Children.list[parent]!) {
+  const children = getChildren(parent);
+
+  for (let i = 0; i < getChildrenCount(parent); i++) {
+    const child = children[i]!;
     if (predicate(child)) {
       return child;
     }
@@ -104,14 +114,10 @@ export function findChildOf(
 }
 
 export function forEachChildOf(parent: Entity, cb: (ent: Entity) => void) {
-  if (hasChildren(parent)) {
-    // wtf holy shit check children lenght
-    for (const child of Children.list[parent]!) {
-      // wtf holy shit lol
-      if (child > 0) {
-        cb(child);
-      }
-    }
+  const children = getChildren(parent);
+
+  for (let i = 0; i < getChildrenCount(parent); i++) {
+    cb(children[i]!);
   }
 }
 

@@ -46,7 +46,7 @@ export function createEnemy(pos: Vector, target: Entity) {
       collisionGroups: ENEMY_COLLISION_GROUP,
     }),
     Weapon: {
-      hit: 10,
+      hit: 100,
     },
   });
 

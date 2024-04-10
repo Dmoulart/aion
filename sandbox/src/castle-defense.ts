@@ -1,12 +1,5 @@
 import { Entity, onEnterQuery } from "aion-ecs";
-import {
-  beforeStart,
-  defineEngine,
-  defineLoop,
-  emit,
-  on,
-  once,
-} from "aion-engine";
+import { beforeStart, defineEngine, defineLoop, emit, on } from "aion-engine";
 import { click, direction, getMouse, key } from "aion-input";
 import {
   translate,
@@ -33,9 +26,7 @@ import {
   Collision,
   castRay,
   getRectHalfHeight,
-  getCollidedEntity,
-  setFillColor,
-  getWorldPosition,
+  getCollidingEntity,
 } from "aion-preset";
 import {
   Colors,
@@ -54,7 +45,7 @@ import {
   Destroyable,
 } from "./castle-defense/components";
 import { setupAI } from "./castle-defense/ai";
-import { SWORDS, Weapon, createEnemy } from "./castle-defense/enemy";
+import { Weapon, createEnemy } from "./castle-defense/enemy";
 import { downDirection, millitimestamp } from "aion-core";
 import { usePrefabs } from "./castle-defense/prefabs";
 import { createWall } from "./castle-defense/wall";
@@ -208,7 +199,7 @@ export function createScenes() {
       Transform: createTransform(right, top - 25),
     });
 
-    const { query, has } = useECS();
+    const { query, has, remove } = useECS();
 
     let enemyCreated = false;
 
@@ -225,11 +216,15 @@ export function createScenes() {
       });
     });
 
-    onBuildingDamaged((entity) => {
-      const attacker = getCollidedEntity(entity);
+    onBuildingDamaged((building) => {
+      const attacker = getCollidingEntity(building);
 
       if (has(Weapon, attacker)) {
-        damage(entity, Weapon.hit[attacker]);
+        damage(building, Weapon.hit[attacker]);
+      }
+
+      if (getHealth(building) <= 0) {
+        remove(building);
       }
     });
 
