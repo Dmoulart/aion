@@ -22,7 +22,7 @@ const engine = defineEngine(
   () => {
     const { $camera, createRect } = useGame();
 
-    setBackgroundColor("black");
+    setBackgroundColor(Colors["rhino:500"]);
 
     defineLoop(() => {
       emit("update");
@@ -68,7 +68,7 @@ const engine = defineEngine(
 
     for (let i = 0; i < 1000; i++) {
       const child = createRect({
-        Transform: createTransform(50 + i * 5, 50 + i * 5),
+        Transform: createTransform(50 + i * 2, 50 + i * 2),
         Fill: "white",
         Stroke: "black",
         Rect: {

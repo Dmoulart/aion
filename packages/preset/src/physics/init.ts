@@ -22,6 +22,12 @@ import {
   getRuntimeBody,
   getLocalPosition,
   getLocalRotation,
+  getRuntimeBodyEntity,
+  getLocalScale,
+  getMatrixRotation,
+  getLocalMatrix,
+  getWorldMatrix,
+  getScaleCompensatedRotation,
 } from "../index.js";
 import { none, not, type Entity } from "aion-ecs";
 import { handleCollisionEvent } from "./collisions.js";
@@ -77,17 +83,32 @@ export function initPhysics(options?: InitPhysicsOptions) {
         const body = collider.parent();
 
         if (body) {
+          const parent = getRuntimeBodyEntity(body);
+
           const worldPosition = getWorldPosition(ent).round();
           const worldRotation = getWorldRotation(ent);
 
           if (!worldPosition.equals(collider.translation())) {
-            collider.setTranslationWrtParent(
-              toSimulationPoint(getLocalPosition(ent)),
-            );
+            const parentScale = getLocalScale(parent);
+
+            const position = toSimulationPoint(getLocalPosition(ent));
+            //@todo not sure if this is correct code. Works with flipped transforms (-1 values)
+            // but other values have not been tested
+            position.scaleEq(parentScale.x, parentScale.y);
+
+            collider.setTranslationWrtParent(position);
           }
 
           if (worldRotation !== collider.rotation()) {
-            collider.setRotationWrtParent(getLocalRotation(ent));
+            const parentScale = getLocalScale(parent);
+
+            const rotation = getScaleCompensatedRotation(
+              getLocalRotation(ent),
+              parentScale.x,
+              parentScale.y,
+            );
+
+            collider.setRotationWrtParent(rotation);
           }
         }
       },

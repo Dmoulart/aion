@@ -14,13 +14,17 @@ import {
   getLocalMatrix,
   getLocalPosition,
   getLocalRotation,
+  getLocalScale,
+  getWorldMatrix,
   getWorldPosition,
   getWorldRotation,
 } from "../basics/transform.js";
 import { getRuntimeBody, setBodyOptions } from "./bodies.js";
 import {
   Children,
+  createIdentityMatrix,
   getMatrixTranslation,
+  multiplyMatrices,
   traverseDescendants,
 } from "../index.js";
 
@@ -68,23 +72,23 @@ export function initPhysicsSystems() {
   );
 
   // attach children colliders
-  onCreatedBodyWithChildren((entity) => {
-    const body = getRuntimeBody(entity);
+  onCreatedBodyWithChildren((ancestor) => {
+    const body = getRuntimeBody(ancestor);
+    const ancestorScale = getLocalScale(ancestor);
 
-    traverseDescendants(entity, (ent) => {
-      if (has(Collider, entity)) {
-        const collider = createRuntimeCollider(ent, world, body);
+    traverseDescendants(ancestor, (descendant) => {
+      if (has(Collider, descendant)) {
+        const collider = createRuntimeCollider(descendant, world, body);
 
-        // const mat = getLocalMatrix(ent);
-        // const position = getMatrixTranslation(mat); // take scale into account
+        const position = toSimulationPoint(getLocalPosition(descendant));
+        //@todo sync rotation with scale like in init.js
+        position.scaleEq(ancestorScale.x, ancestorScale.y);
 
-        collider.setTranslationWrtParent(
-          toSimulationPoint(getLocalPosition(ent)),
-        );
-        collider.setRotationWrtParent(getLocalRotation(ent));
+        collider.setTranslationWrtParent(position);
+        collider.setRotationWrtParent(getLocalRotation(descendant));
 
-        RuntimeCollider[ent] = collider;
-        attach(RuntimeCollider, ent);
+        RuntimeCollider[descendant] = collider;
+        attach(RuntimeCollider, descendant);
       }
     });
   });

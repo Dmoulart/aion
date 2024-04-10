@@ -1,5 +1,5 @@
 import { Vector, leftDirection } from "aion-core";
-import { Entity, defineComponent } from "aion-ecs";
+import { Entity, defineComponent, i32 } from "aion-ecs";
 import {
   createTransform,
   createCollider,
@@ -18,7 +18,9 @@ import { ENEMY_COLLISION_GROUP } from "./collision-groups";
 import { Colors } from "aion-render";
 import { usePrefabs } from "./prefabs";
 
-export const Weapon = defineComponent({});
+export const Weapon = defineComponent({
+  hit: i32,
+});
 export const EyeBrow = defineComponent({});
 
 export const SWORDS: Array<number> = [];
@@ -43,7 +45,9 @@ export function createEnemy(pos: Vector, target: Entity) {
       isSensor: 1,
       collisionGroups: ENEMY_COLLISION_GROUP,
     }),
-    Weapon: {},
+    Weapon: {
+      hit: 10,
+    },
   });
 
   const enemy = Enemy({

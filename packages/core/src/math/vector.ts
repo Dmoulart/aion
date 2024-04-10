@@ -15,8 +15,8 @@ export class Vec implements Vector {
    * @param size
    * @returns scaled vector
    */
-  scale(size: number): Vec {
-    return new Vec(this.x * size, this.y * size);
+  scale(x: number, y = x): Vec {
+    return new Vec(this.x * x, this.y * y);
   }
 
   /**
@@ -26,9 +26,9 @@ export class Vec implements Vector {
    * @param size
    * @returns scaled vector
    */
-  scaleEq(size: number): Vec {
-    this.x *= size;
-    this.y *= size;
+  scaleEq(x: number, y = x): Vec {
+    this.x *= x;
+    this.y *= y;
     return this;
   }
 
