@@ -15,11 +15,7 @@ export function initAI() {
 
       PlanComponent[entity] = plan;
       attach(PlanComponent, entity);
-    });
 
-    const onAddedPlan = onEnterQuery(query(PlanComponent));
-
-    onAddedPlan((entity) => {
       beginNextAction(entity);
     });
   });

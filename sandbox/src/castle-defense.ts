@@ -225,7 +225,7 @@ export function createScenes() {
 
       if (getHealth(building) <= 0) {
         remove(building);
-        console.log("----- REMOVED ", building);
+        console.log("----REMOVED", building);
       }
     });
 
@@ -253,7 +253,7 @@ export function createScenes() {
 export function plugins() {
   const preset = aionPreset({
     renderDebug: false,
-    debugEntityID: true,
+    debugEntityID: false,
   });
 
   // @todo: find a better way to keep a reference to an entity

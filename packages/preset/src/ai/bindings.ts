@@ -30,6 +30,8 @@ export function defineBehavior(
       const plan = planifyCurrentGoal(entity);
 
       PlanComponent[entity] = plan;
+
+      beginNextAction(entity);
       return;
     }
 
@@ -39,7 +41,6 @@ export function defineBehavior(
     ]);
 
     if (result !== true) {
-      console.log("begin next action");
       //@todo remove components in another system ?
       once("update", () => {
         detach(component, entity);
@@ -58,7 +59,6 @@ export function defineBehavior(
     ]);
 
     if (isActionDone) {
-      console.log("action done");
       //@todo remove components in another system ?
       // removing component in the current system make the all things wacky
       once("update", () => {
@@ -76,7 +76,7 @@ export function beginNextAction(entity: Entity) {
   const nextAction = getNextAction(entity);
 
   if (nextAction) {
-    const result = evaluateNextAction(entity);
+    const isDone = evaluateNextAction(entity);
     // const { exists } = useECS();
 
     // if (!exists(nextAction.target)) {
@@ -87,7 +87,7 @@ export function beginNextAction(entity: Entity) {
     //   return;
     // }
 
-    if (result === false) {
+    if (isDone === false) {
       console.info("begin next action for entity", {
         entity,
         name: nextAction.action.name,
@@ -96,12 +96,22 @@ export function beginNextAction(entity: Entity) {
       });
       addBehavior(entity, nextAction);
     } else {
-      const plan = planifyCurrentGoal(entity);
-
-      PlanComponent[entity] = plan;
+      // const plan = planifyCurrentGoal(entity);
+      // console.info("planify next action for entity", {
+      //   plan,
+      // });
+      // PlanComponent[entity] = plan;
     }
   } else {
     console.info("no next action for entity", entity);
+
+    const plan = planifyCurrentGoal(entity);
+    console.info("planify next action for entity", {
+      plan,
+    });
+    // PlanComponent[entity] = plan;
+    // beginNextAction(entity);
+    // wooow loop
   }
 }
 export function getNextAction(entity: Entity) {
