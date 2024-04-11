@@ -38,7 +38,7 @@ export const CanReach = defineWorldState(
       debugger;
       // let's consider the stuff is reachable but too far
       // we'll need to re-planify the actions later
-      return true;
+      return false;
     }
   },
 );

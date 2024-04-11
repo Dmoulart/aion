@@ -83,6 +83,9 @@ export function createEnemy(pos: Vector, target: Entity) {
   //sword
   addChildTo(enemy, sword);
 
+  // attach(Debug, enemy);
+  // Debug[enemy] = "enemy";
+
   // eye
   addChildTo(
     enemy,

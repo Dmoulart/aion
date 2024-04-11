@@ -208,6 +208,9 @@ export function bindAnimationToComponent(
     const target = getTargetEntity(entity);
 
     if (!target) {
+      //@todo why
+      debugger;
+      // console.log(Debug[entity]);
       console.error("animation : targeted entity not found");
       return;
     }

@@ -19,6 +19,8 @@ export function initAI() {
 
     const onAddedPlan = onEnterQuery(query(PlanComponent));
 
-    onAddedPlan(beginNextAction);
+    onAddedPlan((entity) => {
+      beginNextAction(entity);
+    });
   });
 }

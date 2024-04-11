@@ -1,6 +1,6 @@
 import type { Component, Entity, Query, Type } from "aion-ecs";
 import { useECS } from "../ecs.js";
-import { PlanComponent } from "./brain.js";
+import { PlanComponent, planifyCurrentGoal } from "./brain.js";
 import { once } from "aion-engine";
 import type { Action, PlannedAction } from "./action.js";
 import { evaluateState } from "./state.js";
@@ -21,11 +21,18 @@ export function defineBehavior(
   component: BehaviorComponent,
   cb: (entity: Entity) => void,
 ) {
-  const { detach } = useECS();
+  const { detach, exists } = useECS();
 
   BEHAVIORS_COMPONENTS[action.name] = component;
 
   return (entity: Entity) => {
+    if (!exists(component.target[entity]!)) {
+      const plan = planifyCurrentGoal(entity);
+
+      PlanComponent[entity] = plan;
+      return;
+    }
+
     const result = evaluateState(entity, [
       action.preconditions,
       component.target[entity]!,
@@ -66,12 +73,43 @@ export function defineBehavior(
 }
 
 export function beginNextAction(entity: Entity) {
-  const nextAction = PlanComponent[entity]![0];
+  const nextAction = getNextAction(entity);
 
   if (nextAction) {
-    // console.info("begin next action for entity", entity);
-    addBehavior(entity, nextAction);
+    const result = evaluateNextAction(entity);
+    // const { exists } = useECS();
+
+    // if (!exists(nextAction.target)) {
+    //   debugger;
+    //   const plan = planifyCurrentGoal(entity);
+
+    //   PlanComponent[entity] = plan;
+    //   return;
+    // }
+
+    if (result === false) {
+      console.info("begin next action for entity", {
+        entity,
+        name: nextAction.action.name,
+        source: nextAction.source,
+        target: nextAction.target,
+      });
+      addBehavior(entity, nextAction);
+    } else {
+      const plan = planifyCurrentGoal(entity);
+
+      PlanComponent[entity] = plan;
+    }
   } else {
-    // console.info("no next action for entity", entity);
+    console.info("no next action for entity", entity);
   }
+}
+export function getNextAction(entity: Entity) {
+  return PlanComponent[entity]![0]!;
+}
+
+export function evaluateNextAction(entity: Entity) {
+  const action = getNextAction(entity);
+
+  return evaluateState(entity, [action.action.effects, action.target]);
 }

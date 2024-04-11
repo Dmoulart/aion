@@ -2,9 +2,14 @@ import { beforeStart, on } from "aion-engine";
 import { useECS } from "../ecs.js";
 import { fillText, font, strokeStyle, strokeText } from "aion-render";
 import { Transform, getWorldPosition } from "../index.js";
+import { defineComponent } from "aion-ecs";
+
+// export const Debug = defineComponent(Array<string>);
+
 export type InitDebugOptions = {
   debugEntityID?: boolean;
 };
+
 export function initDebug(options?: InitDebugOptions) {
   if (options?.debugEntityID) {
     beforeStart(() => {

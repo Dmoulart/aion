@@ -225,12 +225,14 @@ export function createScenes() {
 
       if (getHealth(building) <= 0) {
         remove(building);
+        console.log("----- REMOVED ", building);
       }
     });
 
     return on("update", () => {
       query(Transform, EnemySpawn).each((entity) => {
         if (enemyCreated) return;
+
         const frequency = EnemySpawn.frequency[entity]!;
         const lastSpawn = EnemySpawn.lastSpawn[entity]!;
 
@@ -251,7 +253,7 @@ export function createScenes() {
 export function plugins() {
   const preset = aionPreset({
     renderDebug: false,
-    debugEntityID: false,
+    debugEntityID: true,
   });
 
   // @todo: find a better way to keep a reference to an entity

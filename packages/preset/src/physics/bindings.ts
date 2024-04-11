@@ -1,4 +1,4 @@
-import { onEnterQuery, not } from "aion-ecs";
+import { onEnterQuery, not, onExitQuery } from "aion-ecs";
 import {
   Body,
   Collider,
@@ -49,6 +49,12 @@ export function initPhysicsSystems() {
     RuntimeBody[ent] = body;
 
     attach(RuntimeBody, ent);
+  });
+
+  const onRemovedBody = onExitQuery(query(Transform, RuntimeBody));
+
+  onRemovedBody((ent) => {
+    world.removeRigidBody(getRuntimeBody(ent));
   });
 
   const onCreatedColliderWithRuntimeBody = onEnterQuery(

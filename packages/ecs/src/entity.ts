@@ -82,6 +82,11 @@ export function removeEntity(world: World, eid: Entity) {
       `Trying to remove a non existant entity with id : ${eid}`,
     );
   }
+
+  // transition to root archetype before being destroy to trigger some onExitQuery ?
+  // @todo is this a good idea?
+  onArchetypeChange(world, eid, archetype, world.rootArchetype);
+
   archetype.entities.remove(eid);
   world.entitiesArchetypes[eid] = undefined;
   world.deletedEntities.push(eid);
