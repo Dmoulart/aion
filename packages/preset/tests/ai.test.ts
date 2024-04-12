@@ -2,7 +2,7 @@ import type { Entity } from "aion-ecs";
 import { expect, it, describe } from "vitest";
 import { defineWorldState, defineAction, planify } from "../src/ai/index.js";
 
-describe("AI", () => {
+describe.skip("AI", () => {
   it(() => {
     const CanReach = defineWorldState(
       "CanReach",

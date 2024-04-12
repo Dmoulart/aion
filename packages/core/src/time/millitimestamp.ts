@@ -1,2 +1,2 @@
-// @todo: runtime agnostic millitimestamp
-export const millitimestamp = window.performance.now.bind(window.performance);
+// runtime agnostic millitimestamp
+export const millitimestamp = performance.now.bind(performance);
