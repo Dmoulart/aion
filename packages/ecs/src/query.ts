@@ -3,10 +3,12 @@ import {
   type Component,
   type ComponentsGroup,
   getComponentID,
+  getComponentByID,
+  type ComponentID,
 } from "./component.js";
 import type { World } from "./world.js";
 import type { Archetype } from "./archetype.js";
-import type { Entity } from "./entity.js";
+import type { Entity, ID } from "./entity.js";
 import { BitSet, SparseSet } from "./collections/index.js";
 
 /**
@@ -19,13 +21,18 @@ export type RegisteredQueryHandler = {
   (entities: Entity): void;
   queryHash: number;
 };
-
+export const QueryTermType = {
+  All: 0,
+  Any: 1,
+  None: 2,
+  Not: 3,
+} as const;
 export type QueryTerm = { type: number; comps: Component[]; matcher: Matcher };
 
 export const all = (...comps: Component[]): QueryTerm => {
   const mask = makeComponentsMask(comps);
   return {
-    type: 0,
+    type: QueryTermType.All,
     comps,
     matcher: (arch: Archetype) => arch.mask.contains(mask),
   };
@@ -34,7 +41,7 @@ export const all = (...comps: Component[]): QueryTerm => {
 export const any = (...comps: Component[]): QueryTerm => {
   const mask = makeComponentsMask(comps);
   return {
-    type: 1,
+    type: QueryTermType.Any,
     comps,
     matcher: (arch: Archetype) => arch.mask.intersects(mask),
   };
@@ -43,7 +50,7 @@ export const any = (...comps: Component[]): QueryTerm => {
 export const none = (...comps: Component[]): QueryTerm => {
   const mask = makeComponentsMask(comps);
   return {
-    type: 2,
+    type: QueryTermType.None,
     comps,
     matcher: (arch: Archetype) => !arch.mask.contains(mask),
   };
@@ -52,7 +59,7 @@ export const none = (...comps: Component[]): QueryTerm => {
 export const not = (...comps: Component[]): QueryTerm => {
   const mask = makeComponentsMask(comps);
   return {
-    type: 3,
+    type: QueryTermType.Not,
     comps,
     matcher: (arch: Archetype) => !arch.mask.intersects(mask),
   };
@@ -167,7 +174,7 @@ export function createQuery(...terms: QueryTerm[]): Query {
   };
 }
 
-type QueryElement = Component<any> | QueryTerm | ComponentsGroup;
+type QueryElement = Component | QueryTerm | ComponentsGroup | ComponentID;
 /**
  * Define a query, register it to the world and returns it.
  * Query terms or components can be used to define this query.
@@ -186,7 +193,9 @@ export const query = <T extends Array<QueryElement>>(
   const freeFloatingComponents: Component[] = [];
 
   for (const termOrComponent of termsOrComponents) {
-    if (isComponent(termOrComponent)) {
+    if (typeof termOrComponent === "number") {
+      freeFloatingComponents.push(getComponentByID(termOrComponent)!);
+    } else if (isComponent(termOrComponent)) {
       freeFloatingComponents.push(termOrComponent);
     } else if (isQueryTerm(termOrComponent)) {
       queryTerms.push(termOrComponent);
