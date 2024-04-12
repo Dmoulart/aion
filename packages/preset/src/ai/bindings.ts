@@ -3,7 +3,7 @@ import { useECS } from "../ecs.js";
 import { PlanComponent, planifyCurrentGoal } from "./brain.js";
 import { once } from "aion-engine";
 import type { Action, PlannedAction } from "./action.js";
-import { evaluateState } from "./state.js";
+import { evaluateState, isWorldState } from "./state.js";
 
 // not ideal
 type BehaviorComponent = Component & { target: Uint32Array };
@@ -42,13 +42,13 @@ export function defineBehavior(
 
     if (result !== true) {
       //@todo remove components in another system ?
-      once("update", () => {
-        detach(component, entity);
+      // once("update", () => {
+      detach(component, entity);
 
-        PlanComponent[entity]!.shift();
+      PlanComponent[entity]!.shift();
 
-        beginNextAction(entity);
-      });
+      beginNextAction(entity);
+      // });
     } else {
       cb(entity);
     }
@@ -61,13 +61,13 @@ export function defineBehavior(
     if (isActionDone) {
       //@todo remove components in another system ?
       // removing component in the current system make the all things wacky
-      once("update", () => {
-        detach(component, entity);
+      // once("update", () => {
+      detach(component, entity);
 
-        PlanComponent[entity]!.shift();
+      PlanComponent[entity]!.shift();
 
-        beginNextAction(entity);
-      });
+      beginNextAction(entity);
+      // });
     }
   };
 }
@@ -77,15 +77,16 @@ export function beginNextAction(entity: Entity) {
 
   if (nextAction) {
     const isDone = evaluateNextAction(entity);
-    // const { exists } = useECS();
+    const { exists } = useECS();
 
-    // if (!exists(nextAction.target)) {
-    //   debugger;
-    //   const plan = planifyCurrentGoal(entity);
+    if (!exists(nextAction.target)) {
+      debugger;
+      const plan = planifyCurrentGoal(entity);
 
-    //   PlanComponent[entity] = plan;
-    //   return;
-    // }
+      PlanComponent[entity] = plan;
+      // beginNextAction(entity);
+      return;
+    }
 
     if (isDone === false) {
       console.info("begin next action for entity", {
@@ -95,12 +96,13 @@ export function beginNextAction(entity: Entity) {
         target: nextAction.target,
       });
       addBehavior(entity, nextAction);
-    } else {
-      // const plan = planifyCurrentGoal(entity);
-      // console.info("planify next action for entity", {
-      //   plan,
-      // });
-      // PlanComponent[entity] = plan;
+    } else if (isWorldState(isDone)) {
+      debugger;
+      const plan = planifyCurrentGoal(entity);
+      console.info("planify next action for entity", {
+        plan,
+      });
+      PlanComponent[entity] = plan;
     }
   } else {
     console.info("no next action for entity", entity);
@@ -109,7 +111,8 @@ export function beginNextAction(entity: Entity) {
     console.info("planify next action for entity", {
       plan,
     });
-    // PlanComponent[entity] = plan;
+
+    PlanComponent[entity] = plan;
     // beginNextAction(entity);
     // wooow loop
   }

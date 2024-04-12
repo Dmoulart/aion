@@ -17,6 +17,7 @@ import {
   findChildOf,
   getGravity,
   getWorldDistance,
+  setScaleX,
   toSimulationPoint,
   useECS,
 } from "aion-preset";
@@ -117,6 +118,8 @@ export function setupAI() {
         undefined,
         ENEMY_COLLISION_GROUP,
       );
+
+      setScaleX(entity, movement.x >= 0 ? -1 : 1);
 
       const computedMovement = controller.computedMovement();
 

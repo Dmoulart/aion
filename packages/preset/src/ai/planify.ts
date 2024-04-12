@@ -17,11 +17,13 @@ export function planify(
   const [desiredState, target] = goal;
 
   const result = evaluateState(source, goal);
-
+  // action is already done
   if (result === true) {
     return plan;
+    // blocking world state, replanify based on this world state
   } else if (isWorldState(result)) {
     return planify(source, result, iter, plan);
+    // action is doable
   } else {
     const action = findAction(desiredState);
 
