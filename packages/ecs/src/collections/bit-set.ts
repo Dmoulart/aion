@@ -1,8 +1,15 @@
+export interface AnyBitSet {
+  has(val: number): boolean;
+  or(val: number): void;
+  xor(val: number): void;
+  intersects(other: this): boolean;
+  contains(other: this): boolean;
+}
 /**
  * Create a new bitset.
  * It allows to make bitwise operations without the size limitations of a 32 integer.
  */
-export class BitSet {
+export class BitSet implements AnyBitSet {
   bits!: Uint32Array;
   size!: number;
 

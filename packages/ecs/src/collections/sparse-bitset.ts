@@ -1,11 +1,12 @@
+import type { AnyBitSet } from "./bit-set.js";
 import { SparseSet } from "./sparse-set.js";
 
-export class SparseBitSet {
+export class SparseBitSet implements AnyBitSet {
   bits!: Uint32Array;
   #set!: SparseSet;
   size!: number;
 
-  constructor(size: number) {
+  constructor(size: number = 10) {
     this.size = size;
     this.bits = new Uint32Array(size);
     this.#set = new SparseSet();
