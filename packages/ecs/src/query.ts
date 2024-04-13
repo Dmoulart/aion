@@ -7,7 +7,7 @@ import {
 import type { World } from "./world.js";
 import type { Archetype } from "./archetype.js";
 import type { Entity, ID } from "./entity.js";
-import { BitSet, SparseSet } from "./collections/index.js";
+import { BitSet, SparseBitSet, SparseSet } from "./collections/index.js";
 import { collectIDs } from "./id.js";
 
 /**
@@ -123,22 +123,22 @@ export type Query = {
  * @param components
  * @returns mask
  */
-export const makeComponentsMask = (components: Component[]): BitSet =>
+export const makeComponentsMask = (components: Component[]) =>
   components.reduce((mask, comp) => {
     mask.or(getComponentID(comp));
     return mask;
-  }, new BitSet());
+  }, new SparseBitSet(2));
 
 /**
  * Create a mask from a list of Ids.
  * @param ids
  * @returns mask
  */
-export const makeIDsMask = (ids: Array<ID>): BitSet =>
+export const makeIDsMask = (ids: Array<ID>) =>
   ids.reduce((mask, id) => {
     mask.or(id);
     return mask;
-  }, new BitSet());
+  }, new SparseBitSet(2));
 
 const hashQueryTerms = (terms: QueryTerm[]) => {
   let hash = 5381;
