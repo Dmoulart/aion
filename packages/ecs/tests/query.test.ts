@@ -19,6 +19,8 @@ import {
   not,
   none,
   createQuery,
+  createTag,
+  runQuery,
 } from "../src/index.js";
 
 describe("Query", () => {
@@ -426,6 +428,22 @@ describe("Query", () => {
     expect(
       world.handlers.exit[arch.id]!.find((fn) => fn === exitHandler),
     ).toBeFalsy();
+  });
+
+  it("queries tags", () => {
+    const world = createWorld();
+
+    const Tag = createTag();
+
+    const entity = createEntity(world);
+
+    attach(world, Tag, entity);
+
+    const result = runQuery(world, createQuery(all(Tag)));
+
+    const firstResult = result[0]!.entities.dense[0];
+
+    expect(firstResult === entity);
   });
 
   // it("api", () => {

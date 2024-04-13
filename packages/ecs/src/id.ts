@@ -5,7 +5,7 @@ import type { ID } from "./entity.js";
  */
 export let cursor = 0;
 
-export function nextID() {
+export function nextID(): ID {
   return ++cursor;
 }
 

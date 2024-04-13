@@ -1,5 +1,3 @@
 import { nextID } from "./id.js";
 
-export function createTag() {
-  return nextID();
-}
+export const createTag = nextID;

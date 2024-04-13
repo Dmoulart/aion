@@ -27,40 +27,60 @@ export const QueryTermType = {
   None: 2,
   Not: 3,
 } as const;
-export type QueryTerm = { type: number; comps: Component[]; matcher: Matcher };
+export type QueryTerm = { type: number; matcher: Matcher; ids: ID[] };
 
-export const all = (...comps: Component[]): QueryTerm => {
-  const mask = makeComponentsMask(comps);
+export const all = (...compsOrIDs: (Component | ID)[]): QueryTerm => {
+  const ids = compsOrIDs.map((compOrID) =>
+    isComponent(compOrID) ? getComponentID(compOrID) : compOrID,
+  );
+
+  const mask = makeIDsMask(ids);
+
   return {
     type: QueryTermType.All,
-    comps,
+    ids,
     matcher: (arch: Archetype) => arch.mask.contains(mask),
   };
 };
 
-export const any = (...comps: Component[]): QueryTerm => {
-  const mask = makeComponentsMask(comps);
+export const any = (...compsOrIDs: (Component | ID)[]): QueryTerm => {
+  const ids = compsOrIDs.map((compOrID) =>
+    isComponent(compOrID) ? getComponentID(compOrID) : compOrID,
+  );
+
+  const mask = makeIDsMask(ids);
+
   return {
     type: QueryTermType.Any,
-    comps,
+    ids,
     matcher: (arch: Archetype) => arch.mask.intersects(mask),
   };
 };
 
-export const none = (...comps: Component[]): QueryTerm => {
-  const mask = makeComponentsMask(comps);
+export const none = (...compsOrIDs: (Component | ID)[]): QueryTerm => {
+  const ids = compsOrIDs.map((compOrID) =>
+    isComponent(compOrID) ? getComponentID(compOrID) : compOrID,
+  );
+
+  const mask = makeIDsMask(ids);
+
   return {
     type: QueryTermType.None,
-    comps,
+    ids,
     matcher: (arch: Archetype) => !arch.mask.contains(mask),
   };
 };
 
-export const not = (...comps: Component[]): QueryTerm => {
-  const mask = makeComponentsMask(comps);
+export const not = (...compsOrIDs: (Component | ID)[]): QueryTerm => {
+  const ids = compsOrIDs.map((compOrID) =>
+    isComponent(compOrID) ? getComponentID(compOrID) : compOrID,
+  );
+
+  const mask = makeIDsMask(ids);
+
   return {
     type: QueryTermType.Not,
-    comps,
+    ids,
     matcher: (arch: Archetype) => !arch.mask.intersects(mask),
   };
 };
@@ -112,9 +132,20 @@ export type Query = {
  * @param components
  * @returns mask
  */
-export const makeComponentsMask = (components: Component<any>[]) =>
+export const makeComponentsMask = (components: Component[]): BitSet =>
   components.reduce((mask, comp) => {
     mask.or(getComponentID(comp));
+    return mask;
+  }, new BitSet());
+
+/**
+ * Create a mask from a list of Ids.
+ * @param ids
+ * @returns mask
+ */
+export const makeIDsMask = (ids: Array<ID>): BitSet =>
+  ids.reduce((mask, id) => {
+    mask.or(id);
     return mask;
   }, new BitSet());
 
@@ -127,8 +158,8 @@ const hashQueryTerms = (terms: QueryTerm[]) => {
 
     hash = (hash << 5) + hash + type;
 
-    for (let j = 0; j < term.comps.length; j++) {
-      const id = getComponentID(term.comps[j]!)!;
+    for (let j = 0; j < term.ids.length; j++) {
+      const id = term.ids[j]!;
       hash = (hash << 5) + hash + id;
     }
   }
@@ -174,7 +205,7 @@ export function createQuery(...terms: QueryTerm[]): Query {
   };
 }
 
-type QueryElement = Component | QueryTerm | ComponentsGroup | ComponentID;
+type QueryElement = Component | QueryTerm | ComponentsGroup | ID;
 /**
  * Define a query, register it to the world and returns it.
  * Query terms or components can be used to define this query.
@@ -190,26 +221,26 @@ export const query = <T extends Array<QueryElement>>(
 ): Query => {
   // @todo way to cache the query before doing all this, simplify api ?
   const queryTerms: QueryTerm[] = [];
-  const freeFloatingComponents: Component[] = [];
+  const freeFloatingIDS: ID[] = [];
 
   for (const termOrComponent of termsOrComponents) {
     if (typeof termOrComponent === "number") {
-      freeFloatingComponents.push(getComponentByID(termOrComponent)!);
+      freeFloatingIDS.push(termOrComponent);
     } else if (isComponent(termOrComponent)) {
-      freeFloatingComponents.push(termOrComponent);
+      freeFloatingIDS.push(getComponentID(termOrComponent));
     } else if (isQueryTerm(termOrComponent)) {
       queryTerms.push(termOrComponent);
     }
     //component group
-    else {
-      freeFloatingComponents.push(
-        ...Object.values(termOrComponent as ComponentsGroup),
-      );
-    }
+    // else {
+    //   freeFloatingIDS.push(
+    //     ...Object.values(termOrComponent as ComponentsGroup),
+    //   );
+    // }
   }
 
-  if (freeFloatingComponents.length > 0) {
-    queryTerms.push(all(...freeFloatingComponents));
+  if (freeFloatingIDS.length > 0) {
+    queryTerms.push(all(...freeFloatingIDS));
   }
 
   const q = defineQuery(...queryTerms);

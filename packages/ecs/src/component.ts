@@ -141,7 +141,8 @@ export const defineComponent = <S extends Schema>(
   return component;
 };
 
-export const isComponent = (obj: object): obj is Component => $cid in obj;
+export const isComponent = (value: unknown): value is Component =>
+  !!value && typeof value === "object" && $cid in value;
 
 export const getComponentID = (component: Component) => component[$cid];
 export const getComponentByID = (id: ComponentID) => components[id];
