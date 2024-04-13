@@ -3,13 +3,12 @@ import {
   type Component,
   type ComponentsGroup,
   getComponentID,
-  getComponentByID,
-  type ComponentID,
 } from "./component.js";
 import type { World } from "./world.js";
 import type { Archetype } from "./archetype.js";
 import type { Entity, ID } from "./entity.js";
 import { BitSet, SparseSet } from "./collections/index.js";
+import { collectIDs } from "./id.js";
 
 /**
  * A matcher represents the conditional expression used for every query operators.
@@ -30,9 +29,7 @@ export const QueryTermType = {
 export type QueryTerm = { type: number; matcher: Matcher; ids: ID[] };
 
 export const all = (...compsOrIDs: (Component | ID)[]): QueryTerm => {
-  const ids = compsOrIDs.map((compOrID) =>
-    isComponent(compOrID) ? getComponentID(compOrID) : compOrID,
-  );
+  const ids = collectIDs(compsOrIDs);
 
   const mask = makeIDsMask(ids);
 
@@ -44,9 +41,7 @@ export const all = (...compsOrIDs: (Component | ID)[]): QueryTerm => {
 };
 
 export const any = (...compsOrIDs: (Component | ID)[]): QueryTerm => {
-  const ids = compsOrIDs.map((compOrID) =>
-    isComponent(compOrID) ? getComponentID(compOrID) : compOrID,
-  );
+  const ids = collectIDs(compsOrIDs);
 
   const mask = makeIDsMask(ids);
 
@@ -58,9 +53,7 @@ export const any = (...compsOrIDs: (Component | ID)[]): QueryTerm => {
 };
 
 export const none = (...compsOrIDs: (Component | ID)[]): QueryTerm => {
-  const ids = compsOrIDs.map((compOrID) =>
-    isComponent(compOrID) ? getComponentID(compOrID) : compOrID,
-  );
+  const ids = collectIDs(compsOrIDs);
 
   const mask = makeIDsMask(ids);
 
@@ -72,9 +65,7 @@ export const none = (...compsOrIDs: (Component | ID)[]): QueryTerm => {
 };
 
 export const not = (...compsOrIDs: (Component | ID)[]): QueryTerm => {
-  const ids = compsOrIDs.map((compOrID) =>
-    isComponent(compOrID) ? getComponentID(compOrID) : compOrID,
-  );
+  const ids = collectIDs(compsOrIDs);
 
   const mask = makeIDsMask(ids);
 

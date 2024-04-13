@@ -43,6 +43,8 @@ import {
   Floor,
   Blueprint,
   Destroyable,
+  Building,
+  Health,
 } from "./castle-defense/components";
 import { setupAI } from "./castle-defense/ai";
 import { Weapon, createEnemy } from "./castle-defense/enemy";
@@ -203,10 +205,10 @@ export function createScenes() {
 
     let enemyCreated = false;
 
-    const onBuildingDamaged = onEnterQuery(query(Destroyable, Collision));
+    const onBuildingDamaged = onEnterQuery(query(Building, Health, Collision));
 
     on("render", () => {
-      query(Destroyable).each((entity) => {
+      query(Building, Health).each((entity) => {
         if (getHealth(entity) !== 1000) {
           const { top, left } = getRectWorldBounds(entity);
 

@@ -1,3 +1,4 @@
+import { type Component, isComponent, getComponentID } from "./component.js";
 import type { ID } from "./entity.js";
 
 /**
@@ -34,3 +35,13 @@ export const hi = (id: ID) => (id >> 20) & ((1 << 20) - 1);
  * @returns id as pair
  */
 export const pair = (a: ID, b: ID) => (a << 20) | b;
+
+export function isID(value: unknown): value is ID {
+  return typeof value === "number";
+}
+
+export function collectIDs(compsOrIDs: (Component | ID)[]): ID[] {
+  return compsOrIDs.map((compOrID) =>
+    isComponent(compOrID) ? getComponentID(compOrID) : compOrID,
+  );
+}

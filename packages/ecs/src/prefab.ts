@@ -1,16 +1,13 @@
 import type { World } from "./world.js";
 import { buildArchetype, onArchetypeChange } from "./archetype.js";
-import { createEntity } from "./entity.js";
-import {
-  type Component,
-  type ComponentsGroup,
-  getComponentID,
-} from "./component.js";
+import { createEntity, type ID } from "./entity.js";
+import { type Component } from "./component.js";
 import {
   isSingleTypeSchema,
   type InferSchema,
   type Instance,
 } from "./schemas.js";
+import { collectIDs, isID } from "./id.js";
 // @todo: This produces a nested array but we're only interested in the second level. Get rid of this level
 export type PrefabOptions<Components extends Component[]> = Map<
   Components,
@@ -28,15 +25,17 @@ type Map<T, U> = { [K in keyof T]: U };
  * The prefab definition is an object grouping the prefab's specific set of components.
  * @example const definition: PrefabDefinition = { sprite, velocity, health }
  */
-export type PrefabDefinition = ComponentsGroup;
+export type PrefabDefinition = Readonly<{
+  [key: string]: Component | ID;
+}>;
 
 /**
  * The prefab instance options is describing the possible parameters for the given prefab definition.
  */
 export type PrefabInstanceOptions<Options extends PrefabDefinition> = {
-  [ComponentName in keyof Options]?: Partial<
-    Instance<InferSchema<Options[ComponentName]>>
-  >;
+  [Name in keyof Options]?: Options[Name] extends Component
+    ? Partial<Instance<InferSchema<Options[Name]>>>
+    : ID;
 };
 
 /**
@@ -54,8 +53,9 @@ export const prefab = <Definition extends PrefabDefinition>(
   definition: Definition,
   defaultProps?: PrefabInstanceOptions<Definition>,
 ) => {
-  const components = Object.values(definition);
-  const archetype = buildArchetype(components.map(getComponentID), world);
+  const componentsOrIDs = Object.values(definition);
+
+  const archetype = buildArchetype(collectIDs(componentsOrIDs), world);
 
   const assign = defaultProps
     ? compilePrefabWithDefaults(definition, defaultProps)
@@ -91,9 +91,11 @@ export const compilePrefabWithDefaults = <Definition extends PrefabDefinition>(
     .map((componentName) => {
       const componentAssignations = Object.entries(defaultProps[componentName]!)
         .map(([prop, val]) => {
-          let componentAssignations;
+          let componentAssignation;
 
-          if (!isSingleTypeSchema(definition[componentName])) {
+          if (isID(definition[componentName])) {
+            //noop
+          } else if (!isSingleTypeSchema(definition[componentName])) {
             componentAssignations = Object.entries(definition[componentName]!)
               .map(([prop, val]) => {
                 if (prop === "data" || prop === "id") return "";
@@ -141,7 +143,9 @@ const compilePrefab = (definition: Record<string, Component<any>>) => {
     .map((componentName) => {
       let componentAssignations;
 
-      if (!isSingleTypeSchema(definition[componentName])) {
+      if (isID(definition[componentName])) {
+        //noop
+      } else if (!isSingleTypeSchema(definition[componentName])) {
         componentAssignations = Object.entries(definition[componentName]!)
           .map(([prop, val]) => {
             if (prop === "data" || prop === "id") return "";

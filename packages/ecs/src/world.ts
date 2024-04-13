@@ -3,6 +3,7 @@ import {
   createEntity,
   entityExists,
   removeEntity,
+  type ID,
 } from "./entity.js";
 import { type Archetype, createArchetype } from "./archetype.js";
 import {
@@ -108,7 +109,7 @@ export const createECS = (world: World = createWorld()) => {
     attach: attach.bind(null, world),
     detach: detach.bind(null, world),
     query: query.bind(null, world) as <
-      T extends (QueryTerm | Component | ComponentsGroup)[],
+      T extends (QueryTerm | Component | ComponentsGroup | ID)[],
     >(
       ...termsOrComponents: T
     ) => Query,

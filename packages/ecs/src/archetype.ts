@@ -1,4 +1,3 @@
-import type { ComponentID } from "./component.js";
 import { type World } from "./world.js";
 import { type Entity, type ID } from "./entity.js";
 import { BitSet, SparseSet } from "./collections/index.js";
@@ -58,7 +57,7 @@ export const createArchetype = (mask = new BitSet(2)): Archetype => {
  * @param components
  * @param world
  */
-export const buildArchetype = (components: ComponentID[], world: World) => {
+export const buildArchetype = (components: ID[], world: World) => {
   let archetype = world.rootArchetype;
   for (const component of components) {
     if (archetype.edge[component]) {
@@ -93,7 +92,7 @@ export const deriveArchetype = (
 
   const mask = base.mask.clone();
   mask.xor(id);
-
+  //@todo class instance
   const archetype: Archetype = {
     id: ++nextAid,
     entities: new SparseSet(),
