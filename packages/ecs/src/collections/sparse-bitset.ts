@@ -1,14 +1,14 @@
-/**
- * Create a new bitset.
- * It allows to make bitwise operations without the size limitations of a 32 integer.
- */
-export class BitSet {
+import { SparseSet } from "./sparse-set.js";
+
+export class SparseBitSet {
   bits!: Uint32Array;
+  #set!: SparseSet;
   size!: number;
 
-  constructor(size: number = 10) {
+  constructor(size: number) {
     this.size = size;
     this.bits = new Uint32Array(size);
+    this.#set = new SparseSet();
   }
 
   /**
@@ -29,28 +29,34 @@ export class BitSet {
   /**
    * Set the given value.
    * @param val
-   * @returns nothing
    */
   or(val: number) {
     const index = val >>> 5;
 
     if (index > this.size) {
-      this.growTo(index + 1);
+      this.#growTo(index + 1);
+    }
+
+    if (!this.#set.has(index)) {
+      this.#set.insert(index);
     }
 
     this.bits[index] |= 1 << (val & 31);
   }
 
   /**
-   * Unset the given value
+   * Set the given value.
    * @param val
-   * @returns nothing
    */
   xor(val: number) {
     const index = val >>> 5;
 
     if (index > this.size) {
-      this.growTo(index + 1);
+      this.#growTo(index + 1);
+    }
+
+    if (!this.#set.has(index)) {
+      this.#set.insert(index);
     }
 
     this.bits[index] ^= 1 << (val & 31);
@@ -59,13 +65,20 @@ export class BitSet {
   /**
    * Returns true if the bitset contains all the values of another bitset
    * @param set
-   * @returns
    */
-  contains(other: BitSet) {
-    const len = Math.min(this.bits.length, other.bits.length);
-    for (let i = 0; i < len; i++) {
-      const a = this.bits[i]!;
-      const b = other.bits[i]!;
+  contains(other: SparseBitSet) {
+    const otherLen = other.indexes.length;
+
+    if (otherLen > this.indexes.length) {
+      return false;
+    }
+
+    for (let i = 0; i < otherLen; i++) {
+      const offset = other.indexes[i]!;
+
+      const b = other.bits[offset]!;
+      const a = this.bits[offset]!;
+
       if ((a & b) !== b) {
         return false;
       }
@@ -76,13 +89,16 @@ export class BitSet {
   /**
    * Returns true if the bitset contains any value of another bitset
    * @param set
-   * @returns
    */
-  intersects(other: BitSet) {
-    const len = Math.min(this.bits.length, other.bits.length);
+  intersects(other: SparseBitSet) {
+    const len = Math.min(this.indexes.length, other.indexes.length);
+
     for (let i = 0; i < len; i++) {
-      const a = this.bits[i]!;
-      const b = other.bits[i]!;
+      const offset = other.indexes[i]!;
+
+      const a = this.bits[offset]!;
+      const b = other.bits[offset]!;
+
       if ((a & b) > 0) {
         return true;
       }
@@ -90,29 +106,33 @@ export class BitSet {
     return false;
   }
 
-  /**
-   * Clone the bitset.
-   * @returns cloned bitset
-   */
-  clone() {
-    const clone = new BitSet(this.size);
-    clone.bits.set(this.bits);
-    return clone;
+  get indexes() {
+    return this.#set.dense;
   }
 
-  /**
-   * Returns a string representation of the bitset
-   * @returns string representation
-   */
-  toString() {
-    return this.bits.join("");
-  }
-
-  private growTo(newSize: number) {
+  #growTo(newSize: number) {
     const diff = newSize - this.size;
+
     this.size += diff;
+
     const newMask = new Uint32Array(this.size);
+
     newMask.set(this.bits);
+
     this.bits = newMask;
   }
+}
+
+{
+  const a = new SparseBitSet(10);
+  // a.or(1);
+  a.or(100);
+  // a.or(10_000);
+
+  const b = new SparseBitSet(10);
+  b.or(1);
+  b.or(100);
+  b.or(100_000);
+
+  console.log(a.intersects(b));
 }

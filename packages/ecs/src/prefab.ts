@@ -79,55 +79,56 @@ export const compilePrefabWithDefaults = <Definition extends PrefabDefinition>(
   definition: Record<string, Component<any>>,
   defaultProps: PrefabInstanceOptions<Definition>,
 ) => {
-  const defaultComponentIdentifiers = Object.keys(defaultProps)
-    .map((componentName) => {
-      return `
-      const ${componentName} = definition.${componentName};
-      `;
-    })
-    .join("");
+  throw new Error("not implemented");
+  // const defaultComponentIdentifiers = Object.keys(defaultProps)
+  //   .map((componentName) => {
+  //     return `
+  //     const ${componentName} = definition.${componentName};
+  //     `;
+  //   })
+  //   .join("");
 
-  const unrolledDefaultComponentAssignations = Object.keys(defaultProps)
-    .map((componentName) => {
-      const componentAssignations = Object.entries(defaultProps[componentName]!)
-        .map(([prop, val]) => {
-          let componentAssignation;
+  // const unrolledDefaultComponentAssignations = Object.keys(defaultProps)
+  //   .map((componentName) => {
+  //     const componentAssignations = Object.entries(defaultProps[componentName]!)
+  //       .map(([prop, val]) => {
+  //         let componentAssignation;
 
-          if (isID(definition[componentName])) {
-            //noop
-          } else if (!isSingleTypeSchema(definition[componentName])) {
-            componentAssignations = Object.entries(definition[componentName]!)
-              .map(([prop, val]) => {
-                if (prop === "data" || prop === "id") return "";
-                return `
-             options_${componentName}.${prop} && (${componentName}.${prop}[eid] = options_${componentName}.${prop});
-          `;
-              })
-              .join("");
-          } else {
-            componentAssignations = `
-             ${componentName}[eid] = options_${componentName};
-          `;
-          }
-        })
-        .join("");
+  //         if (isID(definition[componentName])) {
+  //           //noop
+  //         } else if (!isSingleTypeSchema(definition[componentName])) {
+  //           componentAssignations = Object.entries(definition[componentName]!)
+  //             .map(([prop, val]) => {
+  //               if (prop === "data" || prop === "id") return "";
+  //               return `
+  //            options_${componentName}.${prop} && (${componentName}.${prop}[eid] = options_${componentName}.${prop});
+  //         `;
+  //             })
+  //             .join("");
+  //         } else {
+  //           componentAssignations = `
+  //            ${componentName}[eid] = options_${componentName};
+  //         `;
+  //         }
+  //       })
+  //       .join("");
 
-      return componentAssignations;
-    })
-    .join("");
+  //     return componentAssignations;
+  //   })
+  //   .join("");
 
-  const unrolledDefaultLoop = `
-    ${defaultComponentIdentifiers}
-    ${unrolledDefaultComponentAssignations}
-  `;
+  // const unrolledDefaultLoop = `
+  //   ${defaultComponentIdentifiers}
+  //   ${unrolledDefaultComponentAssignations}
+  // `;
 
-  return new Function(
-    "eid",
-    "definition",
-    `
-      ${unrolledDefaultLoop}
-  `,
-  );
+  // return new Function(
+  //   "eid",
+  //   "definition",
+  //   `
+  //     ${unrolledDefaultLoop}
+  // `,
+  // );
 };
 
 const compilePrefab = (definition: Record<string, Component<any>>) => {
