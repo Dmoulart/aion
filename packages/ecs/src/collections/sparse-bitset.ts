@@ -3,6 +3,7 @@ import { SparseSet } from "./sparse-set.js";
 
 export class SparseBitSet implements AnyBitSet {
   bits!: Uint32Array;
+  //@todo there is a maybe a more efficient way to do a sparse bit set.
   set!: SparseSet;
   size!: number;
 
