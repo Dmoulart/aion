@@ -7,7 +7,7 @@ import {
 import type { World } from "./world.js";
 import type { Archetype } from "./archetype.js";
 import type { Entity, ID } from "./entity.js";
-import { BitSet, SparseBitSet, SparseSet } from "./collections/index.js";
+import { SparseBitSet, SparseSet } from "./collections/index.js";
 import { collectIDs } from "./id.js";
 
 /**
