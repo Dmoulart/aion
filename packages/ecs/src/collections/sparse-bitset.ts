@@ -3,13 +3,13 @@ import { SparseSet } from "./sparse-set.js";
 
 export class SparseBitSet implements AnyBitSet {
   bits!: Uint32Array;
-  #set!: SparseSet;
+  set!: SparseSet;
   size!: number;
 
   constructor(size: number = 10) {
     this.size = size;
     this.bits = new Uint32Array(size);
-    this.#set = new SparseSet();
+    this.set = new SparseSet();
   }
 
   /**
@@ -38,8 +38,8 @@ export class SparseBitSet implements AnyBitSet {
       this.#growTo(index + 1);
     }
 
-    if (!this.#set.has(index)) {
-      this.#set.insert(index);
+    if (!this.set.has(index)) {
+      this.set.insert(index);
     }
 
     this.bits[index] |= 1 << (val & 31);
@@ -56,8 +56,8 @@ export class SparseBitSet implements AnyBitSet {
       this.#growTo(index + 1);
     }
 
-    if (!this.#set.has(index)) {
-      this.#set.insert(index);
+    if (!this.set.has(index)) {
+      this.set.insert(index);
     }
 
     this.bits[index] ^= 1 << (val & 31);
@@ -107,8 +107,15 @@ export class SparseBitSet implements AnyBitSet {
     return false;
   }
 
+  clone() {
+    const clone = new SparseBitSet(this.size);
+    clone.set = this.set.clone();
+    clone.bits.set(this.bits);
+    return clone;
+  }
+
   get indexes() {
-    return this.#set.dense;
+    return this.set.dense;
   }
 
   #growTo(newSize: number) {

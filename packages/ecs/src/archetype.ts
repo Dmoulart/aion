@@ -1,6 +1,6 @@
 import { type World } from "./world.js";
 import { type Entity, type ID } from "./entity.js";
-import { BitSet, SparseSet } from "./collections/index.js";
+import { BitSet, SparseSet, type AnyBitSet } from "./collections/index.js";
 import {
   matchQuery,
   registerQueryHandlersForArchetype,
@@ -24,7 +24,7 @@ export type Archetype = {
   /**
    * The archetype mask based on the components ids
    */
-  mask: BitSet;
+  mask: AnyBitSet;
   /**
    * The components ids posessed by the archetype
    */

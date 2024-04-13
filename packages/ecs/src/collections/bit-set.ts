@@ -4,6 +4,7 @@ export interface AnyBitSet {
   xor(val: number): void;
   intersects(other: this): boolean;
   contains(other: this): boolean;
+  clone(): AnyBitSet;
 }
 /**
  * Create a new bitset.
