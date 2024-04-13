@@ -122,17 +122,3 @@ export class SparseBitSet {
     this.bits = newMask;
   }
 }
-
-{
-  const a = new SparseBitSet(10);
-  // a.or(1);
-  a.or(100);
-  // a.or(10_000);
-
-  const b = new SparseBitSet(10);
-  b.or(1);
-  b.or(100);
-  b.or(100_000);
-
-  console.log(a.intersects(b));
-}
