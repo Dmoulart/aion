@@ -16,7 +16,7 @@ export type Plan = PlannedAction[];
 
 export function defineAction(action: Action) {
   WORLD_ACTIONS[action.effects] ??= [];
-  WORLD_ACTIONS[action.effects]?.push(action);
+  WORLD_ACTIONS[action.effects]!.push(action);
   return action;
 }
 export function findAction(desiredState: StateID): Action {

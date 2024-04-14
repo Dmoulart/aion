@@ -1,8 +1,8 @@
 import type { Component, Entity } from "aion-ecs";
 import { useECS } from "../ecs.js";
-import { PlanComponent, planifyCurrentGoal } from "./brain.js";
+import { PlanComponent } from "./brain.js";
 import type { Action, PlannedAction } from "./action.js";
-import { WorldStateStatus, evaluateState, isWorldState } from "./state.js";
+import { evaluateState } from "./state.js";
 import { assertDefined } from "aion-core";
 
 // not ideal
@@ -16,26 +16,11 @@ export function addBehavior(entity: Entity, { action, target }: PlannedAction) {
   attach(component, entity);
 }
 
-export function removeBehavior(
-  entity: Entity,
-  { action, target }: PlannedAction,
-) {
+export function removeBehavior(entity: Entity, { action }: PlannedAction) {
   const { detach } = useECS();
   const component = BEHAVIORS_COMPONENTS[action.name]!;
   detach(component, entity);
 }
-
-// export function updateBehavior(entity: Entity) {
-//   const { attach, has } = useECS();
-//   const current = getCurrentAction(entity);
-
-//   const component = BEHAVIORS_COMPONENTS[current.action.name]!;
-
-//   if (!has(component, entity)) {
-//     component.target[entity] = current.target;
-//     attach(component, entity);
-//   }
-// }
 
 export function hasBehavior(entity: Entity, { action, target }: PlannedAction) {
   const { has } = useECS();
@@ -49,8 +34,6 @@ export function defineBehavior(
   component: BehaviorComponent,
   cb: (entity: Entity) => void,
 ) {
-  const { detach, exists } = useECS();
-
   BEHAVIORS_COMPONENTS[action.name] = component;
 
   return (entity: Entity) => {
@@ -89,52 +72,6 @@ export function defineBehavior(
     //   // });
     // }
   };
-}
-
-export function beginNextAction(entity: Entity) {
-  const nextAction = getCurrentAction(entity);
-
-  if (nextAction) {
-    const result = evaluateCurrrentAction(entity);
-    const { exists } = useECS();
-
-    if (!exists(nextAction.target)) {
-      debugger;
-      const plan = planifyCurrentGoal(entity);
-
-      PlanComponent[entity] = plan;
-      // beginNextAction(entity);
-      return;
-    }
-
-    if (result === WorldStateStatus.Potential) {
-      console.info("begin next action for entity", {
-        entity,
-        name: nextAction.action.name,
-        source: nextAction.source,
-        target: nextAction.target,
-      });
-      addBehavior(entity, nextAction);
-    } else if (isWorldState(result)) {
-      debugger;
-      const plan = planifyCurrentGoal(entity);
-      console.info("planify next action for entity", {
-        plan,
-      });
-      PlanComponent[entity] = plan;
-    }
-  } else {
-    console.info("no next action for entity", entity);
-
-    const plan = planifyCurrentGoal(entity);
-    console.info("planify next action for entity", {
-      plan,
-    });
-
-    PlanComponent[entity] = plan;
-    // beginNextAction(entity);
-    // wooow loop
-  }
 }
 
 export function getCurrentAction(entity: Entity) {
