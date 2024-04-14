@@ -73,11 +73,13 @@ export function initPhysicsSystems() {
     attach(RuntimeCollider, ent);
   });
 
+  //@todo this a weak, this could not be triggered easily
   const onCreatedBodyWithChildren = onEnterQuery(
     query(Transform, RuntimeBody, Children),
   );
 
   // attach children colliders
+
   onCreatedBodyWithChildren((ancestor) => {
     const body = getRuntimeBody(ancestor);
     const ancestorScale = getLocalScale(ancestor);

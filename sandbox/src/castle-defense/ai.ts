@@ -83,15 +83,6 @@ export const KillOrder = defineComponent({
   state: u8,
 });
 
-// export const ClearWay = defineAction({
-//   effects: CanReach,
-//   preconditions: IsAdjacentTo,
-//   name: "ClearWay",
-// });
-// export const ClearWayAction = defineComponent({
-//   target: eid,
-// });
-
 export function createTakeTreasureGoal(treasure: Entity) {
   const goal = new i32(2);
   goal[0] = IsAdjacentTo;

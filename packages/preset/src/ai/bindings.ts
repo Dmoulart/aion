@@ -1,7 +1,6 @@
-import type { Component, Entity, Query, Type } from "aion-ecs";
+import type { Component, Entity } from "aion-ecs";
 import { useECS } from "../ecs.js";
 import { PlanComponent, planifyCurrentGoal } from "./brain.js";
-import { once } from "aion-engine";
 import type { Action, PlannedAction } from "./action.js";
 import { evaluateState, isWorldState } from "./state.js";
 
