@@ -1,17 +1,18 @@
 import { beforeStart, on } from "aion-engine";
 import { useECS } from "../ecs.js";
-import { onEnterQuery } from "aion-ecs";
+import { detach, onEnterQuery } from "aion-ecs";
 import {
   AnimationComponent,
   getAnimation,
   getAnimationCurrentTime,
+  animationWillEndAfterCurrentCycle,
 } from "./bindings.js";
 import { getAnimationDuration, updateAnimation } from "./animation.js";
 import { millitimestamp } from "aion-core";
 
 export function initAnimations() {
   beforeStart(() => {
-    const { query } = useECS();
+    const { query, detach } = useECS();
     const onAnimationStart = onEnterQuery(query(AnimationComponent));
 
     onAnimationStart((entity) => {
@@ -30,6 +31,10 @@ export function initAnimations() {
         }
 
         updateAnimation(config, time, entity);
+
+        if (time === 0 && animationWillEndAfterCurrentCycle(entity)) {
+          detach(AnimationComponent, entity);
+        }
       });
     });
   });

@@ -1,11 +1,5 @@
-import { assert, assertDefined, memo, millitimestamp } from "aion-core";
-import { useECS, AnimationComponent } from "../index.js";
-import {
-  onEnterQuery,
-  type Component,
-  onExitQuery,
-  type Entity,
-} from "aion-ecs";
+import { assert, assertDefined } from "aion-core";
+import { type Entity } from "aion-ecs";
 
 export type AnimationConfig = {
   steps: AnimationStates;
@@ -193,45 +187,4 @@ export function getAnimationDuration(animation: AnimationConfig) {
   }
 
   return duration;
-}
-
-export function bindAnimationToComponent(
-  animationID: number,
-  component: Component,
-  getTargetEntity: (entity: Entity) => Entity = (entity) => entity,
-) {
-  const { query, detach } = useECS();
-
-  const onComponentAdded = onEnterQuery(query(component));
-
-  onComponentAdded((entity) => {
-    const target = getTargetEntity(entity);
-
-    if (!target) {
-      //@todo why
-      debugger;
-      // console.log(Debug[entity]);
-      console.error("animation : targeted entity not found");
-      return;
-    }
-
-    attachAnimationTo(target, animationID);
-  });
-
-  const onComponentRemoved = onExitQuery(query(component));
-
-  onComponentRemoved((entity) => {
-    const target = getTargetEntity(entity);
-
-    detach(AnimationComponent, target);
-  });
-}
-
-export function attachAnimationTo(entity: Entity, animationID: number) {
-  const { attach } = useECS();
-
-  AnimationComponent.animation[entity] = animationID;
-  AnimationComponent.startTime[entity] = millitimestamp();
-
-  attach(AnimationComponent, entity);
 }

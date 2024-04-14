@@ -10,14 +10,12 @@ import {
   getScaleY,
   setScaleY,
   type AnimationUpdate,
-  getWorldRotation,
-  setWorldRotation,
 } from "../index.js";
 
 export const BASIC_UPDATES = {
   x: { get: getX, set: setX },
   y: { get: getY, set: setY },
-  rotation: { get: getRotation, set: setRotation }, // bug: works with world rotations..
+  rotation: { get: getRotation, set: setRotation },
   scaleX: { get: getScaleX, set: setScaleX },
   scaleY: { get: getScaleY, set: setScaleY },
 } as const;
