@@ -1,3 +1,4 @@
+import { SparseBitSet } from "../dist/index.js";
 import { attach } from "../src/component.js";
 import { createEntity } from "../src/entity.js";
 import { pair } from "../src/id.js";
@@ -5,34 +6,36 @@ import { all, createQuery, runQuery } from "../src/query.js";
 import { createTag } from "../src/tag.js";
 import { createWorld } from "../src/world.js";
 
-const world = createWorld();
+// {
+//   const world = createWorld();
 
-const Power = createTag();
-const PowerOf = (power: number) => {
-  return pair(Power, power);
-};
+//   const Power = createTag();
 
-const fireball = createEntity(world);
-const hero = createEntity(world);
+//   const hero = createEntity(world);
 
-attach(world, PowerOf(fireball), hero);
+//   attach(world, Power, hero);
 
-console.time("query");
-const result = runQuery(world, createQuery(all(PowerOf(fireball))));
-console.timeEnd("query");
+//   const q = createQuery(all(Power));
 
-console.log(result[0]?.entities.dense[0]);
+//   console.time("No relation");
+//   const result = runQuery(world, q);
+//   console.timeEnd("No relation");
+// }
 
-// const world = createWorld();
+{
+  const world = createWorld();
 
-// const Power = createTag();
+  const Power = createTag();
+  const PowerOf = (power: number) => {
+    return pair(Power, power);
+  };
 
-// const hero = createEntity(world);
+  const fireball = createEntity(world);
+  const hero = createEntity(world);
 
-// attach(world, Power, hero);
-
-// console.time("query");
-// const result = runQuery(world, createQuery(all(Power)));
-// console.timeEnd("query");
-
-// console.log(result[0]?.entities.dense[0]);
+  attach(world, PowerOf(fireball), hero);
+  const q = createQuery(all(PowerOf(fireball)));
+  console.time("Relation");
+  const result = runQuery(world, q);
+  console.timeEnd("Relation");
+}
