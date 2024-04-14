@@ -42,7 +42,6 @@ import {
   EnemySpawn,
   Floor,
   Blueprint,
-  Destroyable,
   Building,
   Health,
 } from "./castle-defense/components";
@@ -170,6 +169,7 @@ export function createScenes() {
           Body: createBody({
             type: RAPIER.RigidBodyType.Dynamic,
           }),
+          Health: 1000,
         });
 
         $ecs.remove(player);
@@ -187,7 +187,7 @@ export function createScenes() {
 
     SpawnPoint({
       EnemySpawn: {
-        frequency: 60,
+        frequency: 2,
         lastSpawn: 0,
       },
       Transform: createTransform(left, top - 25),
@@ -195,7 +195,7 @@ export function createScenes() {
 
     SpawnPoint({
       EnemySpawn: {
-        frequency: 60,
+        frequency: 2,
         lastSpawn: 0,
       },
       Transform: createTransform(right, top - 25),

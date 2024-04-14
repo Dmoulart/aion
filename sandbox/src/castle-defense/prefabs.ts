@@ -30,6 +30,8 @@ export const usePrefabs = singleton(() => {
     Collider,
     Body,
     IsTreasure,
+    Health,
+    Building,
   });
 
   const SpawnPoint = prefab({

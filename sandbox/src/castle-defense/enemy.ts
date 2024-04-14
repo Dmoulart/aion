@@ -13,7 +13,7 @@ import {
   useAion,
   degreesToRadians,
 } from "aion-preset";
-import { createTakeTreasureGoal } from "./ai";
+import { createDestroyTreasureGoal } from "./ai";
 import { ENEMY_COLLISION_GROUP } from "./collision-groups";
 import { Colors } from "aion-render";
 import { usePrefabs } from "./prefabs";
@@ -59,7 +59,7 @@ export function createEnemy(pos: Vector, target: Entity) {
     Fill: "white",
     Stroke: "black",
     Brain: {
-      goal: createTakeTreasureGoal(target),
+      goal: createDestroyTreasureGoal(target),
     },
     Collider: createCollider({
       auto: 1,

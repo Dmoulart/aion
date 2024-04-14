@@ -40,6 +40,8 @@ export function initAI() {
             }
 
             PlanComponent[entity] = planifyCurrentGoal(entity);
+            // let's wait for the next plan evaluation
+            return;
           }
 
           // maybe the action effects are effective now and we need to trigger next action or re-planify
@@ -63,13 +65,9 @@ export function initAI() {
             PlanComponent[entity] = planifyCurrentGoal(entity);
             // todo
           }
-
-          console.log(action.action.name);
         } else {
           PlanComponent[entity] = planifyCurrentGoal(entity);
         }
-
-        // beginNextAction(entity);
       });
     });
   });

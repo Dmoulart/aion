@@ -40,7 +40,6 @@ export const CanReach = defineWorldState(
 
       return WorldStateStatus.Effective;
     } else {
-      debugger;
       // let's consider the stuff is reachable but too far
       // we'll need to re-planify the actions later
       return WorldStateStatus.Potential;
@@ -91,9 +90,9 @@ export const KillOrder = defineComponent({
   state: u8,
 });
 
-export function createTakeTreasureGoal(treasure: Entity) {
+export function createDestroyTreasureGoal(treasure: Entity) {
   const goal = new i32(2);
-  goal[0] = IsAdjacentTo;
+  goal[0] = DoesNotExist;
   goal[1] = treasure;
   return goal;
 }

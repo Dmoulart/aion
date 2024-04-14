@@ -56,7 +56,6 @@ export function bindAnimationToComponent(
   const onComponentRemoved = onExitQuery(query(component));
 
   onComponentRemoved((entity) => {
-    debugger;
     const target = getTargetEntity(entity);
 
     setAnimationEndsAfterCurrentCycle(target, true);
