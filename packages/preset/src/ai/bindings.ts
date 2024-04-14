@@ -38,39 +38,6 @@ export function defineBehavior(
 
   return (entity: Entity) => {
     cb(entity);
-    // if (!exists(component.target[entity]!)) {
-    //   const plan = planifyCurrentGoal(entity);
-    //   PlanComponent[entity] = plan;
-    //   beginNextAction(entity);
-    //   return;
-    // }
-    // const result = evaluateState(entity, [
-    //   action.preconditions,
-    //   component.target[entity]!,
-    // ]);
-    // if (result === WorldStateStatus.Effective) {
-    //   //@todo remove components in another system ?
-    //   // once("update", () => {
-    //   detach(component, entity);
-    //   PlanComponent[entity]!.shift();
-    //   beginNextAction(entity);
-    //   // });
-    // } else {
-    //   cb(entity);
-    // }
-    // const isActionDone = evaluateState(entity, [
-    //   action.effects,
-    //   component.target[entity]!,
-    // ]);
-    // if (isActionDone) {
-    //   //@todo remove components in another system ?
-    //   // removing component in the current system make the all things wacky
-    //   // once("update", () => {
-    //   detach(component, entity);
-    //   PlanComponent[entity]!.shift();
-    //   beginNextAction(entity);
-    //   // });
-    // }
   };
 }
 
@@ -82,10 +49,18 @@ export function terminateCurrentAction(entity: Entity) {
   PlanComponent[entity]!.shift();
 }
 
-export function evaluateCurrrentAction(entity: Entity) {
+export function evaluateCurrrentActionEffects(entity: Entity) {
   const action = getCurrentAction(entity);
 
   assertDefined(action);
 
   return evaluateState(entity, [action.action.effects, action.target]);
+}
+
+export function evaluateCurrrentActionConditions(entity: Entity) {
+  const action = getCurrentAction(entity);
+
+  assertDefined(action);
+
+  return evaluateState(entity, [action.action.preconditions, action.target]);
 }

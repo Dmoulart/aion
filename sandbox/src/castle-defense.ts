@@ -187,16 +187,16 @@ export function createScenes() {
 
     SpawnPoint({
       EnemySpawn: {
-        frequency: 2,
-        lastSpawn: millitimestamp(),
+        frequency: 60,
+        lastSpawn: 0,
       },
       Transform: createTransform(left, top - 25),
     });
 
     SpawnPoint({
       EnemySpawn: {
-        frequency: 2,
-        lastSpawn: millitimestamp(),
+        frequency: 60,
+        lastSpawn: 0,
       },
       Transform: createTransform(right, top - 25),
     });
@@ -242,7 +242,7 @@ export function createScenes() {
 
         const secondsSinceLastSpawn = (now - lastSpawn) / 1000;
 
-        if (secondsSinceLastSpawn >= frequency) {
+        if (secondsSinceLastSpawn >= frequency || lastSpawn === 0) {
           EnemySpawn.lastSpawn[entity] = now;
 
           createEnemy({ x: getX(entity), y: getY(entity) }, treasure);

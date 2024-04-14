@@ -66,8 +66,10 @@ export function bindAnimationToComponent(
 export function attachAnimationTo(entity: Entity, animationID: number) {
   const { attach } = useECS();
 
+  // reinitialize animation
   AnimationComponent.animation[entity] = animationID;
   AnimationComponent.startTime[entity] = millitimestamp();
+  AnimationComponent.endsAfterCurrentCycle[entity] = Number(false);
 
   attach(AnimationComponent, entity);
 }

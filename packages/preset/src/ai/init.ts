@@ -4,7 +4,8 @@ import { beforeStart, on } from "aion-engine";
 import { Brain, PlanComponent, planifyCurrentGoal } from "./brain.js";
 import {
   addBehavior,
-  evaluateCurrrentAction,
+  evaluateCurrrentActionConditions,
+  evaluateCurrrentActionEffects,
   getCurrentAction,
   hasBehavior,
   removeBehavior,
@@ -20,7 +21,7 @@ export function initAI() {
 
     onAddedBrain((entity) => {
       const plan = planifyCurrentGoal(entity);
-
+      console.log({ plan });
       PlanComponent[entity] = plan;
       attach(PlanComponent, entity);
     });
@@ -30,23 +31,31 @@ export function initAI() {
         const action = getCurrentAction(entity);
 
         if (action) {
-          const status = evaluateCurrrentAction(entity);
+          // maybe the action conditions are not effective anymore and we need to planify again
+          const conditions = evaluateCurrrentActionConditions(entity);
+
+          if (conditions !== WorldStateStatus.Effective) {
+            if (hasBehavior(entity, action)) {
+              removeBehavior(entity, action);
+            }
+
+            PlanComponent[entity] = planifyCurrentGoal(entity);
+          }
+
+          // maybe the action effects are effective now and we need to trigger next action or re-planify
+          const status = evaluateCurrrentActionEffects(entity);
 
           if (status === WorldStateStatus.Potential) {
             if (!hasBehavior(entity, action)) {
               addBehavior(entity, action);
             }
-          }
-
-          if (status === WorldStateStatus.Effective) {
+          } else if (status === WorldStateStatus.Effective) {
             if (hasBehavior(entity, action)) {
               removeBehavior(entity, action);
             }
 
             terminateCurrentAction(entity);
-          }
-
-          if (isWorldState(status)) {
+          } else if (isWorldState(status)) {
             if (hasBehavior(entity, action)) {
               removeBehavior(entity, action);
             }
