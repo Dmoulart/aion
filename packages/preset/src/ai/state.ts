@@ -11,11 +11,19 @@ const WORLD_STATES: Record<
 export type EvaluateWorldState = (
   source: Entity,
   target: Entity,
-) => boolean | WorldState; // can return the blocking worldstate
+) => StateStatus | WorldState; // true mean the state is effective, false means it is not but could be, world state means  there is a blocking worldstate
 
 export type StateID = number;
 
 export type WorldState = [StateID, Entity];
+
+export type StateStatus =
+  (typeof WorldStateStatus)[keyof typeof WorldStateStatus];
+
+export const WorldStateStatus = {
+  Potential: 0,
+  Effective: 1,
+} as const;
 
 export function getState(id: StateID) {
   assertDefined(WORLD_STATES[id]!);

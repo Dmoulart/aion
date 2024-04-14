@@ -6,6 +6,7 @@ import {
   RuntimeBody,
   RuntimeCharacterController,
   RuntimeCollider,
+  WorldStateStatus,
   animate,
   bindAnimationToComponent,
   castRay,
@@ -31,15 +32,19 @@ export const CanReach = defineWorldState(
     const hit = castRay(source, target, Collider.collisionGroups[source], 50.0);
     if (hit) {
       const hasHitTarget = hit.entity === target;
+
       if (!hasHitTarget) {
         Fill[hit.entity] = "pink";
+        debugger;
+        return [DoesNotExist, hit.entity];
       }
-      return hasHitTarget ? true : [DoesNotExist, hit.entity];
+
+      return WorldStateStatus.Effective;
     } else {
       debugger;
       // let's consider the stuff is reachable but too far
       // we'll need to re-planify the actions later
-      return false;
+      return WorldStateStatus.Potential;
     }
   },
 );
@@ -50,7 +55,9 @@ export const IsAdjacentTo = defineWorldState(
     const distance = toSimulationPoint(getWorldDistance(source, target));
 
     // @todo consider y
-    return Math.abs(distance.x) <= 1; // && Math.abs(distance.y) <= 4;
+    return Math.abs(distance.x) <= 1
+      ? WorldStateStatus.Effective
+      : WorldStateStatus.Potential;
   },
 );
 
@@ -58,7 +65,9 @@ export const DoesNotExist = defineWorldState(
   "IsDead",
   (_: Entity, target: Entity) => {
     const { exists } = useECS();
-    return !exists(target);
+    return !exists(target)
+      ? WorldStateStatus.Effective
+      : WorldStateStatus.Potential;
   },
 );
 

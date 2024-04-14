@@ -2,7 +2,8 @@ import type { Component, Entity } from "aion-ecs";
 import { useECS } from "../ecs.js";
 import { PlanComponent, planifyCurrentGoal } from "./brain.js";
 import type { Action, PlannedAction } from "./action.js";
-import { evaluateState, isWorldState } from "./state.js";
+import { WorldStateStatus, evaluateState, isWorldState } from "./state.js";
+import { assertDefined } from "aion-core";
 
 // not ideal
 type BehaviorComponent = Component & { target: Uint32Array };
@@ -15,6 +16,34 @@ export function addBehavior(entity: Entity, { action, target }: PlannedAction) {
   attach(component, entity);
 }
 
+export function removeBehavior(
+  entity: Entity,
+  { action, target }: PlannedAction,
+) {
+  const { detach } = useECS();
+  const component = BEHAVIORS_COMPONENTS[action.name]!;
+  detach(component, entity);
+}
+
+// export function updateBehavior(entity: Entity) {
+//   const { attach, has } = useECS();
+//   const current = getCurrentAction(entity);
+
+//   const component = BEHAVIORS_COMPONENTS[current.action.name]!;
+
+//   if (!has(component, entity)) {
+//     component.target[entity] = current.target;
+//     attach(component, entity);
+//   }
+// }
+
+export function hasBehavior(entity: Entity, { action, target }: PlannedAction) {
+  const { has } = useECS();
+  const component = BEHAVIORS_COMPONENTS[action.name]!;
+  component.target[entity] = target;
+  return has(component, entity);
+}
+
 export function defineBehavior(
   action: Action,
   component: BehaviorComponent,
@@ -25,57 +54,48 @@ export function defineBehavior(
   BEHAVIORS_COMPONENTS[action.name] = component;
 
   return (entity: Entity) => {
-    if (!exists(component.target[entity]!)) {
-      const plan = planifyCurrentGoal(entity);
-
-      PlanComponent[entity] = plan;
-
-      beginNextAction(entity);
-      return;
-    }
-
-    const result = evaluateState(entity, [
-      action.preconditions,
-      component.target[entity]!,
-    ]);
-
-    if (result !== true) {
-      //@todo remove components in another system ?
-      // once("update", () => {
-      detach(component, entity);
-
-      PlanComponent[entity]!.shift();
-
-      beginNextAction(entity);
-      // });
-    } else {
-      cb(entity);
-    }
-
-    const isActionDone = evaluateState(entity, [
-      action.effects,
-      component.target[entity]!,
-    ]);
-
-    if (isActionDone) {
-      //@todo remove components in another system ?
-      // removing component in the current system make the all things wacky
-      // once("update", () => {
-      detach(component, entity);
-
-      PlanComponent[entity]!.shift();
-
-      beginNextAction(entity);
-      // });
-    }
+    cb(entity);
+    // if (!exists(component.target[entity]!)) {
+    //   const plan = planifyCurrentGoal(entity);
+    //   PlanComponent[entity] = plan;
+    //   beginNextAction(entity);
+    //   return;
+    // }
+    // const result = evaluateState(entity, [
+    //   action.preconditions,
+    //   component.target[entity]!,
+    // ]);
+    // if (result === WorldStateStatus.Effective) {
+    //   //@todo remove components in another system ?
+    //   // once("update", () => {
+    //   detach(component, entity);
+    //   PlanComponent[entity]!.shift();
+    //   beginNextAction(entity);
+    //   // });
+    // } else {
+    //   cb(entity);
+    // }
+    // const isActionDone = evaluateState(entity, [
+    //   action.effects,
+    //   component.target[entity]!,
+    // ]);
+    // if (isActionDone) {
+    //   //@todo remove components in another system ?
+    //   // removing component in the current system make the all things wacky
+    //   // once("update", () => {
+    //   detach(component, entity);
+    //   PlanComponent[entity]!.shift();
+    //   beginNextAction(entity);
+    //   // });
+    // }
   };
 }
 
 export function beginNextAction(entity: Entity) {
-  const nextAction = getNextAction(entity);
+  const nextAction = getCurrentAction(entity);
 
   if (nextAction) {
-    const isDone = evaluateNextAction(entity);
+    const result = evaluateCurrrentAction(entity);
     const { exists } = useECS();
 
     if (!exists(nextAction.target)) {
@@ -87,7 +107,7 @@ export function beginNextAction(entity: Entity) {
       return;
     }
 
-    if (isDone === false) {
+    if (result === WorldStateStatus.Potential) {
       console.info("begin next action for entity", {
         entity,
         name: nextAction.action.name,
@@ -95,7 +115,7 @@ export function beginNextAction(entity: Entity) {
         target: nextAction.target,
       });
       addBehavior(entity, nextAction);
-    } else if (isWorldState(isDone)) {
+    } else if (isWorldState(result)) {
       debugger;
       const plan = planifyCurrentGoal(entity);
       console.info("planify next action for entity", {
@@ -116,12 +136,19 @@ export function beginNextAction(entity: Entity) {
     // wooow loop
   }
 }
-export function getNextAction(entity: Entity) {
-  return PlanComponent[entity]![0]!;
+
+export function getCurrentAction(entity: Entity) {
+  return PlanComponent[entity]![0];
 }
 
-export function evaluateNextAction(entity: Entity) {
-  const action = getNextAction(entity);
+export function terminateCurrentAction(entity: Entity) {
+  PlanComponent[entity]!.shift();
+}
+
+export function evaluateCurrrentAction(entity: Entity) {
+  const action = getCurrentAction(entity);
+
+  assertDefined(action);
 
   return evaluateState(entity, [action.action.effects, action.target]);
 }
