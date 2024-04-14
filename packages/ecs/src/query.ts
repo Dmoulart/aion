@@ -7,7 +7,7 @@ import {
 import type { World } from "./world.js";
 import type { Archetype } from "./archetype.js";
 import type { Entity, ID } from "./entity.js";
-import { SparseBitSet, SparseSet } from "./collections/index.js";
+import { BitSetImpl, SparseSet } from "./collections/index.js";
 import { collectIDs } from "./id.js";
 
 /**
@@ -127,7 +127,7 @@ export const makeComponentsMask = (components: Component[]) =>
   components.reduce((mask, comp) => {
     mask.or(getComponentID(comp));
     return mask;
-  }, new SparseBitSet(2));
+  }, new BitSetImpl(2));
 
 /**
  * Create a mask from a list of Ids.
@@ -138,7 +138,7 @@ export const makeIDsMask = (ids: Array<ID>) =>
   ids.reduce((mask, id) => {
     mask.or(id);
     return mask;
-  }, new SparseBitSet(2));
+  }, new BitSetImpl(2));
 
 const hashQueryTerms = (terms: QueryTerm[]) => {
   let hash = 5381;

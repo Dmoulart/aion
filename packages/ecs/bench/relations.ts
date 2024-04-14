@@ -6,16 +6,6 @@ import { all, createQuery, runQuery } from "../src/query.js";
 import { createTag } from "../src/tag.js";
 import { createWorld } from "../src/world.js";
 
-const set = new SparseBitSet();
-set.or(5);
-set.or(6);
-
-const other = new SparseBitSet();
-other.or(5);
-
-console.log(set.contains(other));
-console.log(other.contains(set));
-
 // {
 //   const world = createWorld();
 
@@ -32,20 +22,20 @@ console.log(other.contains(set));
 //   console.timeEnd("No relation");
 // }
 
-// {
-//   const world = createWorld();
+{
+  const world = createWorld();
 
-//   const Power = createTag();
-//   const PowerOf = (power: number) => {
-//     return pair(Power, power);
-//   };
+  const Power = createTag();
+  const PowerOf = (power: number) => {
+    return pair(Power, power);
+  };
 
-//   const fireball = createEntity(world);
-//   const hero = createEntity(world);
+  const fireball = createEntity(world);
+  const hero = createEntity(world);
 
-//   attach(world, PowerOf(fireball), hero);
-//   const q = createQuery(all(PowerOf(fireball)));
-//   console.time("Relation");
-//   const result = runQuery(world, q);
-//   console.timeEnd("Relation");
-// }
+  attach(world, PowerOf(fireball), hero);
+  const q = createQuery(all(PowerOf(fireball)));
+  console.time("Relation");
+  const result = runQuery(world, q);
+  console.timeEnd("Relation");
+}
