@@ -1,4 +1,4 @@
-import { Entity, onEnterQuery } from "aion-ecs";
+import { Entity, forgetEntity, onEnterQuery } from "aion-ecs";
 import { beforeStart, defineEngine, defineLoop, emit, on } from "aion-engine";
 import { click, direction, getMouse, key } from "aion-input";
 import {
@@ -201,7 +201,7 @@ export function createScenes() {
       Transform: createTransform(right, top - 25),
     });
 
-    const { query, has, remove } = useECS();
+    const { query, has, remove, world } = useECS();
 
     let enemyCreated = false;
 
@@ -226,7 +226,7 @@ export function createScenes() {
       }
 
       if (getHealth(building) <= 0) {
-        remove(building);
+        forgetEntity(world, building);
         console.log("----REMOVED", building);
       }
     });

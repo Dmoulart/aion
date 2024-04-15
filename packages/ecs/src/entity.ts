@@ -89,11 +89,20 @@ export function removeEntity(world: World, eid: Entity) {
 
   archetype.entities.remove(eid);
   world.entitiesArchetypes[eid] = undefined;
-  if (eid === 38) {
-    console.info("DELETE");
-    console.log("38 ARCH", world.entitiesArchetypes[38]);
-  }
+
   world.deletedEntities.push(eid);
+}
+
+/**
+ * Remove an entity from the given world and don't allow the entity to be recycled
+ * @param eid entity id
+ * @param world
+ * @throws {NonExistantEntity}
+ * @returns nothing
+ */
+export function forgetEntity(world: World, eid: Entity) {
+  removeEntity(world, eid);
+  world.deletedEntities.pop();
 }
 
 /**
@@ -104,9 +113,6 @@ export function removeEntity(world: World, eid: Entity) {
  * @returns true if world contains the given entity
  */
 export function entityExists(world: World, eid: Entity): boolean {
-  if (eid === 38) {
-    console.log("38 ARCH", world.entitiesArchetypes[38]);
-  }
   return Boolean(world.entitiesArchetypes[eid]);
 }
 
