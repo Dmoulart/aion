@@ -51,8 +51,8 @@ export function defineEngine<T>(
       ctx.call(engine, setup);
 
       (function loop() {
-        step();
         if (engine.running) {
+          step();
           requestAnimationFrame(loop);
         }
       })();

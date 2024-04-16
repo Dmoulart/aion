@@ -242,11 +242,11 @@ export function createScenes() {
     onTreasureDestroyed(() => {
       const { x, y } = windowCenter();
       setBackgroundColor("black");
-      font("Arial 148px").strokeText("GAME OVER", x, y, "white");
-      on("draw", () => {
+
+      engine.stop();
+      on("render", () => {
         font("Arial 148px").strokeText("GAME OVER", x, y, "white");
       });
-      engine.stop();
     });
 
     return on("update", () => {
