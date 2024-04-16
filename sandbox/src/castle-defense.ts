@@ -250,6 +250,7 @@ export function createScenes() {
       setBackgroundColor("black");
 
       engine.stop();
+
       on("render", () => {
         font("Arial 148px").strokeText("GAME OVER", x, y, "white");
       });
@@ -270,7 +271,6 @@ export function createScenes() {
           EnemySpawn.lastSpawn[entity] = now;
 
           const treasure = query(IsTreasure).first();
-          console.log(treasure);
           if (treasure) {
             createEnemy({ x: getX(entity), y: getY(entity) }, treasure);
           }

@@ -8,7 +8,10 @@ import {
   createWorld,
   i32,
   i8,
+  createQuery,
+  runQuery,
 } from "../src/index.js";
+import { all, query } from "../src/index.js";
 
 describe("Component", () => {
   it("sees its array types fields instanciated", () => {
@@ -26,7 +29,7 @@ describe("Component", () => {
       {
         field: i8,
       },
-      10
+      10,
     );
 
     const world = createWorld(10);
@@ -39,7 +42,7 @@ describe("Component", () => {
       {
         nested: [i8, 5],
       },
-      10
+      10,
     );
 
     const world = createWorld(10);
@@ -158,7 +161,7 @@ describe("Component", () => {
     attach(world, TestComponent, eid);
 
     expect(
-      TestComponent.field[eid]!.x === 0 && TestComponent.field[eid]!.y === 0
+      TestComponent.field[eid]!.x === 0 && TestComponent.field[eid]!.y === 0,
     );
   });
 
@@ -167,16 +170,21 @@ describe("Component", () => {
 
     const eid = createEntity(world);
 
-    const TestComponent = defineComponent((size) => {
-      return new Array<{ obj: { x: number; y: number } }>(size)
-        .fill(undefined as any)
-        .map(() => ({ x: 0, y: 0 }));
-    });
+    const TestComponent = defineComponent(i32);
+    expect(TestComponent[eid] === 0 && TestComponent[eid] === 0);
+  });
 
-    attach(world, TestComponent, eid);
-    expect(TestComponent[eid]!.x === 0 && TestComponent[eid]!.y === 0);
+  it("can create more than 100 components", () => {
+    const world = createWorld();
 
-    const TestComponent2 = defineComponent(i32);
-    expect(TestComponent2[eid] === 0 && TestComponent2[eid] === 0);
+    for (let i = 0; i < 100; i++) {
+      defineComponent(i32);
+    }
+    const Component32 = defineComponent(i32);
+
+    const eid = createEntity(world);
+    attach(world, Component32, eid);
+    const query = runQuery(world, createQuery(all(Component32)));
+    expect(query[0]!.entities.dense[0] === eid);
   });
 });

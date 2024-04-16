@@ -1,4 +1,4 @@
-import { Vector, leftDirection } from "aion-core";
+import { Vector } from "aion-core";
 import { Entity, defineComponent, i32 } from "aion-ecs";
 import {
   createTransform,
@@ -8,8 +8,6 @@ import {
   addChildTo,
   useECS,
   usePhysics,
-  getApproximateDirection,
-  flipX,
   useAion,
   degreesToRadians,
 } from "aion-preset";
@@ -127,4 +125,5 @@ export function createEnemy(pos: Vector, target?: Entity) {
       Stroke: "black",
     }),
   );
+  return enemy;
 }

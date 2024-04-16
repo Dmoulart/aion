@@ -11,12 +11,14 @@ export interface AnyBitSet {
  * It allows to make bitwise operations without the size limitations of a 32 integer.
  */
 export class BitSet implements AnyBitSet {
-  bits!: Uint32Array;
+  // With a UInt32 adding (with xor method) 31 will give a negative number which does not work
+  // Here I'm maybe missing something
+  bits!: Int32Array;
   size!: number;
 
   constructor(size: number = 10) {
     this.size = size;
-    this.bits = new Uint32Array(size);
+    this.bits = new Int32Array(size);
   }
 
   /**
@@ -119,7 +121,7 @@ export class BitSet implements AnyBitSet {
   private growTo(newSize: number) {
     const diff = newSize - this.size;
     this.size += diff;
-    const newMask = new Uint32Array(this.size);
+    const newMask = new Int32Array(this.size);
     newMask.set(this.bits);
     this.bits = newMask;
   }

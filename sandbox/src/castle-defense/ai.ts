@@ -1,4 +1,4 @@
-import { Entity, defineComponent, eid, i32, u8 } from "aion-ecs";
+import { $cid, Entity, defineComponent, eid, i32, u8 } from "aion-ecs";
 import { on } from "aion-engine";
 import {
   Collider,
@@ -95,6 +95,9 @@ export const KillOrder = defineComponent({
   state: u8,
 });
 
+console.log({ KillOrder: KillOrder[$cid] });
+console.log({ MoveToOrder: MoveToOrder[$cid] });
+
 export function createDestroyTreasureGoal(treasure: Entity) {
   const goal = new i32(2);
   goal[0] = DoesNotExist;
@@ -130,15 +133,6 @@ export function setupAI() {
     },
   );
 
-  setupBehavior(() => {
-    query(
-      MoveToOrder,
-      RuntimeCharacterController,
-      RuntimeBody,
-      RuntimeCollider,
-    ).each(moveToTarget);
-  });
-
   const AttackAnimation = defineAnimationConfig({
     steps: {
       initial: {
@@ -172,6 +166,17 @@ export function setupAI() {
     return findChildOf(entity, (child) => has(Weapon, child))!;
   });
 
+  on("update", () => {
+    query(
+      MoveToOrder,
+      RuntimeCharacterController,
+      RuntimeBody,
+      RuntimeCollider,
+    ).each((e) => {
+      moveToTarget(e);
+    });
+  });
+
   const killTarget = defineBehavior(KillAction, KillOrder, (entity: Entity) => {
     // console.log("kill !");
     // // updateAnimation(AttackAnimation, undefined, Transform[entity]!);
@@ -185,26 +190,22 @@ export function setupAI() {
     //   // setRotation(sword, )
     //   // body.setLinvel()
   });
-
-  setupBehavior(() => {
-    query(
+  on("update", () => {
+    const moving = query(
       MoveToOrder,
       RuntimeCharacterController,
       RuntimeBody,
       RuntimeCollider,
-    ).each(moveToTarget);
-  });
+    );
+    moving.each(moveToTarget);
 
-  setupBehavior(() => {
-    query(
+    const attacking = query(
       KillOrder,
       RuntimeCharacterController,
       RuntimeBody,
       RuntimeCollider,
-    ).each(killTarget);
-  });
-}
+    );
 
-export function setupBehavior(behavior: () => void) {
-  on("update", behavior);
+    attacking.each(killTarget);
+  });
 }
