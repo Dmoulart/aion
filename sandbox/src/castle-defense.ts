@@ -130,7 +130,6 @@ export function createScenes() {
     });
   });
 
-  let treasure: Entity;
   defineScene("place-treasure", () => {
     const player = Treasure({
       Transform: createTransform(0, 0),
