@@ -59,6 +59,7 @@ import { downDirection, millitimestamp } from "aion-core";
 import { usePrefabs } from "./castle-defense/prefabs";
 import { createWall } from "./castle-defense/wall";
 import { damage, getHealth } from "./castle-defense/health";
+import { createTurret, initTurrets } from "./castle-defense/turret";
 
 export const engine = defineEngine(plugins, () => {
   const { $camera, getFloor } = useGame();
@@ -122,7 +123,11 @@ export function createScenes() {
         const { point } = result;
         point.y -= getRectHalfHeight(blueprint);
         setRuntimeBodyPosition(blueprint, point);
-
+        if (key("w")) {
+          if (click()) {
+            createTurret(point);
+          }
+        }
         if (click()) {
           createWall(point.x, point.y);
 
@@ -138,6 +143,7 @@ export function createScenes() {
   });
 
   defineScene("place-treasure", () => {
+    initTurrets();
     const player = Treasure({
       Transform: createTransform(0, 0),
       Rect: {
@@ -264,7 +270,7 @@ export function createScenes() {
           EnemySpawn.lastSpawn[entity] = now;
 
           const treasure = query(IsTreasure).first();
-
+          console.log(treasure);
           if (treasure) {
             createEnemy({ x: getX(entity), y: getY(entity) }, treasure);
           }

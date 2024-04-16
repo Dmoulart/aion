@@ -6,6 +6,7 @@ import {
   Fill,
   Rect,
   Stroke,
+  Circle,
   Transform,
   singleton,
   useECS,
@@ -18,6 +19,7 @@ import {
   Building,
 } from "./components";
 import { Weapon } from "./enemy";
+import { Shoot, AutoTarget } from "./turret";
 
 export const usePrefabs = singleton(() => {
   const { prefab } = useECS();
@@ -71,5 +73,23 @@ export const usePrefabs = singleton(() => {
     Collider,
   });
 
-  return { Treasure, SpawnPoint, Wall, Enemy, Sword };
+  const Turret = prefab({
+    Transform,
+    Circle,
+    Fill,
+    Stroke,
+    Collider,
+  });
+
+  const Canon = prefab({
+    Transform,
+    Rect,
+    Fill,
+    Stroke,
+    Collider,
+    Shoot,
+    AutoTarget,
+  });
+
+  return { Treasure, SpawnPoint, Wall, Enemy, Sword, Turret, Canon };
 });
