@@ -154,7 +154,7 @@ export function createScenes() {
       setRuntimeBodyPosition(player, { x, y });
 
       if (click()) {
-        treasure = Treasure({
+        Treasure({
           Transform: createTransform(x, y),
           Rect: {
             h: Rect.h[player],
