@@ -1,4 +1,4 @@
-import { Entity, forgetEntity, onEnterQuery } from "aion-ecs";
+import { Entity, forgetEntity, onEnterQuery, removeEntity } from "aion-ecs";
 import { beforeStart, defineEngine, defineLoop, emit, on } from "aion-engine";
 import { click, direction, getMouse, key } from "aion-input";
 import {
@@ -44,6 +44,7 @@ import {
   Blueprint,
   Building,
   Health,
+  IsTreasure,
 } from "./castle-defense/components";
 import { setupAI } from "./castle-defense/ai";
 import { Weapon, createEnemy } from "./castle-defense/enemy";
@@ -170,6 +171,7 @@ export function createScenes() {
             type: RAPIER.RigidBodyType.Dynamic,
           }),
           Health: 1000,
+          IsTreasure,
         });
 
         $ecs.remove(player);
@@ -201,7 +203,7 @@ export function createScenes() {
       Transform: createTransform(right, top - 25),
     });
 
-    const { query, has, remove, world } = useECS();
+    const { query, has, world } = useECS();
 
     let enemyCreated = false;
 
@@ -226,8 +228,7 @@ export function createScenes() {
       }
 
       if (getHealth(building) <= 0) {
-        forgetEntity(world, building);
-        console.log("----REMOVED", building);
+        removeEntity(world, building);
       }
     });
 
@@ -245,7 +246,11 @@ export function createScenes() {
         if (secondsSinceLastSpawn >= frequency || lastSpawn === 0) {
           EnemySpawn.lastSpawn[entity] = now;
 
-          createEnemy({ x: getX(entity), y: getY(entity) }, treasure);
+          const treasure = query(IsTreasure).first();
+
+          if (treasure) {
+            createEnemy({ x: getX(entity), y: getY(entity) }, treasure);
+          }
         }
       });
     });

@@ -25,7 +25,7 @@ export const EyeBrow = defineComponent({});
 
 export const SWORDS: Array<number> = [];
 
-export function createEnemy(pos: Vector, target: Entity) {
+export function createEnemy(pos: Vector, target?: Entity) {
   const { Sword, Enemy } = usePrefabs();
 
   const { attach } = useECS();
@@ -58,9 +58,11 @@ export function createEnemy(pos: Vector, target: Entity) {
     },
     Fill: "white",
     Stroke: "black",
-    Brain: {
-      goal: createDestroyTreasureGoal(target),
-    },
+    Brain: target
+      ? {
+          goal: createDestroyTreasureGoal(target),
+        }
+      : undefined,
     Collider: createCollider({
       auto: 1,
       collisionGroups: ENEMY_COLLISION_GROUP,
@@ -125,12 +127,4 @@ export function createEnemy(pos: Vector, target: Entity) {
       Stroke: "black",
     }),
   );
-
-  const comesFromRight = getApproximateDirection(enemy, target).equals(
-    leftDirection(),
-  );
-
-  if (comesFromRight) {
-    flipX(enemy);
-  }
 }

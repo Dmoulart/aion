@@ -21,7 +21,6 @@ export function initAI() {
 
     onAddedBrain((entity) => {
       const plan = planifyCurrentGoal(entity);
-      console.log({ plan });
       PlanComponent[entity] = plan;
       attach(PlanComponent, entity);
     });

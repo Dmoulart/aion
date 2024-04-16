@@ -116,6 +116,8 @@ export type Query = {
    * @returns nothing
    */
   each: (fn: (eid: Entity, index: number) => void) => void;
+
+  first(): Entity | undefined;
 };
 
 /**
@@ -190,6 +192,14 @@ export function createQuery(...terms: QueryTerm[]): Query {
         const ents = this.archetypes[i]!.entities.dense;
         for (let j = 0; j < ents.length; j++) {
           fn(ents[j]!, j);
+        }
+      }
+    },
+    first() {
+      for (let i = 0; i < this.archetypes.length; i++) {
+        const ents = this.archetypes[i]!.entities.dense;
+        if (ents.length) {
+          return ents[0];
         }
       }
     },

@@ -15,7 +15,6 @@ export function planifyCurrentGoal(entity: Entity) {
 
   // maybe this target existance verification should exist at a lower level.
   if (exists(target!)) {
-    console.log(target, "exists");
     return planify(entity, [state!, target!]);
   } else {
     return [];
