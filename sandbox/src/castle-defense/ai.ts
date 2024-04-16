@@ -29,7 +29,12 @@ export const CanReach = defineWorldState(
   "CanReach",
   (source: Entity, target: Entity) => {
     // return false;
-    const hit = castRay(source, target, Collider.collisionGroups[source], 50.0);
+    const hit = castRay(
+      source,
+      target,
+      Collider.collisionGroups[source],
+      100.0,
+    );
     if (hit) {
       const hasHitTarget = hit.entity === target;
 
