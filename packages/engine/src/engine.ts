@@ -2,9 +2,11 @@ import { ctx } from "./ctx.js";
 import { createEventEmitter, type EventEmitter } from "./event.js";
 
 export interface BaseEngine {
+  running: boolean;
   events: EventEmitter<BaseEvents>;
   loop: () => void;
   run: () => void;
+  stop: () => void;
   beforeStart: (cb: BeforeStartCallback) => void;
 }
 
@@ -34,20 +36,29 @@ export function defineEngine<T>(
   const beforeStartCallbacks: BeforeStartCallback[] = [];
 
   const baseEngine: BaseEngine = {
+    running: false,
     events: createEventEmitter<BaseEvents>(),
     loop: () => baseEngine.events.emit("update"),
     beforeStart: (cb) => beforeStartCallbacks.push(cb),
-    run: () => {
+    run() {
+      const engine = this;
+      engine.running = true;
+
       ctx.call(engine, () =>
         beforeStartCallbacks.forEach((cb) => cb(baseEngine)),
       );
+
       ctx.call(engine, setup);
 
       (function loop() {
         step();
-
-        requestAnimationFrame(loop);
+        if (engine.running) {
+          requestAnimationFrame(loop);
+        }
       })();
+    },
+    stop: () => {
+      engine.running = false;
     },
   };
 

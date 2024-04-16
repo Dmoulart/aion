@@ -1,4 +1,10 @@
-import { Entity, forgetEntity, onEnterQuery, removeEntity } from "aion-ecs";
+import {
+  Entity,
+  forgetEntity,
+  onEnterQuery,
+  onExitQuery,
+  removeEntity,
+} from "aion-ecs";
 import { beforeStart, defineEngine, defineLoop, emit, on } from "aion-engine";
 import { click, direction, getMouse, key } from "aion-input";
 import {
@@ -33,6 +39,7 @@ import {
   fillText,
   font,
   setBackgroundColor,
+  windowCenter,
   windowCenterX,
   windowCenterY,
   windowWidth,
@@ -207,6 +214,7 @@ export function createScenes() {
     let enemyCreated = false;
 
     const onBuildingDamaged = onEnterQuery(query(Building, Health, Collision));
+    const onTreasureDestroyed = onExitQuery(query(IsTreasure));
 
     on("render", () => {
       query(Building, Health).each((entity) => {
@@ -229,6 +237,16 @@ export function createScenes() {
       if (getHealth(building) <= 0) {
         removeEntity(world, building);
       }
+    });
+
+    onTreasureDestroyed(() => {
+      const { x, y } = windowCenter();
+      setBackgroundColor("black");
+      font("Arial 148px").strokeText("GAME OVER", x, y, "white");
+      on("draw", () => {
+        font("Arial 148px").strokeText("GAME OVER", x, y, "white");
+      });
+      engine.stop();
     });
 
     return on("update", () => {
