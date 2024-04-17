@@ -1,4 +1,4 @@
-import { onEnterQuery, not, onExitQuery } from "aion-ecs";
+import { onEnterQuery, not, onExitQuery, type Entity } from "aion-ecs";
 import {
   Body,
   Collider,
@@ -79,7 +79,6 @@ export function initPhysicsSystems() {
   );
 
   // attach children colliders
-
   onCreatedBodyWithChildren((ancestor) => {
     const body = getRuntimeBody(ancestor);
     const ancestorScale = getLocalScale(ancestor);
@@ -103,6 +102,10 @@ export function initPhysicsSystems() {
 }
 
 export const SCALE_FACTOR = 50;
+
+export function getPhysicsWorldPosition(entity: Entity) {
+  return toSimulationPoint(getWorldPosition(entity));
+}
 
 export function fromSimulationPoint(vec: Vector, factor = SCALE_FACTOR) {
   return new Vec(vec.x * factor, vec.y * factor);

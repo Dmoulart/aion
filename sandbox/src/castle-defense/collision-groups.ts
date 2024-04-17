@@ -1,14 +1,22 @@
 import { defineCollisionGroup } from "aion-preset";
 
-const ENEMY_COLLISION_ID = 0b01;
-const OBSTACLE_COLLISION_ID = 0b10;
+export const ENEMY_COLLISION_MEMBERSHIP_ID = 0b01;
+export const OBSTACLE_COLLISION_MEMBERSHIP_ID = 0b10;
 
 export const OBSTACLE_COLLISION_GROUP = defineCollisionGroup()
-  .isPartOfGroups(OBSTACLE_COLLISION_ID)
-  .canInteractWith(OBSTACLE_COLLISION_ID, ENEMY_COLLISION_ID)
+  .isPartOfGroups(OBSTACLE_COLLISION_MEMBERSHIP_ID)
+  .canInteractWith(
+    OBSTACLE_COLLISION_MEMBERSHIP_ID,
+    ENEMY_COLLISION_MEMBERSHIP_ID,
+  )
   .get();
 
 export const ENEMY_COLLISION_GROUP = defineCollisionGroup()
-  .isPartOfGroups(ENEMY_COLLISION_ID)
-  .canInteractWith(OBSTACLE_COLLISION_ID)
+  .isPartOfGroups(ENEMY_COLLISION_MEMBERSHIP_ID)
+  .canInteractWith(OBSTACLE_COLLISION_MEMBERSHIP_ID)
+  .get();
+
+export const TURET_COLLISION_GROUP = defineCollisionGroup()
+  .isPartOfGroups(OBSTACLE_COLLISION_MEMBERSHIP_ID)
+  .canInteractWith(ENEMY_COLLISION_MEMBERSHIP_ID)
   .get();

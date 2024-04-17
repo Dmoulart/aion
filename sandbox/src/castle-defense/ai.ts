@@ -95,9 +95,6 @@ export const KillOrder = defineComponent({
   state: u8,
 });
 
-console.log({ KillOrder: KillOrder[$cid] });
-console.log({ MoveToOrder: MoveToOrder[$cid] });
-
 export function createDestroyTreasureGoal(treasure: Entity) {
   const goal = new i32(2);
   goal[0] = DoesNotExist;
