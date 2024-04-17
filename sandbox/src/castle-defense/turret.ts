@@ -1,4 +1,4 @@
-import { Vector } from "aion-core";
+import { Vector, millitimestamp } from "aion-core";
 import {
   createTransform,
   createCollider,
@@ -7,28 +7,35 @@ import {
   Transform,
   usePhysics,
   getPhysicsWorldPosition,
-  getColliderEntity,
   Fill,
   getRuntimeBodyEntity,
+  castRay,
+  rotateTowards,
+  createBody,
+  setRuntimeBodyVelocity,
+  getWorldDistance,
+  getWorldPosition,
+  getWorldRotation,
 } from "aion-preset";
 import {
-  ENEMY_COLLISION_GROUP,
-  ENEMY_COLLISION_MEMBERSHIP_ID,
   OBSTACLE_COLLISION_GROUP,
   TURET_COLLISION_GROUP,
 } from "./collision-groups";
 import { Colors } from "aion-render";
 import { usePrefabs } from "./prefabs";
-import { defineComponent, i32, u32 } from "aion-ecs";
+import { Entity, defineComponent, eid, f32, i32, u32 } from "aion-ecs";
 import { IsEnemy } from "./components";
 import { on } from "aion-engine";
 
-export const Shoot = defineComponent({
-  force: i32,
+export const Gun = defineComponent({
+  force: f32,
+  freq: u32,
+  lastShot: f32,
 });
 
 export const AutoTarget = defineComponent({
-  target: u32,
+  targetComponent: u32,
+  target: eid,
 });
 
 export function createTurret(pos: Vector) {
@@ -59,7 +66,11 @@ export function createTurret(pos: Vector) {
       Fill: Colors["mine-shaft:900"],
       Stroke: "black",
       AutoTarget: {
-        target: IsEnemy,
+        targetComponent: IsEnemy,
+      },
+      Gun: {
+        freq: 1,
+        force: 25,
       },
     }),
   );
@@ -70,42 +81,102 @@ export function createTurret(pos: Vector) {
 export function initTurrets() {
   const { query } = useECS();
 
-  const { world, RAPIER } = usePhysics();
   on("update", () => {
-    // query(Transform, AutoTarget).each((entity) => {
-    //   query(Transform, AutoTarget.target[entity]).each((target) => {
-    //     const impact = castRay(entity, target, OBSTACLE_COLLISION_GROUP);
-    //     if (impact) {
-    //       Fill[impact.entity] = "blue";
-    //     }
-    //   });
-    // });
+    query(Transform, AutoTarget, Gun).each((entity) => {
+      if (AutoTarget.target[entity] === 0) {
+        searchForTarget(entity);
+      }
 
-    query(Transform, AutoTarget).each((entity) => {
-      const position = getPhysicsWorldPosition(entity);
-      const rotation = 0;
-      const maxToi = 400;
-      const result = world.castShape(
-        position,
-        rotation,
-        { x: Math.random() > 0.5 ? 1 : -1, y: 0 },
-        new RAPIER.Cuboid(40, 40),
-        maxToi,
-        false,
-        undefined,
-        TURET_COLLISION_GROUP,
-      );
-      if (result) {
-        // const entity = getColliderEntity(result.collider.handle);
-        const body = result.collider.parent();
-        if (body) {
-          const entity = getRuntimeBodyEntity(body);
-          if (entity) {
-            Fill[entity] = "blue";
-          }
+      if (AutoTarget.target[entity] !== 0) {
+        rotateTowards(entity, AutoTarget.target[entity], 3);
+        debugger;
+        const now = millitimestamp();
+        const timeSinceLastShot = now - Gun.lastShot[entity];
+        const shootFrequency = Gun.freq[entity] * 1000;
+
+        if (timeSinceLastShot >= shootFrequency) {
+          shoot(entity, AutoTarget.target[entity]);
+          Gun.lastShot[entity] = now;
         }
       }
-      console.log(result);
     });
   });
+}
+
+function searchForTarget(entity: Entity) {
+  const { world, RAPIER } = usePhysics();
+
+  const position = getPhysicsWorldPosition(entity);
+  const rotation = 0;
+  const maxToi = 400;
+  const result = world.castShape(
+    position,
+    rotation,
+    { x: Math.random() > 0.5 ? 1 : -1, y: 0 },
+    new RAPIER.Cuboid(40, 40),
+    maxToi,
+    false,
+    undefined,
+    TURET_COLLISION_GROUP,
+  );
+  if (result) {
+    const body = result.collider.parent();
+    if (body) {
+      const target = getRuntimeBodyEntity(body);
+
+      if (target) {
+        Fill[target] = "blue";
+        AutoTarget.target[entity] = target;
+      }
+    }
+  }
+  console.log(result);
+}
+
+function isTargetReachable(entity: Entity) {
+  const result = castRay(
+    entity,
+    AutoTarget.target[entity],
+    TURET_COLLISION_GROUP,
+  );
+
+  if (result) {
+    const target = result.entity;
+    if (target === AutoTarget.target[entity]) {
+      Fill[target] = "red";
+    }
+    return true;
+  }
+  return false;
+}
+
+function shoot(entity: Entity, target: Entity) {
+  const { Bullet } = usePrefabs();
+  const { RAPIER } = usePhysics();
+
+  const position = getWorldPosition(entity);
+  const rotation = getWorldRotation(entity);
+
+  const bullet = Bullet({
+    Transform: createTransform(position.x, position.y, rotation),
+    Collider: createCollider({
+      auto: 1,
+      collisionGroups: TURET_COLLISION_GROUP,
+      isSensor: 1,
+    }),
+    Body: createBody({
+      type: RAPIER.RigidBodyType.KinematicVelocityBased,
+    }),
+    Fill: "yellow",
+    Rect: {
+      w: 10,
+      h: 2,
+    },
+    Stroke: "black",
+  });
+
+  setRuntimeBodyVelocity(
+    bullet,
+    getWorldDistance(target, entity).norm().scale(Gun.force[entity]),
+  );
 }

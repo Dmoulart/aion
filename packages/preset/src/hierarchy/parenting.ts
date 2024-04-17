@@ -113,6 +113,15 @@ export function findChildOf(
   return undefined;
 }
 
+export function findFirstChildWithComponent(
+  parent: Entity,
+  component: Component,
+) {
+  const { has } = useECS();
+
+  return findChildOf(parent, (child) => has(component, child));
+}
+
 export function forEachChildOf(parent: Entity, cb: (ent: Entity) => void) {
   const children = getChildren(parent);
 

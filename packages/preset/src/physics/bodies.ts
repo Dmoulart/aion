@@ -89,3 +89,7 @@ export function getRuntimeBody(entity: Entity) {
 export function getRuntimeBodyEntity(body: RAPIER.RigidBody) {
   return body.userData as Entity;
 }
+
+export function setRuntimeBodyVelocity(entity: Entity, velocity: Vector) {
+  getRuntimeBody(entity).setLinvel(velocity, true);
+}

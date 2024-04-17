@@ -36,6 +36,14 @@ export function getTransform(entity: Entity): Transform {
   return Transform[entity]!;
 }
 
+export function cloneTransform(
+  entity: Entity,
+  out: Transform = new Float32Array(6),
+): Transform {
+  out.set(Transform[entity]!);
+  return out;
+}
+
 export function getTransformLocalMatrix(transform: Transform): Matrix {
   return createMatrixFromTransform(transform);
 }
@@ -252,4 +260,37 @@ export function createMatrixFromTransform(
   out[3] = scaleY! * cos;
 
   return out;
+}
+
+export function rotateTowards(source: Entity, target: Entity, step: number) {
+  // Get positions of source and target entities
+  const sourcePosition = getWorldPosition(source);
+  const targetPosition = getWorldPosition(target);
+
+  // Calculate the angle between source and target
+  const angle = Math.atan2(
+    targetPosition.y - sourcePosition.y,
+    targetPosition.x - sourcePosition.x,
+  );
+
+  // Rotate the source entity towards the target entity
+  rotateTowardsAngle(source, angle, step);
+}
+
+function rotateTowardsAngle(entity: Entity, targetAngle: number, step: number) {
+  const currentRotation = getLocalRotation(entity);
+
+  // Calculate the angle difference between current rotation and target angle
+  let angleDiff = targetAngle - currentRotation;
+
+  // Normalize the angle difference to be within the range of -Math.PI to Math.PI
+  angleDiff = ((angleDiff + Math.PI) % (2 * Math.PI)) - Math.PI;
+
+  // If the angle difference is greater than step, rotate by step, else directly set the target angle
+  if (Math.abs(angleDiff) > step) {
+    const rotationDirection = Math.sign(angleDiff);
+    rotate(entity, step * rotationDirection);
+  } else {
+    setLocalRotation(entity, targetAngle);
+  }
 }

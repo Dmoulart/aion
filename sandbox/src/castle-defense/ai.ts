@@ -39,7 +39,6 @@ export const CanReach = defineWorldState(
       const hasHitTarget = hit.entity === target;
 
       if (!hasHitTarget) {
-        Fill[hit.entity] = "pink";
         return [DoesNotExist, hit.entity];
       }
 

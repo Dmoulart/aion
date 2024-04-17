@@ -76,6 +76,7 @@ export function createEnemy(pos: Vector, target?: Entity) {
       snapToGround: 1,
       slideEnabled: 1,
     }),
+    Health: 100,
   });
 
   const { createRect, createCircle } = useAion();
