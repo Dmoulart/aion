@@ -144,6 +144,7 @@ export function createScenes() {
 
   defineScene("place-treasure", () => {
     initTurrets();
+
     const player = Treasure({
       Transform: createTransform(0, 0),
       Rect: {
@@ -223,7 +224,7 @@ export function createScenes() {
     const onTreasureDestroyed = onExitQuery(query(IsTreasure));
 
     on("render", () => {
-      query(Building, Health).each((entity) => {
+      query(Health).each((entity) => {
         if (getHealth(entity) !== 1000) {
           const { top, left } = getRectWorldBounds(entity);
 
@@ -238,10 +239,6 @@ export function createScenes() {
 
       if (has(Weapon, attacker)) {
         damage(building, Weapon.hit[attacker]);
-      }
-
-      if (getHealth(building) <= 0) {
-        removeEntity(world, building);
       }
     });
 

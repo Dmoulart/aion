@@ -16,7 +16,7 @@ export const ENEMY_COLLISION_GROUP = defineCollisionGroup()
   .canInteractWith(OBSTACLE_COLLISION_MEMBERSHIP_ID)
   .get();
 
-export const TURET_COLLISION_GROUP = defineCollisionGroup()
+export const TURRET_COLLISION_GROUP = defineCollisionGroup()
   .isPartOfGroups(OBSTACLE_COLLISION_MEMBERSHIP_ID)
   .canInteractWith(ENEMY_COLLISION_MEMBERSHIP_ID)
   .get();

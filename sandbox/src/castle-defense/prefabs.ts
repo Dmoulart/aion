@@ -19,7 +19,7 @@ import {
   Building,
 } from "./components";
 import { Weapon } from "./enemy";
-import { Gun, AutoTarget } from "./turret";
+import { Gun, AutoTarget, Projectile } from "./turret";
 
 export const usePrefabs = singleton(() => {
   const { prefab } = useECS();
@@ -99,6 +99,7 @@ export const usePrefabs = singleton(() => {
     Stroke,
     Collider,
     Body,
+    Projectile,
   });
 
   return { Treasure, SpawnPoint, Wall, Enemy, Sword, Turret, Canon, Bullet };
