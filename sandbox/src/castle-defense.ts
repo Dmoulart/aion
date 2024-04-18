@@ -1,10 +1,4 @@
-import {
-  Entity,
-  forgetEntity,
-  onEnterQuery,
-  onExitQuery,
-  removeEntity,
-} from "aion-ecs";
+import { Entity, onEnterQuery, onExitQuery } from "aion-ecs";
 import { beforeStart, defineEngine, defineLoop, emit, on } from "aion-engine";
 import { click, direction, getMouse, key } from "aion-input";
 import {
@@ -68,6 +62,8 @@ export const engine = defineEngine(plugins, () => {
     emit("update");
 
     emit("draw");
+
+    emit("delete-entities");
   });
 
   setBackgroundColor(Colors["rhino:950"]);
@@ -216,7 +212,7 @@ export function createScenes() {
       Transform: createTransform(right, top - 25),
     });
 
-    const { query, has, world } = useECS();
+    const { query, has } = useECS();
 
     let enemyCreated = false;
 

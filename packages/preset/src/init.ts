@@ -19,6 +19,7 @@ import {
   type InitDebugOptions,
   initAnimations,
   Transform,
+  initHierarchy,
 } from "./index.js";
 import { debugRender } from "./physics/debug.js";
 
@@ -37,6 +38,8 @@ export function aionPreset(options?: AionPresetOptions) {
   initAnimations();
 
   initDebug(options);
+
+  initHierarchy();
 
   const $ecs = createECS();
 

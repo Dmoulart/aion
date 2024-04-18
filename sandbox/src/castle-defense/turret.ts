@@ -35,7 +35,7 @@ import {
   u32,
 } from "aion-ecs";
 import { Health, IsEnemy } from "./components";
-import { on } from "aion-engine";
+import { on, once } from "aion-engine";
 import { damage } from "./health";
 
 export const Gun = defineComponent({
@@ -130,7 +130,6 @@ export function initTurrets() {
   const onProjectileHit = onEnterQuery(query(Projectile, Collision));
 
   onProjectileHit((projectile) => {
-    debugger;
     const collided = getCollidingEntity(projectile);
     if (collided) {
       if (has(Health, collided)) {

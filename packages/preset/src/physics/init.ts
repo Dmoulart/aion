@@ -29,7 +29,7 @@ import {
   getWorldMatrix,
   getScaleCompensatedRotation,
 } from "../index.js";
-import { none, not, type Entity } from "aion-ecs";
+import { none, not, type Entity, createQuery, all, runQuery } from "aion-ecs";
 import { handleCollisionEvent } from "./collisions.js";
 
 await RAPIER.init();
@@ -52,7 +52,7 @@ export function initPhysics(options?: InitPhysicsOptions) {
   const eventQueue = new RAPIER.EventQueue(true);
 
   on("update", () => {
-    const { attach, detach, query } = useECS();
+    const { attach, detach, query, has, world: w } = useECS();
 
     // sync body with transform /!\
     // query(RuntimeCollider, not(RuntimeBody), Transform).each((ent) => {
@@ -75,41 +75,50 @@ export function initPhysics(options?: InitPhysicsOptions) {
     //     collider.setRotation(worldRotation);
     //   }
     // });
+
     // child colliders controlled by bodies up in the hierarchy
     //@todo we only support child controlled by body up one level in the hierarchy
     query(RuntimeCollider, none(Body, RuntimeBody), Transform, Parent).each(
       (ent) => {
-        const collider = getRuntimeCollider(ent);
-        const body = collider.parent();
+        try {
+          const collider = getRuntimeCollider(ent);
+          const body = collider.parent();
+          // console.log(body);
+          // console.log(collider);
+          if (body) {
+            console.log("rb ent", getRuntimeBodyEntity(body));
+            const parent = getRuntimeBodyEntity(body);
 
-        if (body) {
-          const parent = getRuntimeBodyEntity(body);
+            const worldPosition = getWorldPosition(ent).round();
+            const worldRotation = getWorldRotation(ent);
 
-          const worldPosition = getWorldPosition(ent).round();
-          const worldRotation = getWorldRotation(ent);
+            console.log(collider.handle);
 
-          if (!worldPosition.equals(collider.translation())) {
-            const parentScale = getLocalScale(parent);
+            if (!worldPosition.equals(collider.translation())) {
+              const parentScale = getLocalScale(parent);
 
-            const position = toSimulationPoint(getLocalPosition(ent));
-            //@todo not sure if this is correct code. Works with flipped transforms (-1 values)
-            // but other values have not been tested
-            position.scaleEq(parentScale.x, parentScale.y);
+              const position = toSimulationPoint(getLocalPosition(ent));
+              //@todo not sure if this is correct code. Works with flipped transforms (-1 values)
+              // but other values have not been tested
+              position.scaleEq(parentScale.x, parentScale.y);
 
-            collider.setTranslationWrtParent(position);
+              collider.setTranslationWrtParent(position);
+            }
+
+            if (worldRotation !== collider.rotation()) {
+              const parentScale = getLocalScale(parent);
+
+              const rotation = getScaleCompensatedRotation(
+                getLocalRotation(ent),
+                parentScale.x,
+                parentScale.y,
+              );
+
+              collider.setRotationWrtParent(rotation);
+            }
           }
-
-          if (worldRotation !== collider.rotation()) {
-            const parentScale = getLocalScale(parent);
-
-            const rotation = getScaleCompensatedRotation(
-              getLocalRotation(ent),
-              parentScale.x,
-              parentScale.y,
-            );
-
-            collider.setRotationWrtParent(rotation);
-          }
+        } catch (error) {
+          debugger;
         }
       },
     );

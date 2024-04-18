@@ -125,6 +125,10 @@ export function getRuntimeCollider(entity: Entity) {
   return RuntimeCollider[entity]!;
 }
 
+export function setRuntimeCollider(entity: Entity, collider: RAPIER.Collider) {
+  RuntimeCollider[entity] = collider;
+}
+
 // is there a more efficient data structure ? An array ?
 export const COLLIDER_HANDLE_TO_ENTITY_ID = new Map<number, Entity>();
 

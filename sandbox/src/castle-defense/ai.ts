@@ -17,6 +17,7 @@ import {
   degreesToRadians,
   findChildOf,
   getGravity,
+  getRuntimeCollider,
   getWorldDistance,
   setScaleX,
   toSimulationPoint,
@@ -115,7 +116,7 @@ export function setupAI() {
         .add(getGravity());
 
       controller.computeColliderMovement(
-        RuntimeCollider[entity]!,
+        getRuntimeCollider(entity),
         movement,
         undefined,
         ENEMY_COLLISION_GROUP,

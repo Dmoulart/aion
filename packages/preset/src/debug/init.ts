@@ -18,7 +18,7 @@ export function initDebug(options?: InitDebugOptions) {
       on("render", () => {
         ecs.query(Transform).each((ent) => {
           const pos = getWorldPosition(ent);
-          font("bold 48px Helvetica");
+          font("bold 18px Helvetica");
           fillText(ent.toString(), pos.x, pos.y, "white");
           strokeText(ent.toString(), pos.x, pos.y, "black");
         });

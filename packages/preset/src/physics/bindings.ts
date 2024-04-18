@@ -5,6 +5,9 @@ import {
   RuntimeBody,
   RuntimeCollider,
   createRuntimeCollider,
+  getRuntimeCollider,
+  setRuntimeCollider,
+  unmapColliderHandleToEntity,
   usePhysics,
 } from "./index.js";
 import { useECS } from "../ecs.js";
@@ -52,9 +55,20 @@ export function initPhysicsSystems() {
   });
 
   const onRemovedBody = onExitQuery(query(Transform, RuntimeBody));
+  const onRemovedCollider = onExitQuery(query(Transform, RuntimeCollider));
 
   onRemovedBody((ent) => {
+    console.log("on removed body", ent);
     world.removeRigidBody(getRuntimeBody(ent));
+    debugger;
+  });
+
+  onRemovedCollider((ent) => {
+    console.log("on removed collider", ent);
+    const collider = getRuntimeCollider(ent);
+    unmapColliderHandleToEntity(collider.handle);
+    world.removeCollider(collider, true);
+    debugger;
   });
 
   const onCreatedColliderWithRuntimeBody = onEnterQuery(
@@ -68,8 +82,7 @@ export function initPhysicsSystems() {
 
     collider.setTranslation(toSimulationPoint(getWorldPosition(ent)));
     collider.setRotation(getWorldRotation(ent));
-
-    RuntimeCollider[ent] = collider;
+    setRuntimeCollider(ent, collider);
     attach(RuntimeCollider, ent);
   });
 
@@ -82,19 +95,19 @@ export function initPhysicsSystems() {
   onCreatedBodyWithChildren((ancestor) => {
     const body = getRuntimeBody(ancestor);
     const ancestorScale = getLocalScale(ancestor);
-
+    console.log("on created body with children", ancestor);
     traverseDescendants(ancestor, (descendant) => {
       if (has(Collider, descendant)) {
         const collider = createRuntimeCollider(descendant, world, body);
-
+        console.log(" created child collider", descendant, collider.handle);
         const position = toSimulationPoint(getLocalPosition(descendant));
         //@todo sync rotation with scale like in init.js
         position.scaleEq(ancestorScale.x, ancestorScale.y);
 
         collider.setTranslationWrtParent(position);
         collider.setRotationWrtParent(getLocalRotation(descendant));
-
-        RuntimeCollider[descendant] = collider;
+        console.log("createRuntimeCollider", descendant);
+        setRuntimeCollider(descendant, collider);
         attach(RuntimeCollider, descendant);
       }
     });

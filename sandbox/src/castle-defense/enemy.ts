@@ -47,7 +47,7 @@ export function createEnemy(pos: Vector, target?: Entity) {
       hit: 100,
     },
   });
-
+  console.log("create sword", sword);
   const enemy = Enemy({
     Transform: createTransform(pos.x, pos.y),
     Rect: {
