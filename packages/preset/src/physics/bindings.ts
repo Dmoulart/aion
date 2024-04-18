@@ -22,7 +22,7 @@ import {
   getWorldPosition,
   getWorldRotation,
 } from "../basics/transform.js";
-import { getRuntimeBody, setBodyOptions } from "./bodies.js";
+import { getRuntimeBody, setBodyOptions, setRuntimeBody } from "./bodies.js";
 import {
   Children,
   createIdentityMatrix,
@@ -49,7 +49,7 @@ export function initPhysicsSystems() {
 
     body.userData = ent;
 
-    RuntimeBody[ent] = body;
+    setRuntimeBody(ent, body);
 
     attach(RuntimeBody, ent);
   });
@@ -59,15 +59,22 @@ export function initPhysicsSystems() {
 
   onRemovedBody((ent) => {
     console.log("on removed body", ent);
-    world.removeRigidBody(getRuntimeBody(ent));
-    debugger;
+    const body = getRuntimeBody(ent);
+
+    if (body) {
+      world.removeRigidBody(getRuntimeBody(ent));
+      debugger;
+    }
   });
 
   onRemovedCollider((ent) => {
     console.log("on removed collider", ent);
     const collider = getRuntimeCollider(ent);
-    unmapColliderHandleToEntity(collider.handle);
-    world.removeCollider(collider, true);
+
+    if (collider) {
+      unmapColliderHandleToEntity(collider.handle);
+      world.removeCollider(collider, true);
+    }
     debugger;
   });
 

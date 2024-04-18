@@ -1,8 +1,14 @@
-import type { Entity, PrefabInstanceOptions } from "aion-ecs";
-import { Body, RuntimeBody } from "./components.js";
+import {
+  defineComponent,
+  type Entity,
+  type PrefabInstanceOptions,
+} from "aion-ecs";
+import { Body } from "./components.js";
 import RAPIER from "@dimforge/rapier2d-compat";
 import type { Vector } from "aion-core";
-import { setPosition } from "../index.js";
+import { setPosition, toSimulationPoint, usePhysics } from "../index.js";
+
+export const RuntimeBody = defineComponent(Array<number>);
 
 // @todo type crap
 const DEFAULT_BODIES_OPTIONS: PrefabInstanceOptions<{
@@ -79,13 +85,16 @@ export function setRuntimeBodyPosition(entity: Entity, position: Vector) {
 
   const body = getRuntimeBody(entity);
 
-  body.setTranslation(position, false);
+  body.setTranslation(toSimulationPoint(position), true);
 }
 
 export function getRuntimeBody(entity: Entity) {
-  return RuntimeBody[entity]!;
+  const { world } = usePhysics();
+  return world.getRigidBody(RuntimeBody[entity]!);
 }
-
+export function setRuntimeBody(entity: Entity, body: RAPIER.RigidBody) {
+  RuntimeBody[entity] = body.handle;
+}
 export function getRuntimeBodyEntity(body: RAPIER.RigidBody) {
   return body.userData as Entity;
 }

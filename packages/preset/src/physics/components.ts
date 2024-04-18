@@ -1,5 +1,4 @@
-import RAPIER from "@dimforge/rapier2d-compat";
-import { bool, defineComponent, eid, f32, i32, u16, u8 } from "aion-ecs";
+import { defineComponent, bool, f32, u8, eid } from "aion-ecs";
 
 export const Collider = defineComponent({
   auto: bool,
@@ -28,10 +27,6 @@ export const Collider = defineComponent({
   angularInertiaLocalFrame: f32,
 });
 
-export const RuntimeCollider = defineComponent(
-  () => new Array<RAPIER.Collider>(),
-);
-
 export const Body = defineComponent({
   enabled: bool,
   type: u8,
@@ -58,8 +53,6 @@ export const Body = defineComponent({
   dominanceGroup: f32,
   additionalSolverIterations: f32,
 });
-
-export const RuntimeBody = defineComponent(() => new Array<RAPIER.RigidBody>());
 
 export const Collision = defineComponent({
   with: eid,

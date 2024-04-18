@@ -275,8 +275,8 @@ export function createScenes() {
 
 export function plugins() {
   const preset = aionPreset({
-    renderDebug: false,
-    debugEntityID: false,
+    renderDebug: true,
+    debugEntityID: true,
   });
 
   // @todo: find a better way to keep a reference to an entity

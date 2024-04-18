@@ -1,8 +1,7 @@
-import { $cid, Entity, defineComponent, eid, i32, u8 } from "aion-ecs";
+import { Entity, defineComponent, eid, i32, u8 } from "aion-ecs";
 import { on } from "aion-engine";
 import {
   Collider,
-  Fill,
   RuntimeBody,
   RuntimeCharacterController,
   RuntimeCollider,
@@ -17,6 +16,7 @@ import {
   degreesToRadians,
   findChildOf,
   getGravity,
+  getRuntimeBody,
   getRuntimeCollider,
   getWorldDistance,
   setScaleX,
@@ -126,7 +126,7 @@ export function setupAI() {
 
       const computedMovement = controller.computedMovement();
 
-      RuntimeBody[entity]!.setLinvel(computedMovement, false);
+      getRuntimeBody(entity).setLinvel(computedMovement, false);
     },
   );
 

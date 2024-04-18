@@ -7,7 +7,6 @@ import {
 } from "./bindings.js";
 import { beforeStart, on } from "aion-engine";
 import { useECS } from "../ecs.js";
-import { Collision, RuntimeBody, RuntimeCollider } from "./components.js";
 import { initCharacterControllerSystem } from "./character-controller.js";
 import {
   Transform,
@@ -18,18 +17,16 @@ import {
   setWorldPosition,
   setWorldRotation,
   Parent,
-  findNearestAncestorWithComponent,
-  getRuntimeBody,
   getLocalPosition,
   getLocalRotation,
   getRuntimeBodyEntity,
   getLocalScale,
-  getMatrixRotation,
-  getLocalMatrix,
-  getWorldMatrix,
   getScaleCompensatedRotation,
+  RuntimeBody,
+  RuntimeCollider,
+  getRuntimeBody,
 } from "../index.js";
-import { none, not, type Entity, createQuery, all, runQuery } from "aion-ecs";
+import { none, not } from "aion-ecs";
 import { handleCollisionEvent } from "./collisions.js";
 
 await RAPIER.init();
@@ -53,8 +50,28 @@ export function initPhysics(options?: InitPhysicsOptions) {
 
   on("update", () => {
     const { attach, detach, query, has, world: w } = useECS();
-
     // sync body with transform /!\
+    // query(RuntimeBody, Transform).each((ent) => {
+    //   const body = getRuntimeBody(ent);
+
+    //   // rounding is bad for perfs. compare local positions ?
+    //   const worldPosition = getWorldPosition(ent).round();
+    //   const worldRotation = getWorldRotation(ent);
+
+    //   const colliderTranslation = fromSimulationPoint(
+    //     body.translation(),
+    //   ).round();
+    //   const colliderRotation = body.rotation();
+
+    //   if (!worldPosition.equals(colliderTranslation)) {
+    //     body.setTranslation(toSimulationPoint(worldPosition), false);
+    //   }
+
+    //   if (worldRotation !== colliderRotation) {
+    //     body.setRotation(worldRotation, false);
+    //   }
+    // });
+    // // sync body with transform /!\
     // query(RuntimeCollider, not(RuntimeBody), Transform).each((ent) => {
     //   const collider = getRuntimeCollider(ent);
 
@@ -128,7 +145,7 @@ export function initPhysics(options?: InitPhysicsOptions) {
 
     // sync transform with body
     query(RuntimeBody, Transform).each((ent) => {
-      const body = RuntimeBody[ent]!;
+      const body = getRuntimeBody(ent);
 
       setWorldPosition(ent, fromSimulationPoint(body.translation()));
       setWorldRotation(ent, body.rotation());

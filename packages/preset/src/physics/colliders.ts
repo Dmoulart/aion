@@ -1,10 +1,16 @@
-import { SparseSet, type Entity, type PrefabInstanceOptions } from "aion-ecs";
-import { Collider, RuntimeCollider } from "./components.js";
+import {
+  type Entity,
+  type PrefabInstanceOptions,
+  defineComponent,
+} from "aion-ecs";
+import { Collider } from "./components.js";
 import RAPIER from "@dimforge/rapier2d-compat";
 import { Circle, Rect } from "../components.js";
 import { useECS } from "../ecs.js";
 import { SCALE_FACTOR } from "./bindings.js";
 import { usePhysics } from "./init.js";
+
+export const RuntimeCollider = defineComponent(Array<number>);
 
 // @todo: these seems to be the defaults of RAPIER but it does not work.
 // Collider init is not ideal
@@ -122,11 +128,12 @@ export function createColliderDesc(ent: Entity): RAPIER.ColliderDesc[] {
 }
 
 export function getRuntimeCollider(entity: Entity) {
-  return RuntimeCollider[entity]!;
+  const { world } = usePhysics();
+  return world.getCollider(RuntimeCollider[entity]!);
 }
 
 export function setRuntimeCollider(entity: Entity, collider: RAPIER.Collider) {
-  RuntimeCollider[entity] = collider;
+  RuntimeCollider[entity] = collider.handle;
 }
 
 // is there a more efficient data structure ? An array ?
