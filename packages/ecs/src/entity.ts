@@ -23,8 +23,6 @@ export function createEntity(
     ? world.deletedEntities.shift()!
     : nextID();
 
-  console.log("create eid", eid);
-
   // We start creating entities id from 1
   if (eid > world.size) {
     // todo: resize world automatically ?
@@ -88,7 +86,7 @@ export function removeEntity(world: World, eid: Entity) {
   // transition to root archetype before being destroy to trigger some onExitQuery ?
   // @todo is this a good idea?
   onArchetypeChange(world, eid, archetype, world.rootArchetype);
-  console.log("remove", eid);
+
   archetype.entities.remove(eid);
   world.entitiesArchetypes[eid] = undefined;
 

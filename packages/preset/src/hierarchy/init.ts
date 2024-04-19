@@ -1,7 +1,7 @@
 import { onExitQuery } from "aion-ecs";
 import { useECS } from "../ecs.js";
 import { Children, traverseDescendants } from "./parenting.js";
-import { beforeStart } from "aion-engine";
+import { beforeStart, once } from "aion-engine";
 
 export function initHierarchy() {
   beforeStart(() => {
@@ -9,10 +9,11 @@ export function initHierarchy() {
 
     const onAncestorRemoved = onExitQuery(query(Children));
 
-    // onAncestorRemoved((parent) => {
-    //   traverseDescendants(parent, (descendant) => {
-    //     remove(descendant);
-    //   });
-    // });
+    onAncestorRemoved((parent) => {
+      debugger;
+      traverseDescendants(parent, (descendant) => {
+        remove(descendant);
+      });
+    });
   });
 }

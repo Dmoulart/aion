@@ -58,24 +58,20 @@ export function initPhysicsSystems() {
   const onRemovedCollider = onExitQuery(query(Transform, RuntimeCollider));
 
   onRemovedBody((ent) => {
-    console.log("on removed body", ent);
     const body = getRuntimeBody(ent);
 
     if (body) {
       world.removeRigidBody(getRuntimeBody(ent));
-      debugger;
     }
   });
 
   onRemovedCollider((ent) => {
-    console.log("on removed collider", ent);
     const collider = getRuntimeCollider(ent);
 
     if (collider) {
       unmapColliderHandleToEntity(collider.handle);
       world.removeCollider(collider, true);
     }
-    debugger;
   });
 
   const onCreatedColliderWithRuntimeBody = onEnterQuery(
@@ -102,18 +98,16 @@ export function initPhysicsSystems() {
   onCreatedBodyWithChildren((ancestor) => {
     const body = getRuntimeBody(ancestor);
     const ancestorScale = getLocalScale(ancestor);
-    console.log("on created body with children", ancestor);
+
     traverseDescendants(ancestor, (descendant) => {
       if (has(Collider, descendant)) {
         const collider = createRuntimeCollider(descendant, world, body);
-        console.log(" created child collider", descendant, collider.handle);
         const position = toSimulationPoint(getLocalPosition(descendant));
         //@todo sync rotation with scale like in init.js
         position.scaleEq(ancestorScale.x, ancestorScale.y);
 
         collider.setTranslationWrtParent(position);
         collider.setRotationWrtParent(getLocalRotation(descendant));
-        console.log("createRuntimeCollider", descendant);
         setRuntimeCollider(descendant, collider);
         attach(RuntimeCollider, descendant);
       }
