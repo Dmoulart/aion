@@ -22,6 +22,7 @@ export function createEntity(
   const eid = world.deletedEntities.length
     ? world.deletedEntities.shift()!
     : nextID();
+  console.log("create entity", eid);
 
   // We start creating entities id from 1
   if (eid > world.size) {
@@ -76,6 +77,7 @@ export function insertEntity(
  * @returns nothing
  */
 export function removeEntity(world: World, eid: Entity) {
+  console.log("remove entity", eid);
   const archetype = world.entitiesArchetypes[eid];
   if (!archetype) {
     throw new NonExistantEntity(

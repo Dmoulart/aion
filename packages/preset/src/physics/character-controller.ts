@@ -25,8 +25,8 @@ export const CharacterController = defineComponent({
   autoStepIncludeRigidBodies: bool,
 });
 
-export const RuntimeCharacterController = defineComponent(() =>
-  Array<RAPIER.KinematicCharacterController>(),
+export const RuntimeCharacterController = defineComponent(
+  Array<RAPIER.KinematicCharacterController>,
 );
 
 // Up direction as an array
@@ -79,7 +79,9 @@ export function initCharacterControllerSystem() {
 
   const onCreatedCharacterController = onEnterQuery(characterControllersQuery);
 
-  const onRemovedCharacterController = onExitQuery(query(CharacterController));
+  const onRemovedCharacterController = onExitQuery(
+    query(CharacterController, RuntimeCharacterController),
+  );
 
   onCreatedCharacterController((ent) => {
     const controller = world.createCharacterController(
@@ -89,12 +91,14 @@ export function initCharacterControllerSystem() {
     setCharacterControllerOptions(ent, controller);
 
     setRuntimeCharacterController(ent, controller);
-
     attach(RuntimeCharacterController, ent);
   });
 
   onRemovedCharacterController((ent) => {
+    debugger;
     world.removeCharacterController(RuntimeCharacterController[ent]!);
+    RuntimeCharacterController[ent] = undefined;
+    console.log("remove character controller ent", ent);
   });
 }
 

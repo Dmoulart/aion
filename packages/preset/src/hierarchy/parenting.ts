@@ -81,6 +81,14 @@ export function addChildTo(parent: Entity, child: Entity) {
   attach(Children, parent);
 }
 
+export function removeChildren(parent: Entity) {
+  forEachChildOf(parent, (_, i) => {
+    Children.list[parent]![i] = 0;
+  });
+
+  Children.length[parent] = 0;
+}
+
 export function getFirstChildOf(parent: Entity) {
   return Children.list[parent]![0];
 }
@@ -122,11 +130,14 @@ export function findFirstChildWithComponent(
   return findChildOf(parent, (child) => has(component, child));
 }
 
-export function forEachChildOf(parent: Entity, cb: (ent: Entity) => void) {
+export function forEachChildOf(
+  parent: Entity,
+  cb: (entity: Entity, index: number) => void,
+) {
   const children = getChildren(parent);
 
   for (let i = 0; i < getChildrenCount(parent); i++) {
-    cb(children[i]!);
+    cb(children[i]!, i);
   }
 }
 
