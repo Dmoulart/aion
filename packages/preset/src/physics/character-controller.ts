@@ -26,7 +26,7 @@ export const CharacterController = defineComponent({
 });
 
 export const RuntimeCharacterController = defineComponent(
-  Array<RAPIER.KinematicCharacterController>,
+  Array<RAPIER.KinematicCharacterController | undefined>,
 );
 
 // Up direction as an array
@@ -98,7 +98,6 @@ export function initCharacterControllerSystem() {
     debugger;
     world.removeCharacterController(RuntimeCharacterController[ent]!);
     RuntimeCharacterController[ent] = undefined;
-    console.log("remove character controller ent", ent);
   });
 }
 
