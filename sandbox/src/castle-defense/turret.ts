@@ -141,6 +141,7 @@ export function initTurrets() {
   const onProjectileHit = onEnterQuery(query(Projectile, Collision));
 
   onProjectileHit((projectile) => {
+    console.log("projectile hit", projectile);
     const collided = getCollidingEntity(projectile);
     if (collided) {
       if (has(Health, collided)) {

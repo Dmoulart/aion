@@ -1,5 +1,12 @@
 import { Entity, onEnterQuery, onExitQuery } from "aion-ecs";
-import { beforeStart, defineEngine, defineLoop, emit, on } from "aion-engine";
+import {
+  beforeStart,
+  defineEngine,
+  defineLoop,
+  emit,
+  on,
+  once,
+} from "aion-engine";
 import { click, direction, getMouse, key } from "aion-input";
 import {
   translate,
@@ -27,6 +34,7 @@ import {
   castRay,
   getRectHalfHeight,
   getCollidingEntity,
+  getWorldPosition,
 } from "aion-preset";
 import {
   Colors,
@@ -248,6 +256,22 @@ export function createScenes() {
         font("Arial 148px").strokeText("GAME OVER", x, y, "white");
       });
     });
+
+    //   query(Transform).each((entity) => {
+    //     const position = getWorldPosition(entity);
+
+    //     if (
+    //       position.x < -4000 ||
+    //       position.x > 4000 ||
+    //       position.y < -4000 ||
+    //       position.y > 4000
+    //     ) {
+    //       once("delete-entities", () => {
+    //         remove(entity);
+    //       });
+    //     }
+    //   });
+    // });
 
     return on("update", () => {
       query(Transform, EnemySpawn).each((entity) => {
