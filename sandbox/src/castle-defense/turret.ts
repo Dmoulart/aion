@@ -30,12 +30,12 @@ import {
   defineComponent,
   eid,
   f32,
-  i32,
   onEnterQuery,
+  onExitQuery,
   u32,
 } from "aion-ecs";
 import { Health, IsEnemy } from "./components";
-import { on, once } from "aion-engine";
+import { on } from "aion-engine";
 import { damage } from "./health";
 
 export const Gun = defineComponent({
@@ -52,6 +52,10 @@ export const AutoTarget = defineComponent({
 
 export const Projectile = defineComponent({
   hit: u32,
+});
+
+export const IsTargeted = defineComponent({
+  attacker: eid,
 });
 
 export function createTurret(pos: Vector) {
@@ -86,8 +90,8 @@ export function createTurret(pos: Vector) {
         range: 1,
       },
       Gun: {
-        freq: 200,
-        force: 10,
+        freq: 50,
+        force: 20,
       },
     }),
   );
@@ -97,6 +101,13 @@ export function createTurret(pos: Vector) {
 
 export function initTurrets() {
   const { query, has, remove } = useECS();
+  const onTargetKilled = onExitQuery(query(IsTargeted));
+
+  onTargetKilled((entity) => {
+    const attacker = IsTargeted.attacker[entity];
+    AutoTarget.target[attacker] = 0;
+    IsTargeted.attacker[entity] = 0;
+  });
 
   on("update", () => {
     query(Transform, AutoTarget, Gun).each((entity) => {
@@ -142,6 +153,7 @@ export function initTurrets() {
 
 function searchForTarget(entity: Entity) {
   const { world, RAPIER } = usePhysics();
+  const { attach } = useECS();
 
   const position = getPhysicsWorldPosition(entity);
   const rotation = 0;
@@ -164,6 +176,9 @@ function searchForTarget(entity: Entity) {
       if (target) {
         Fill[target] = "blue";
         AutoTarget.target[entity] = target;
+
+        IsTargeted.attacker[target] = entity;
+        attach(IsTargeted, target);
       }
     }
   }

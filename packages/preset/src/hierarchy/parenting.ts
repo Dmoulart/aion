@@ -82,8 +82,9 @@ export function addChildTo(parent: Entity, child: Entity) {
 }
 
 export function removeChildren(parent: Entity) {
-  forEachChildOf(parent, (_, i) => {
+  forEachChildOf(parent, (child, i) => {
     Children.list[parent]![i] = 0;
+    Parent[child] = 0;
   });
 
   Children.length[parent] = 0;
