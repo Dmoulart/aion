@@ -22,7 +22,7 @@ export function createEntity(
   const eid = world.deletedEntities.length
     ? world.deletedEntities.shift()!
     : nextID();
-
+  // const eid = nextID();
   // We start creating entities id from 1
   if (eid > world.size) {
     // todo: resize world automatically ?

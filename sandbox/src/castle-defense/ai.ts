@@ -109,30 +109,24 @@ export function setupAI() {
     MoveToAction,
     MoveToOrder,
     (entity: Entity) => {
-      try {
-        const controller = RuntimeCharacterController[entity]!;
-        const movement = getWorldDistance(MoveToOrder.target[entity], entity)
-          .norm()
-          .scale(10)
-          .add(getGravity());
+      const controller = RuntimeCharacterController[entity]!;
+      const movement = getWorldDistance(MoveToOrder.target[entity], entity)
+        .norm()
+        .scale(10)
+        .add(getGravity());
 
-        controller.computeColliderMovement(
-          getRuntimeCollider(entity),
-          movement,
-          undefined,
-          ENEMY_COLLISION_GROUP,
-        );
+      controller.computeColliderMovement(
+        getRuntimeCollider(entity),
+        movement,
+        undefined,
+        ENEMY_COLLISION_GROUP,
+      );
 
-        setScaleX(entity, movement.x >= 0 ? -1 : 1);
+      setScaleX(entity, movement.x >= 0 ? -1 : 1);
 
-        const computedMovement = controller.computedMovement();
+      const computedMovement = controller.computedMovement();
 
-        getRuntimeBody(entity).setLinvel(computedMovement, false);
-      } catch (e) {
-        debugger;
-        console.log("entity", entity);
-        console.log("exists", exists(entity));
-      }
+      getRuntimeBody(entity).setLinvel(computedMovement, false);
     },
   );
 

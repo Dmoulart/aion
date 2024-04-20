@@ -29,24 +29,7 @@ export function createEnemy(pos: Vector, target?: Entity) {
   const { attach } = useECS();
 
   const { RAPIER } = usePhysics();
-
-  const sword = Sword({
-    Transform: createTransform(10, -20),
-    Fill: "grey",
-    Stroke: "black",
-    Rect: {
-      h: 50,
-      w: 5,
-    },
-    Collider: createCollider({
-      auto: 1,
-      isSensor: 1,
-      collisionGroups: ENEMY_COLLISION_GROUP,
-    }),
-    Weapon: {
-      hit: 100,
-    },
-  });
+  console.log(ENEMY_COLLISION_GROUP);
   const enemy = Enemy({
     Transform: createTransform(pos.x, pos.y),
     Rect: {
@@ -81,7 +64,26 @@ export function createEnemy(pos: Vector, target?: Entity) {
   const { createRect, createCircle } = useAion();
 
   //sword
-  addChildTo(enemy, sword);
+  addChildTo(
+    enemy,
+    Sword({
+      Transform: createTransform(10, -20),
+      Fill: "grey",
+      Stroke: "black",
+      Rect: {
+        h: 50,
+        w: 5,
+      },
+      Collider: createCollider({
+        auto: 1,
+        isSensor: 1,
+        collisionGroups: ENEMY_COLLISION_GROUP,
+      }),
+      Weapon: {
+        hit: 100,
+      },
+    }),
+  );
 
   // attach(Debug, enemy);
   // Debug[enemy] = "enemy";
@@ -125,5 +127,6 @@ export function createEnemy(pos: Vector, target?: Entity) {
       Stroke: "black",
     }),
   );
+
   return enemy;
 }

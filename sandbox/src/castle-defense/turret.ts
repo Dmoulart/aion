@@ -37,6 +37,7 @@ import {
 import { Health, IsEnemy } from "./components";
 import { on } from "aion-engine";
 import { damage } from "./health";
+import { Weapon } from "./enemy";
 
 export const Gun = defineComponent({
   force: f32,
@@ -91,7 +92,7 @@ export function createTurret(pos: Vector) {
       },
       Gun: {
         freq: 50,
-        force: 20,
+        force: 50,
       },
     }),
   );
@@ -111,14 +112,14 @@ export function initTurrets() {
 
   on("update", () => {
     query(Transform, AutoTarget, Gun).each((entity) => {
-      // if (AutoTarget.target[entity] !== 0) {
-      //   // if (
-      //   //   getWorldDistance(entity, AutoTarget.target[entity]).mag() >
-      //   //   AutoTarget.range[entity]
-      //   // ) {
-      //   //   AutoTarget.target[entity] = 0;
-      //   // }
-      // }
+      if (AutoTarget.target[entity] !== 0) {
+        if (
+          getWorldDistance(AutoTarget.target[entity], entity).mag() <
+          AutoTarget.range[entity]
+        ) {
+          AutoTarget.target[entity] = 0;
+        }
+      }
 
       if (AutoTarget.target[entity] === 0) {
         searchForTarget(entity);
@@ -127,6 +128,7 @@ export function initTurrets() {
       if (AutoTarget.target[entity] !== 0) {
         rotateTowards(entity, AutoTarget.target[entity], 3);
         const now = millitimestamp();
+
         const timeSinceLastShot = now - Gun.lastShot[entity];
         const shootFrequency = Gun.freq[entity];
 
@@ -141,9 +143,11 @@ export function initTurrets() {
   const onProjectileHit = onEnterQuery(query(Projectile, Collision));
 
   onProjectileHit((projectile) => {
-    console.log("projectile hit", projectile);
     const collided = getCollidingEntity(projectile);
     if (collided) {
+      // if (has(Weapon, collided)) {
+      //   remove(collided);
+      // }
       if (has(Health, collided)) {
         damage(collided, Projectile.hit[projectile]);
       }
@@ -163,7 +167,7 @@ function searchForTarget(entity: Entity) {
     position,
     rotation,
     { x: Math.random() > 0.5 ? 1 : -1, y: 0 },
-    new RAPIER.Cuboid(20, 20),
+    new RAPIER.Cuboid(10, 10),
     maxToi,
     false,
     undefined,

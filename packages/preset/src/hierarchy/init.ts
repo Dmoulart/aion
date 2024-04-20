@@ -10,7 +10,6 @@ export function initHierarchy() {
     const onAncestorRemoved = onExitQuery(query(Children));
 
     onAncestorRemoved((parent) => {
-      debugger;
       traverseDescendants(parent, (descendant) => {
         remove(descendant);
       });

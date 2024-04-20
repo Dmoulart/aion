@@ -54,23 +54,27 @@ export function initPhysicsSystems() {
     attach(RuntimeBody, ent);
   });
 
-  const onRemovedBody = onExitQuery(query(Transform, RuntimeBody));
   const onRemovedCollider = onExitQuery(query(Transform, RuntimeCollider));
+  const onRemovedBody = onExitQuery(query(Transform, RuntimeBody));
+
+  onRemovedCollider((ent) => {
+    const collider = getRuntimeCollider(ent);
+    if (collider) {
+      unmapColliderHandleToEntity(collider.handle);
+      world.removeCollider(collider, true);
+    }
+  });
 
   onRemovedBody((ent) => {
     const body = getRuntimeBody(ent);
 
     if (body) {
+      // for (let i = 0; i < body.numColliders(); i++) {
+      //   const collider = body.collider(i);
+      //   world.removeCollider(collider, false);
+      //   unmapColliderHandleToEntity(collider.handle);
+      // }
       world.removeRigidBody(getRuntimeBody(ent));
-    }
-  });
-
-  onRemovedCollider((ent) => {
-    const collider = getRuntimeCollider(ent);
-
-    if (collider) {
-      unmapColliderHandleToEntity(collider.handle);
-      world.removeCollider(collider, true);
     }
   });
 

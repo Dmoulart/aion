@@ -108,13 +108,12 @@ export function createColliderDesc(ent: Entity): RAPIER.ColliderDesc[] {
 
   const colliders: RAPIER.ColliderDesc[] = [];
 
+  //@todo multiple colliders
   if (has(Circle, ent)) {
     const radius = Circle.r[ent]!;
     const collider = RAPIER.ColliderDesc.ball((radius / SCALE_FACTOR) | 0);
     colliders.push(collider);
-  }
-
-  if (has(Rect, ent)) {
+  } else if (has(Rect, ent)) {
     const w = Rect.w[ent]!;
     const h = Rect.h[ent]!;
     const collider = RAPIER.ColliderDesc.cuboid(

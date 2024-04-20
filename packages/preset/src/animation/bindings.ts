@@ -50,7 +50,9 @@ export function bindAnimationToComponent(
   onComponentAdded((entity) => {
     const target = getTargetEntity(entity);
 
-    attachAnimationTo(target, animationID);
+    if (target) {
+      attachAnimationTo(target, animationID);
+    }
   });
 
   const onComponentRemoved = onExitQuery(query(component));
@@ -58,7 +60,9 @@ export function bindAnimationToComponent(
   onComponentRemoved((entity) => {
     const target = getTargetEntity(entity);
 
-    setAnimationEndsAfterCurrentCycle(target, true);
+    if (target) {
+      setAnimationEndsAfterCurrentCycle(target, true);
+    }
   });
 }
 

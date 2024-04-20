@@ -1,12 +1,5 @@
 import { Entity, onEnterQuery, onExitQuery } from "aion-ecs";
-import {
-  beforeStart,
-  defineEngine,
-  defineLoop,
-  emit,
-  on,
-  once,
-} from "aion-engine";
+import { beforeStart, defineEngine, defineLoop, emit, on } from "aion-engine";
 import { click, direction, getMouse, key } from "aion-input";
 import {
   translate,
@@ -34,7 +27,6 @@ import {
   castRay,
   getRectHalfHeight,
   getCollidingEntity,
-  getWorldPosition,
 } from "aion-preset";
 import {
   Colors,
@@ -313,7 +305,6 @@ export function plugins() {
   beforeStart(() => {
     const { $ecs } = useGame();
     const { RAPIER } = usePhysics();
-
     floor = preset.createCube({
       Transform: createTransform(windowCenterX(), windowCenterY()),
       Rect: {

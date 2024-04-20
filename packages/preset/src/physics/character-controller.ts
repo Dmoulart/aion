@@ -95,7 +95,6 @@ export function initCharacterControllerSystem() {
   });
 
   onRemovedCharacterController((ent) => {
-    debugger;
     world.removeCharacterController(RuntimeCharacterController[ent]!);
     RuntimeCharacterController[ent] = undefined;
   });
