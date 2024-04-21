@@ -1,6 +1,6 @@
 import { Entity, onEnterQuery, onExitQuery } from "aion-ecs";
 import { beforeStart, defineEngine, defineLoop, emit, on } from "aion-engine";
-import { click, direction, getMouse, key } from "aion-input";
+import { isClicking, direction, getMouse, key } from "aion-input";
 import {
   translate,
   zoomBy,
@@ -27,6 +27,7 @@ import {
   castRay,
   getRectHalfHeight,
   getCollidingEntity,
+  getMouseWorldPosition,
 } from "aion-preset";
 import {
   Colors,
@@ -111,20 +112,26 @@ export function createScenes() {
     $ecs.attach(Blueprint, blueprint);
 
     return on("update", () => {
-      const mouse = screenToWorldPosition(getMouse());
-
-      const result = castRay(mouse, downDirection(), undefined, 20);
+      const result = castRay(
+        getMouseWorldPosition(),
+        downDirection(),
+        undefined,
+        20,
+      );
 
       if (result) {
         const { point } = result;
+
         point.y -= getRectHalfHeight(blueprint);
+
         setRuntimeBodyPosition(blueprint, point);
+
         if (key("w")) {
-          if (click()) {
+          if (isClicking()) {
             createTurret(point);
           }
         }
-        if (click()) {
+        if (isClicking()) {
           createWall(point.x, point.y);
 
           wallNumber++;
@@ -163,7 +170,7 @@ export function createScenes() {
 
       setRuntimeBodyPosition(player, { x, y });
 
-      if (click()) {
+      if (isClicking()) {
         Treasure({
           Transform: createTransform(x, y),
           Rect: {

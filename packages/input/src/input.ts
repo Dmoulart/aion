@@ -1,4 +1,4 @@
-import { vec, type Vector } from "aion-core";
+import { Vec, vec, type Vector } from "aion-core";
 import type { KeyboardEventKey } from "./keys.js";
 
 let listener: ReturnType<typeof createInputListener>;
@@ -58,9 +58,18 @@ export function createInputListener(options?: InputListenerOptions) {
   const onClick = (cb: (ev: MouseEvent) => void) =>
     root.addEventListener("click", cb);
 
+  const onMouseUp = (cb: (ev: MouseEvent) => void) =>
+    root.addEventListener("mouseup", cb);
+
+  const onceMouseUp = (cb: (ev: MouseEvent) => void) =>
+    root.addEventListener("mouseup", cb, { once: true });
+
   let _isClicking = false;
+
   root.addEventListener("mousedown", () => (_isClicking = true));
   root.addEventListener("mouseup", () => (_isClicking = false));
+
+  // onceMouseUp()
 
   return {
     root,
@@ -73,7 +82,9 @@ export function createInputListener(options?: InputListenerOptions) {
     pressedKeys,
     mouse,
     onClick,
-    click,
+    click: isClicking,
+    onMouseUp,
+    onceMouseUp,
   };
 }
 
@@ -113,14 +124,18 @@ export function anyKey(...keys: KeyboardEventKey[]) {
 
 // }
 
-export function click() {
-  if (listener.isClicking) {
-    listener.isClicking = false;
-    return true;
-  }
-  return false;
+export function isClicking() {
+  return listener.isClicking;
+}
+
+export function onMouseUp(cb: () => void) {
+  return listener.onMouseUp(cb);
+}
+
+export function onceMouseUp(cb: () => void) {
+  return listener.onceMouseUp(cb);
 }
 
 export function direction() {
-  return vec(axis("horizontal"), axis("vertical"));
+  return new Vec(axis("horizontal"), axis("vertical"));
 }
