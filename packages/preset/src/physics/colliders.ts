@@ -131,6 +131,10 @@ export function getRuntimeCollider(entity: Entity) {
   return world.getCollider(RuntimeCollider[entity]!);
 }
 
+export function getRuntimeColliderEntity(collider: RAPIER.Collider) {
+  return COLLIDER_HANDLE_TO_ENTITY_ID.get(collider.handle);
+}
+
 export function setRuntimeCollider(entity: Entity, collider: RAPIER.Collider) {
   RuntimeCollider[entity] = collider.handle;
 }

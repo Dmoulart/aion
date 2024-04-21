@@ -19,7 +19,7 @@ import {
   Building,
 } from "./components";
 import { Weapon } from "./enemy";
-import { Gun, AutoTarget, Projectile } from "./turret";
+import { Gun, AutoTarget, Projectile, MovementDetector } from "./turret";
 
 export const usePrefabs = singleton(() => {
   const { prefab } = useECS();

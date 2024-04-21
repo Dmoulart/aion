@@ -18,6 +18,7 @@ import {
   getWorldRotation,
   Collision,
   getCollidingEntity,
+  getRuntimeColliderEntity,
 } from "aion-preset";
 import {
   OBSTACLE_COLLISION_GROUP,
@@ -45,7 +46,7 @@ export const Gun = defineComponent({
 });
 
 export const AutoTarget = defineComponent({
-  targetComponent: u32,
+  targetComponent: eid,
   target: eid,
   range: u32,
 });
@@ -104,6 +105,7 @@ export function initTurrets() {
   const onTargetKilled = onExitQuery(query(IsTargeted));
 
   onTargetKilled((entity) => {
+    console.log("target killed");
     const attacker = IsTargeted.attacker[entity];
     AutoTarget.target[attacker] = 0;
     IsTargeted.attacker[entity] = 0;
@@ -111,18 +113,28 @@ export function initTurrets() {
 
   on("update", () => {
     query(Transform, AutoTarget, Gun).each((entity) => {
-      if (AutoTarget.target[entity] !== 0) {
-        if (
-          getWorldDistance(AutoTarget.target[entity], entity).mag() <
-          AutoTarget.range[entity]
-        ) {
-          AutoTarget.target[entity] = 0;
-        }
-      }
+      // if (AutoTarget.target[entity] !== 0) {
+      //   const distance = getWorldDistance(
+      //     AutoTarget.target[entity],
+      //     entity,
+      //   ).mag();
+      //   console.log("distance,", distance);
+
+      //   if (distance > AutoTarget.range[entity]) {
+      //     AutoTarget.target[entity] = 0;
+      //   }
+      // }
 
       if (AutoTarget.target[entity] === 0) {
         searchForTarget(entity);
       }
+
+      console.log(
+        "source is ",
+        entity,
+        "target is :",
+        AutoTarget.target[entity],
+      );
 
       if (AutoTarget.target[entity] !== 0) {
         rotateTowards(entity, AutoTarget.target[entity], 3);
@@ -141,6 +153,7 @@ export function initTurrets() {
 
   const onProjectileHit = onEnterQuery(query(Projectile, Collision));
   let lastRemovedProj: Entity[] = [];
+
   onProjectileHit((projectile) => {
     const collided = getCollidingEntity(projectile);
     if (collided) {
@@ -155,16 +168,32 @@ export function initTurrets() {
 
 function searchForTarget(entity: Entity) {
   const { world, RAPIER } = usePhysics();
-  const { attach } = useECS();
+  const { attach, has } = useECS();
   const result = world.castShape(
     getPhysicsWorldPosition(entity),
     0,
     { x: Math.random() > 0.5 ? 1 : -1, y: 0 },
     new RAPIER.Cuboid(10, 10),
     4,
-    true,
+    false,
     undefined,
     TURRET_COLLISION_GROUP,
+    undefined,
+    undefined,
+    // (collider) => {
+    //   debugger;
+    //   const target = getRuntimeColliderEntity(collider);
+
+    //   if (target) {
+    //     const TargetComponent = AutoTarget.targetComponent[entity];
+    //     console.log(TargetComponent, target);
+    //     if (has(TargetComponent, target)) {
+    //       return true;
+    //     }
+    //   }
+
+    //   return false;
+    // },
   );
 
   if (result) {
@@ -217,19 +246,17 @@ function shoot(entity: Entity, target: Entity) {
   );
 }
 
-function isTargetReachable(entity: Entity) {
-  const result = castRay(
-    entity,
-    AutoTarget.target[entity],
-    TURRET_COLLISION_GROUP,
-  );
-
+function isTargetReachable(
+  source: Entity,
+  target: Entity,
+  collisionGroup: number = TURRET_COLLISION_GROUP,
+) {
+  const result = castRay(source, target, collisionGroup);
+  console.log({ result });
   if (result) {
-    const target = result.entity;
-    if (target === AutoTarget.target[entity]) {
-      Fill[target] = "red";
-    }
-    return true;
+    const hit = result.entity;
+    return hit === target;
   }
+
   return false;
 }
