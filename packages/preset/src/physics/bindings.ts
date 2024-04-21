@@ -38,6 +38,7 @@ export function initPhysicsSystems() {
   const onCreatedBody = onEnterQuery(query(Transform, Body, not(RuntimeBody)));
 
   onCreatedBody((ent) => {
+    console.log("create Body", ent, Body.type[ent]!);
     const bodyDesc = new RAPIER.RigidBodyDesc(Body.type[ent]!);
 
     setBodyOptions(bodyDesc, ent);

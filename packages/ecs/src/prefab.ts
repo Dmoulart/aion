@@ -151,8 +151,10 @@ const compilePrefab = (definition: Record<string, Component<any>>) => {
           .map(([prop, val]) => {
             if (prop === "data" || prop === "id") return "";
             return `
-             options_${componentName}.${prop} && (${componentName}.${prop}[eid] = options_${componentName}.${prop});
-          `;
+             if(options_${componentName}.${prop} !== undefined) {
+              ${componentName}.${prop}[eid] = options_${componentName}.${prop}
+             };
+          `; //@todo default values !! This will avoid huge pain in the ass bugs with entity recycling
           })
           .join("");
       } else {

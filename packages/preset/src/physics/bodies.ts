@@ -51,6 +51,7 @@ export function createBody(
 
 export function setBodyOptions(bodyDesc: RAPIER.RigidBodyDesc, entity: Entity) {
   bodyDesc.setEnabled(Boolean(Body.enabled[entity])!);
+  bodyDesc.status = Body.type[entity]!;
 
   bodyDesc.setLinvel(Body.linvelX[entity]!, Body.linvelY[entity]!);
   bodyDesc.setAngvel(Body.angvel[entity]!);
@@ -92,9 +93,11 @@ export function getRuntimeBody(entity: Entity) {
   const { world } = usePhysics();
   return world.getRigidBody(RuntimeBody[entity]!);
 }
+
 export function setRuntimeBody(entity: Entity, body: RAPIER.RigidBody) {
   RuntimeBody[entity] = body.handle;
 }
+
 export function getRuntimeBodyEntity(body: RAPIER.RigidBody) {
   return body.userData as Entity;
 }

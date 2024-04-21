@@ -2,7 +2,7 @@ import { beforeStart, on } from "aion-engine";
 import { useECS } from "../ecs.js";
 import { fillText, font, strokeStyle, strokeText } from "aion-render";
 import { Parent, Transform, getWorldPosition } from "../index.js";
-import { defineComponent, not } from "aion-ecs";
+import { defineComponent, not, type Component, type Entity } from "aion-ecs";
 
 // export const Debug = defineComponent(Array<string>);
 
@@ -25,4 +25,21 @@ export function initDebug(options?: InitDebugOptions) {
       });
     });
   }
+}
+
+export function logEntityComponent(entity: Entity, component: Component) {
+  for (const field in component) {
+    console.log(field, component[field][entity]);
+  }
+}
+
+export function getEntityComponentAsObject(
+  entity: Entity,
+  component: Component,
+) {
+  const obj = {};
+  for (const field in component) {
+    obj[field] = component[field][entity];
+  }
+  return obj;
 }

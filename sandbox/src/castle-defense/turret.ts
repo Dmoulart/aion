@@ -18,6 +18,12 @@ import {
   getWorldRotation,
   Collision,
   getCollidingEntity,
+  getRuntimeBody,
+  logEntityComponent,
+  Body,
+  Collider,
+  logEntityComponentAsObject,
+  getEntityComponentAsObject,
 } from "aion-preset";
 import {
   OBSTACLE_COLLISION_GROUP,
@@ -141,8 +147,9 @@ export function initTurrets() {
   });
 
   const onProjectileHit = onEnterQuery(query(Projectile, Collision));
-
+  let lastRemovedProj: Entity[] = [];
   onProjectileHit((projectile) => {
+    console.log("hit");
     const collided = getCollidingEntity(projectile);
     if (collided) {
       // if (has(Weapon, collided)) {
@@ -152,7 +159,24 @@ export function initTurrets() {
         damage(collided, Projectile.hit[projectile]);
       }
     }
+    lastRemovedProj.push(projectile);
     remove(projectile);
+  });
+  const onCreatedEnemy = onEnterQuery(query(IsEnemy));
+  onCreatedEnemy((e) => {
+    if (lastRemovedProj.includes(e)) {
+      console.log("Recycled entity from projectile", e);
+      console.log("body", getEntityComponentAsObject(e, Body));
+      console.log("collider", getEntityComponentAsObject(e, Collider));
+
+      // console.log(getRuntimeBody(e));
+      // console.log(getBody(e));
+      debugger;
+    } else {
+      console.log("NOT Recycled entity from projectile", e);
+      console.log("body", getEntityComponentAsObject(e, Body));
+      console.log("collider", getEntityComponentAsObject(e, Collider));
+    }
   });
 }
 
@@ -216,6 +240,8 @@ function shoot(entity: Entity, target: Entity) {
       hit: 10,
     },
   });
+
+  console.log("create bullet");
 
   setRuntimeBodyVelocity(
     bullet,

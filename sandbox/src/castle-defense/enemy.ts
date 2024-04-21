@@ -10,6 +10,7 @@ import {
   usePhysics,
   useAion,
   degreesToRadians,
+  Body,
 } from "aion-preset";
 import { createDestroyTreasureGoal } from "./ai";
 import { ENEMY_COLLISION_GROUP } from "./collision-groups";
@@ -29,7 +30,7 @@ export function createEnemy(pos: Vector, target?: Entity) {
   const { attach } = useECS();
 
   const { RAPIER } = usePhysics();
-  console.log(ENEMY_COLLISION_GROUP);
+
   const enemy = Enemy({
     Transform: createTransform(pos.x, pos.y),
     Rect: {
@@ -60,10 +61,9 @@ export function createEnemy(pos: Vector, target?: Entity) {
     }),
     Health: 100,
   });
-
+  console.log("create enemy", enemy, "body type", Body.type[enemy]);
   const { createRect, createCircle } = useAion();
 
-  //sword
   addChildTo(
     enemy,
     Sword({
@@ -84,9 +84,6 @@ export function createEnemy(pos: Vector, target?: Entity) {
       },
     }),
   );
-
-  // attach(Debug, enemy);
-  // Debug[enemy] = "enemy";
 
   // eye
   addChildTo(
