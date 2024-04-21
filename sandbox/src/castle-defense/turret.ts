@@ -18,12 +18,6 @@ import {
   getWorldRotation,
   Collision,
   getCollidingEntity,
-  getRuntimeBody,
-  logEntityComponent,
-  Body,
-  Collider,
-  logEntityComponentAsObject,
-  getEntityComponentAsObject,
 } from "aion-preset";
 import {
   OBSTACLE_COLLISION_GROUP,
@@ -43,7 +37,6 @@ import {
 import { Health, IsEnemy } from "./components";
 import { on } from "aion-engine";
 import { damage } from "./health";
-import { Weapon } from "./enemy";
 
 export const Gun = defineComponent({
   force: f32,
@@ -97,7 +90,7 @@ export function createTurret(pos: Vector) {
         range: 1,
       },
       Gun: {
-        freq: 250,
+        freq: 25,
         force: 50,
       },
     }),
@@ -151,9 +144,6 @@ export function initTurrets() {
   onProjectileHit((projectile) => {
     const collided = getCollidingEntity(projectile);
     if (collided) {
-      // if (has(Weapon, collided)) {
-      //   remove(collided);
-      // }
       if (has(Health, collided)) {
         damage(collided, Projectile.hit[projectile]);
       }
@@ -166,20 +156,17 @@ export function initTurrets() {
 function searchForTarget(entity: Entity) {
   const { world, RAPIER } = usePhysics();
   const { attach } = useECS();
-
-  const position = getPhysicsWorldPosition(entity);
-  const rotation = 0;
-  const maxToi = 4;
   const result = world.castShape(
-    position,
-    rotation,
+    getPhysicsWorldPosition(entity),
+    0,
     { x: Math.random() > 0.5 ? 1 : -1, y: 0 },
     new RAPIER.Cuboid(10, 10),
-    maxToi,
-    false,
+    4,
+    true,
     undefined,
     TURRET_COLLISION_GROUP,
   );
+
   if (result) {
     const body = result.collider.parent();
     if (body) {
