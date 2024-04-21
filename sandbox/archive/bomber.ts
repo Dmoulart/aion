@@ -78,7 +78,6 @@ onTileCreated((e) => {
     InputCommand.horizontal[player] = x;
     InputCommand.vertical[player] = y;
   }
-  console.log("player", player);
 
   const { key } = useInput();
   if (key(" ")) {
@@ -96,7 +95,6 @@ onTileCreated((e) => {
     if (isMoving(e)) {
       lastPlayersDirections[e].x = Velocity.x[e];
       lastPlayersDirections[e].y = Velocity.y[e];
-      console.log("last pl d", e, lastPlayersDirections[e]);
       if (Animation.start[e] === 0) {
         // start animation
         Animation.start[e] = Date.now();

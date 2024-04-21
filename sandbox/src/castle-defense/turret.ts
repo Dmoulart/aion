@@ -149,7 +149,6 @@ export function initTurrets() {
   const onProjectileHit = onEnterQuery(query(Projectile, Collision));
   let lastRemovedProj: Entity[] = [];
   onProjectileHit((projectile) => {
-    console.log("hit");
     const collided = getCollidingEntity(projectile);
     if (collided) {
       // if (has(Weapon, collided)) {
@@ -161,22 +160,6 @@ export function initTurrets() {
     }
     lastRemovedProj.push(projectile);
     remove(projectile);
-  });
-  const onCreatedEnemy = onEnterQuery(query(IsEnemy));
-  onCreatedEnemy((e) => {
-    if (lastRemovedProj.includes(e)) {
-      console.log("Recycled entity from projectile", e);
-      console.log("body", getEntityComponentAsObject(e, Body));
-      console.log("collider", getEntityComponentAsObject(e, Collider));
-
-      // console.log(getRuntimeBody(e));
-      // console.log(getBody(e));
-      debugger;
-    } else {
-      console.log("NOT Recycled entity from projectile", e);
-      console.log("body", getEntityComponentAsObject(e, Body));
-      console.log("collider", getEntityComponentAsObject(e, Collider));
-    }
   });
 }
 
@@ -240,8 +223,6 @@ function shoot(entity: Entity, target: Entity) {
       hit: 10,
     },
   });
-
-  console.log("create bullet");
 
   setRuntimeBodyVelocity(
     bullet,

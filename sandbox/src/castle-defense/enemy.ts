@@ -61,7 +61,6 @@ export function createEnemy(pos: Vector, target?: Entity) {
     }),
     Health: 100,
   });
-  console.log("create enemy", enemy, "body type", Body.type[enemy]);
   const { createRect, createCircle } = useAion();
 
   addChildTo(

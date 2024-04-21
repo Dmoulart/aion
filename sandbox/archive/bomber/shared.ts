@@ -135,7 +135,6 @@ export function handleBombs(world: World) {
       });
 
       setTimeout(() => {
-        console.log("delete");
         explodedBombs.push(bomb);
         remove(bomb);
       }, 1_000);
