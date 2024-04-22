@@ -126,11 +126,10 @@ export function createScenes() {
 
         setRuntimeBodyPosition(blueprint, point);
 
-        if (key("w")) {
-          if (isClicking()) {
-            createTurret(point);
-          }
+        if (key("w") && isClicking()) {
+          createTurret(point);
         }
+
         if (isClicking()) {
           createWall(point.x, point.y);
 
