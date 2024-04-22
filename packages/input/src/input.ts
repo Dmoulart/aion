@@ -124,6 +124,14 @@ export function anyKey(...keys: KeyboardEventKey[]) {
 
 // }
 
+export function click() {
+  if (listener.isClicking) {
+    listener.isClicking = false;
+    return true;
+  }
+  return false;
+}
+
 export function isClicking() {
   return listener.isClicking;
 }

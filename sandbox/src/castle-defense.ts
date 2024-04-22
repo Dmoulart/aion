@@ -1,6 +1,6 @@
 import { Entity, onEnterQuery, onExitQuery } from "aion-ecs";
 import { beforeStart, defineEngine, defineLoop, emit, on } from "aion-engine";
-import { isClicking, direction, getMouse, key } from "aion-input";
+import { isClicking, direction, getMouse, key, click } from "aion-input";
 import {
   translate,
   zoomBy,
@@ -126,11 +126,11 @@ export function createScenes() {
 
         setRuntimeBodyPosition(blueprint, point);
 
-        if (key("w") && isClicking()) {
+        if (key("w") && click()) {
           createTurret(point);
         }
 
-        if (isClicking()) {
+        if (click()) {
           createWall(point.x, point.y);
 
           wallNumber++;
