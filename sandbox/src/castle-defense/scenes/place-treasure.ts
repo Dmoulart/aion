@@ -3,82 +3,73 @@ import { getMouse, isClicking } from "aion-input";
 import {
   createTransform,
   createCollider,
-  screenToWorldPosition,
-  Rect,
   createBody,
+  screenToWorldPosition,
+  setRuntimeBodyPosition,
+  Rect,
   exitCurrentScene,
-  Body,
-  Collider,
-  Fill,
-  Stroke,
-  Transform,
+  useECS,
+  usePhysics,
 } from "aion-preset";
 import { Colors } from "aion-render";
 import { OBSTACLE_COLLISION_GROUP } from "../collision-groups";
-import { useGame } from "../../castle-defense";
-import { Resistance } from "../components";
+import { IsTreasure } from "../components";
+import { initTurrets } from "../turret";
+import { usePrefabs } from "../prefabs";
 
 export default () => {
-  const { $ecs, $physics } = useGame();
-  const { RAPIER } = $physics;
+  const { RAPIER } = usePhysics();
+  const { remove } = useECS();
+  const { Treasure } = usePrefabs();
 
-  const Wall = $ecs.prefab({
-    Transform,
-    Rect,
-    Fill,
-    Stroke,
-    Collider,
-    Body,
-    Resistance,
-  });
+  initTurrets();
 
-  let wallNumber = 0;
-
-  const player = Wall({
+  const player = Treasure({
     Transform: createTransform(0, 0),
     Rect: {
-      h: 500,
+      h: 50,
       w: 50,
     },
-    Fill: Colors["cornflower:800"],
+    Fill: Colors["fuchsia-blue:700"],
     Stroke: "black",
     Collider: createCollider({
       auto: 1,
       collisionGroups: OBSTACLE_COLLISION_GROUP,
     }),
-    Resistance: 100,
+    Body: createBody({
+      type: RAPIER.RigidBodyType.Dynamic,
+    }),
   });
 
-  return on("update", () => {
+  const cleanup = on("update", () => {
     const { x, y } = screenToWorldPosition(getMouse());
 
-    setBodyPosition(player, { x, y });
+    setRuntimeBodyPosition(player, { x, y });
 
     if (isClicking()) {
-      Wall({
+      Treasure({
         Transform: createTransform(x, y),
         Rect: {
           h: Rect.h[player],
           w: Rect.w[player],
         },
-        Fill: Colors["cornflower:800"],
+        Fill: Colors["fuchsia-blue:700"],
         Stroke: "black",
         Collider: createCollider({
           auto: 1,
           collisionGroups: OBSTACLE_COLLISION_GROUP,
         }),
         Body: createBody({
-          type: RAPIER.RigidBodyType.Fixed,
+          type: RAPIER.RigidBodyType.Dynamic,
         }),
-        Resistance: 10,
+        Health: 1000,
+        IsTreasure,
       });
 
-      wallNumber++;
-    }
-
-    if (wallNumber === 4) {
-      $ecs.remove(player);
+      remove(player);
       exitCurrentScene();
     }
   });
+
+  return cleanup;
 };

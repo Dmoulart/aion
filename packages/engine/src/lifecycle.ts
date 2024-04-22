@@ -13,6 +13,10 @@ export function beforeStart(cb: BeforeStartCallback) {
   engine.beforeStart(cb);
 }
 
+export function stopEngine() {
+  useEngine().stop();
+}
+
 // Make event listeners available in implicit context
 export const on: ReturnType<typeof useEngine>["events"]["on"] = (hook, cb) => {
   return useEngine().events.on(hook, cb);

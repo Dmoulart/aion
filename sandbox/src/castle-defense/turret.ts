@@ -18,7 +18,6 @@ import {
   getWorldRotation,
   Collision,
   getCollidingEntity,
-  getRuntimeColliderEntity,
 } from "aion-preset";
 import {
   OBSTACLE_COLLISION_GROUP,
@@ -129,13 +128,6 @@ export function initTurrets() {
         searchForTarget(entity);
       }
 
-      console.log(
-        "source is ",
-        entity,
-        "target is :",
-        AutoTarget.target[entity],
-      );
-
       if (AutoTarget.target[entity] !== 0) {
         rotateTowards(entity, AutoTarget.target[entity], 3);
         const now = millitimestamp();
@@ -168,7 +160,7 @@ export function initTurrets() {
 
 function searchForTarget(entity: Entity) {
   const { world, RAPIER } = usePhysics();
-  const { attach, has } = useECS();
+  const { attach } = useECS();
   const result = world.castShape(
     getPhysicsWorldPosition(entity),
     0,
