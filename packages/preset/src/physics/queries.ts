@@ -1,7 +1,16 @@
 import type { Entity } from "aion-ecs";
-import { getWorldPosition, getWorldDistance, usePhysics } from "../index.js";
-import { fromSimulationPoint, toSimulationPoint } from "./bindings.js";
-import type { Vector } from "aion-core";
+import {
+  getWorldPosition,
+  getWorldDistance,
+  usePhysics,
+  getColliderEntity,
+} from "../index.js";
+import {
+  fromSimulationPoint,
+  getPhysicsWorldPosition,
+  toSimulationPoint,
+} from "./bindings.js";
+import { vec, type Vec, type Vector } from "aion-core";
 
 export function castRay(
   from: Entity | Vector,
@@ -42,4 +51,32 @@ export function castRay(
   }
 
   return undefined;
+}
+
+export function findPhysicalEntityInsideBoundingBox(
+  position: Vector,
+  width: number,
+  height: number,
+  cb: (entity: Entity) => boolean,
+) {
+  const { world } = usePhysics();
+
+  let entity: Entity = 0;
+
+  world.collidersWithAabbIntersectingAabb(
+    toSimulationPoint(position),
+    toSimulationPoint(vec(width, height)),
+    (collider) => {
+      const owner = getColliderEntity(collider.handle);
+
+      if (owner && cb(owner)) {
+        entity = owner;
+        return false;
+      }
+
+      return true;
+    },
+  );
+
+  return entity;
 }

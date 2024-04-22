@@ -1,4 +1,4 @@
-import { Vector, millitimestamp } from "aion-core";
+import { Vector, millitimestamp, vec } from "aion-core";
 import {
   createTransform,
   createCollider,
@@ -18,12 +18,16 @@ import {
   getWorldRotation,
   Collision,
   getCollidingEntity,
+  getParentOf,
+  getColliderEntity,
+  getRuntimeColliderEntity,
+  findPhysicalEntityInsideBoundingBox,
 } from "aion-preset";
 import {
   OBSTACLE_COLLISION_GROUP,
   TURRET_COLLISION_GROUP,
 } from "./collision-groups";
-import { Colors } from "aion-render";
+import { Colors, fillRect } from "aion-render";
 import { usePrefabs } from "./prefabs";
 import {
   Entity,
@@ -35,7 +39,7 @@ import {
   u32,
 } from "aion-ecs";
 import { Health, IsEnemy } from "./components";
-import { on } from "aion-engine";
+import { on, once } from "aion-engine";
 import { damage } from "./health";
 
 export const Gun = defineComponent({
@@ -87,10 +91,10 @@ export function createTurret(pos: Vector) {
       Stroke: "black",
       AutoTarget: {
         targetComponent: IsEnemy,
-        range: 1,
+        range: 200,
       },
       Gun: {
-        freq: 25,
+        freq: 250,
         force: 50,
       },
     }),
@@ -104,7 +108,6 @@ export function initTurrets() {
   const onTargetKilled = onExitQuery(query(IsTargeted));
 
   onTargetKilled((entity) => {
-    console.log("target killed");
     const attacker = IsTargeted.attacker[entity];
     AutoTarget.target[attacker] = 0;
     IsTargeted.attacker[entity] = 0;
@@ -129,14 +132,15 @@ export function initTurrets() {
       }
 
       if (AutoTarget.target[entity] !== 0) {
-        rotateTowards(entity, AutoTarget.target[entity], 3);
+        const target = AutoTarget.target[entity];
+        rotateTowards(entity, target, 3);
         const now = millitimestamp();
 
         const timeSinceLastShot = now - Gun.lastShot[entity];
         const shootFrequency = Gun.freq[entity];
 
         if (timeSinceLastShot >= shootFrequency) {
-          shoot(entity, AutoTarget.target[entity]);
+          shoot(entity, target);
           Gun.lastShot[entity] = now;
         }
       }
@@ -159,48 +163,21 @@ export function initTurrets() {
 }
 
 function searchForTarget(entity: Entity) {
-  const { world, RAPIER } = usePhysics();
-  const { attach } = useECS();
-  const result = world.castShape(
-    getPhysicsWorldPosition(entity),
-    0,
-    { x: Math.random() > 0.5 ? 1 : -1, y: 0 },
-    new RAPIER.Cuboid(10, 10),
-    4,
-    false,
-    undefined,
-    TURRET_COLLISION_GROUP,
-    undefined,
-    undefined,
-    // (collider) => {
-    //   debugger;
-    //   const target = getRuntimeColliderEntity(collider);
+  const { attach, has } = useECS();
 
-    //   if (target) {
-    //     const TargetComponent = AutoTarget.targetComponent[entity];
-    //     console.log(TargetComponent, target);
-    //     if (has(TargetComponent, target)) {
-    //       return true;
-    //     }
-    //   }
-
-    //   return false;
-    // },
+  const target = findPhysicalEntityInsideBoundingBox(
+    getWorldPosition(entity),
+    AutoTarget.range[entity],
+    AutoTarget.range[entity],
+    (entity) => has(IsEnemy, entity),
   );
 
-  if (result) {
-    const body = result.collider.parent();
-    if (body) {
-      const target = getRuntimeBodyEntity(body);
+  if (target) {
+    Fill[target] = "blue";
+    AutoTarget.target[entity] = target;
 
-      if (target) {
-        Fill[target] = "blue";
-        AutoTarget.target[entity] = target;
-
-        IsTargeted.attacker[target] = entity;
-        attach(IsTargeted, target);
-      }
-    }
+    IsTargeted.attacker[target] = entity;
+    attach(IsTargeted, target);
   }
 }
 

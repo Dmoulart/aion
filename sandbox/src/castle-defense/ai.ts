@@ -103,7 +103,7 @@ export function createDestroyTreasureGoal(treasure: Entity) {
 }
 
 export function setupAI() {
-  const { query, has, exists } = useECS();
+  const { query, has } = useECS();
 
   const moveToTarget = defineBehavior(
     MoveToAction,
