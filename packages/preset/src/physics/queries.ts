@@ -4,6 +4,7 @@ import {
   getWorldDistance,
   usePhysics,
   getColliderEntity,
+  getRuntimeColliderEntity,
 } from "../index.js";
 import {
   fromSimulationPoint,
@@ -57,7 +58,7 @@ export function findPhysicalEntityInsideBoundingBox(
   position: Vector,
   width: number,
   height: number,
-  cb: (entity: Entity) => boolean,
+  predicate: (entity: Entity) => boolean,
 ) {
   const { world } = usePhysics();
 
@@ -67,9 +68,9 @@ export function findPhysicalEntityInsideBoundingBox(
     toSimulationPoint(position),
     toSimulationPoint(vec(width, height)),
     (collider) => {
-      const owner = getColliderEntity(collider.handle);
+      const owner = getRuntimeColliderEntity(collider);
 
-      if (owner && cb(owner)) {
+      if (owner && predicate(owner)) {
         entity = owner;
         return false;
       }

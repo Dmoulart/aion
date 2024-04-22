@@ -94,7 +94,7 @@ export function createTurret(pos: Vector) {
         range: 200,
       },
       Gun: {
-        freq: 250,
+        freq: 50,
         force: 50,
       },
     }),
@@ -115,17 +115,17 @@ export function initTurrets() {
 
   on("update", () => {
     query(Transform, AutoTarget, Gun).each((entity) => {
-      // if (AutoTarget.target[entity] !== 0) {
-      //   const distance = getWorldDistance(
-      //     AutoTarget.target[entity],
-      //     entity,
-      //   ).mag();
-      //   console.log("distance,", distance);
+      if (AutoTarget.target[entity] !== 0) {
+        const distance = getWorldDistance(
+          AutoTarget.target[entity],
+          entity,
+        ).mag();
+        console.log("distance,", distance);
 
-      //   if (distance > AutoTarget.range[entity]) {
-      //     AutoTarget.target[entity] = 0;
-      //   }
-      // }
+        if (distance > AutoTarget.range[entity]) {
+          AutoTarget.target[entity] = 0;
+        }
+      }
 
       if (AutoTarget.target[entity] === 0) {
         searchForTarget(entity);
@@ -148,7 +148,6 @@ export function initTurrets() {
   });
 
   const onProjectileHit = onEnterQuery(query(Projectile, Collision));
-  let lastRemovedProj: Entity[] = [];
 
   onProjectileHit((projectile) => {
     const collided = getCollidingEntity(projectile);
@@ -157,7 +156,6 @@ export function initTurrets() {
         damage(collided, Projectile.hit[projectile]);
       }
     }
-    lastRemovedProj.push(projectile);
     remove(projectile);
   });
 }
