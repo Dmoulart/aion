@@ -32,7 +32,9 @@ export const engine = defineEngine(plugins, () => {
   setZoom(0.7);
   centerCameraOnEntity(getFloor());
 
-  createScenes();
+  defineScene("build-castle", buildCastle);
+  defineScene("place-treasure", placeTreasure);
+  defineScene("invasion", invasion);
 
   onSceneExit("build-castle", () => startScene("place-treasure"));
   onSceneExit("place-treasure", () => startScene("invasion"));
@@ -55,14 +57,6 @@ export const engine = defineEngine(plugins, () => {
 export const useGame = engine.use;
 
 engine.run();
-
-export function createScenes() {
-  defineScene("build-castle", buildCastle);
-
-  defineScene("place-treasure", placeTreasure);
-
-  defineScene("invasion", invasion);
-}
 
 export function plugins() {
   const preset = aionPreset({
