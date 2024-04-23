@@ -47,7 +47,8 @@ export const CanReach = defineWorldState(
     } else {
       // let's consider the stuff is reachable but too far
       // we'll need to re-planify the actions later
-      return WorldStateStatus.Potential;
+      // WorldStateStatus.Potential;
+      return WorldStateStatus.Effective;
     }
   },
 );
@@ -121,7 +122,6 @@ export function setupAI() {
         undefined,
         ENEMY_COLLISION_GROUP,
       );
-
       setScaleX(entity, movement.x >= 0 ? -1 : 1);
 
       const computedMovement = controller.computedMovement();

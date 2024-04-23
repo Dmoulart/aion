@@ -28,6 +28,7 @@ export function initAI() {
     on("update", () => {
       query(Brain, PlanComponent).each((entity) => {
         const action = getCurrentAction(entity);
+        console.log(action);
         if (action) {
           // maybe the action conditions are not effective anymore and we need to planify again
           const conditions = evaluateCurrrentActionConditions(entity);

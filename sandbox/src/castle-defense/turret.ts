@@ -94,7 +94,7 @@ export function createTurret(pos: Vector) {
         range: 200,
       },
       Gun: {
-        freq: 50,
+        freq: 350,
         force: 50,
       },
     }),
