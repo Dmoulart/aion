@@ -46,6 +46,7 @@ export function createWindow(options?: CreateWindowOptions) {
 
   windowEl.style.height = options.height ?? "100vh";
   windowEl.style.width = options.width ?? "100vw";
+  windowEl.style.position = "relative";
 
   const canvas = document.createElement("canvas");
   canvas.classList.add("aion-canvas");
@@ -99,6 +100,7 @@ export function createWindow(options?: CreateWindowOptions) {
     clear,
     moveToCenter,
     begin: beginDraw,
+    windowEl,
   };
 }
 
@@ -392,6 +394,10 @@ export function windowWidth() {
 
 export function windowHeight() {
   return instance.ctx.canvas.height;
+}
+
+export function getWindowElement() {
+  return instance.windowEl;
 }
 
 export function setBackgroundColor(color: string) {

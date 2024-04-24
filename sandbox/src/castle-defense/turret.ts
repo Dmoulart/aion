@@ -62,11 +62,11 @@ export const IsTargeted = defineComponent({
   attacker: eid,
 });
 
-export function createTurret(pos: Vector) {
+export function createTurret(x: number, y: number) {
   const { Turret, Canon } = usePrefabs();
 
   const turret = Turret({
-    Transform: createTransform(pos.x, pos.y),
+    Transform: createTransform(x, y),
     Circle: {
       r: 20,
     },
