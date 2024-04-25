@@ -6,12 +6,21 @@ import {
   getColliderEntity,
   getRuntimeColliderEntity,
   getRuntimeCollider,
+  getEntityPhysicalShape,
+  getWorldRotation,
+  getRuntimeColliderShape,
 } from "../index.js";
-import { fromSimulationPoint, toSimulationPoint } from "./bindings.js";
+import {
+  fromSimulationPoint,
+  getPhysicsWorldPosition,
+  toSimulationPoint,
+} from "./bindings.js";
 import { vec, type Vector } from "aion-core";
 import type {
   QueryFilterFlags,
   RayColliderIntersection,
+  Collider,
+  Shape,
 } from "@dimforge/rapier2d-compat";
 
 export function intersectionsWithRay(
@@ -127,6 +136,36 @@ export function firstIntersectionWithRay(
 }
 
 // not tested
+export function someIntersectingEntities(
+  entity: Entity,
+  cb: (entity: Entity) => boolean,
+) {
+  const { world, RAPIER } = usePhysics();
+
+  const shape = getRuntimeColliderShape(entity);
+  let result = false;
+
+  world.intersectionsWithShape(
+    getPhysicsWorldPosition(entity),
+    getWorldRotation(entity),
+    shape,
+    (collider) => {
+      const intersectingEntity = getRuntimeColliderEntity(collider)!;
+      if (intersectingEntity && cb(intersectingEntity)) {
+        result = true;
+        return false;
+      }
+      return true;
+    },
+    undefined,
+    undefined,
+    getRuntimeCollider(entity),
+  );
+
+  return result;
+}
+
+// not tested
 export function areInContact(a: Entity, b: Entity) {
   const { world } = usePhysics();
 
@@ -146,6 +185,7 @@ export function castRay(
   to: Entity | Vector, // entity position or direction
   collisionGroup?: number,
   maxToi: number = 4,
+  excludeCollider?: Collider,
 ) {
   const { world, RAPIER } = usePhysics();
 
@@ -166,7 +206,14 @@ export function castRay(
   }
 
   const ray = new RAPIER.Ray(origin, target);
-  const hit = world.castRay(ray, maxToi, false, undefined, collisionGroup);
+  const hit = world.castRay(
+    ray,
+    maxToi,
+    false,
+    undefined,
+    collisionGroup,
+    excludeCollider,
+  );
   if (hit != null) {
     debugger;
     // The first collider hit has the handle `hit.colliderHandle` and it hit after

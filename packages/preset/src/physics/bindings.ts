@@ -132,3 +132,7 @@ export function fromSimulationPoint(vec: Vector, factor = SCALE_FACTOR) {
 export function toSimulationPoint(vec: Vector, factor = SCALE_FACTOR) {
   return new Vec(vec.x / factor, vec.y / factor);
 }
+
+export function toSimulationValue(value: number, factor = SCALE_FACTOR) {
+  return number / value;
+}

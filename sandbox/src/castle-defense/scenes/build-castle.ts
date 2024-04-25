@@ -1,4 +1,4 @@
-import { EventEmitter, emit, on, useEngine } from "aion-engine";
+import { on } from "aion-engine";
 import { useECS, Transform, getMouseWorldPosition } from "aion-preset";
 import { Blueprint } from "../components";
 import { createWall } from "../wall";

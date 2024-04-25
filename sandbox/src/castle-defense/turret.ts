@@ -115,7 +115,6 @@ export function initTurrets() {
           AutoTarget.target[entity],
           entity,
         ).mag();
-        console.log("distance,", distance);
 
         if (distance > AutoTarget.range[entity]) {
           AutoTarget.target[entity] = 0;

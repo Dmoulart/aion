@@ -2,6 +2,7 @@ import { defineCollisionGroup } from "aion-preset";
 
 export const ENEMY_COLLISION_MEMBERSHIP_ID = 0b01;
 export const OBSTACLE_COLLISION_MEMBERSHIP_ID = 0b10;
+export const BLUEPRINT_COLLISION_MEMBERSHIP_ID = 0b100;
 
 export const OBSTACLE_COLLISION_GROUP = defineCollisionGroup()
   .isPartOfGroups(OBSTACLE_COLLISION_MEMBERSHIP_ID)

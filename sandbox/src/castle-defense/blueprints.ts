@@ -2,55 +2,50 @@ import {
   useECS,
   exitCurrentScene,
   getMouseWorldPosition,
-  intersectionsWithRay,
   setRuntimeBodyPosition,
   getBoundingBox,
   firstIntersectionWithRay,
   castRay,
+  getRuntimeCollider,
+  someIntersectingEntities,
 } from "aion-preset";
 import { Entity } from "aion-ecs";
 import { downDirection } from "aion-core";
 import { key, click } from "aion-input";
+import { Floor } from "./components";
 
 export function placeBluePrint(
   entity: Entity,
   construct: (x: number, y: number) => Entity,
 ) {
-  const { remove } = useECS();
+  const { remove, has } = useECS();
 
-  const intersection = intersectionsWithRay(
+  const result = castRay(
     getMouseWorldPosition(),
     downDirection(),
-    (collided) => collided !== entity,
+    undefined,
     20,
+    getRuntimeCollider(entity),
   );
-  console.log("----");
-  const nearest = castRay(getMouseWorldPosition(), downDirection(), 120);
-  console.log("first intersection", nearest);
-  console.log("----");
 
-  if (intersection) {
+  // const intersect = someIntersectingEntities(entity, (entity) => {
+  //   return !has(Floor, entity);
+  // });
+  // console.log({ intersect });
+  // console.log(intersect);
+
+  // console.log(result);
+
+  if (result) {
     const bbox = getBoundingBox(entity);
-    intersection.point.y -= bbox.getHalfHeight();
+    result.point.y -= bbox.getHalfHeight();
 
-    setRuntimeBodyPosition(entity, intersection.point);
+    setRuntimeBodyPosition(entity, result.point);
 
     if (click()) {
-      construct(intersection.point.x, intersection.point.y);
+      construct(result.point.x, result.point.y);
     }
   }
-
-  // if (result) {
-  //   const { point } = result;
-
-  //   point.y -= getBoundingBox(entity).halfHeight();
-
-  //   setRuntimeBodyPosition(entity, point);
-
-  //   if (click()) {
-  //     construct(point.x, point.y);
-  //   }
-  // }
 
   if (key("w")) {
     remove(entity);
