@@ -5,20 +5,21 @@ import {
   setRuntimeBodyPosition,
   getBoundingBox,
   firstIntersectionWithRay,
+  castEntityShape,
+  castEntityShapeFrom,
   castRay,
   getRuntimeCollider,
-  someIntersectingEntities,
+  getRuntimeBody,
 } from "aion-preset";
 import { Entity } from "aion-ecs";
-import { downDirection } from "aion-core";
+import { downDirection, upDirection } from "aion-core";
 import { key, click } from "aion-input";
-import { Floor } from "./components";
 
 export function placeBluePrint(
   entity: Entity,
   construct: (x: number, y: number) => Entity,
 ) {
-  const { remove, has } = useECS();
+  const { remove } = useECS();
 
   const result = castRay(
     getMouseWorldPosition(),
@@ -27,6 +28,14 @@ export function placeBluePrint(
     20,
     getRuntimeCollider(entity),
   );
+  // const result = castEntityShapeFrom(
+  //   getMouseWorldPosition(),
+  //   entity,
+  //   downDirection(),
+  //   50,
+  // );
+
+  console.log(result?.entity);
 
   // const intersect = someIntersectingEntities(entity, (entity) => {
   //   return !has(Floor, entity);
@@ -36,7 +45,7 @@ export function placeBluePrint(
 
   // console.log(result);
 
-  if (result) {
+  if (result && result.toi > 0) {
     const bbox = getBoundingBox(entity);
     result.point.y -= bbox.getHalfHeight();
 

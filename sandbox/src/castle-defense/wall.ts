@@ -25,7 +25,7 @@ export function createWall(x: number = 0, y: number = 0, h = 500, w = 50) {
       collisionGroups: OBSTACLE_COLLISION_GROUP,
     }),
     Body: createBody({
-      type: RAPIER.RigidBodyType.Fixed,
+      type: RAPIER.RigidBodyType.KinematicPositionBased,
     }),
     Health: 1000,
   });

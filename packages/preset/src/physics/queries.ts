@@ -6,21 +6,23 @@ import {
   getColliderEntity,
   getRuntimeColliderEntity,
   getRuntimeCollider,
-  getEntityPhysicalShape,
   getWorldRotation,
   getRuntimeColliderShape,
+  getEntityPhysicalShape,
 } from "../index.js";
 import {
   fromSimulationPoint,
+  fromSimulationValue,
   getPhysicsWorldPosition,
   toSimulationPoint,
 } from "./bindings.js";
-import { vec, type Vector } from "aion-core";
+import { Vec, vec, type Vector } from "aion-core";
 import type {
   QueryFilterFlags,
   RayColliderIntersection,
   Collider,
-  Shape,
+  ShapeColliderTOI,
+  RayColliderToi,
 } from "@dimforge/rapier2d-compat";
 
 export function intersectionsWithRay(
@@ -180,13 +182,99 @@ export function areInContact(a: Entity, b: Entity) {
   return inContact;
 }
 
+export function castEntityShapeFrom(
+  position: Vector,
+  entity: Entity,
+  velocity: Vector,
+  maxToi: number,
+  stopAtPenetration: boolean = true,
+  filterFlags?: QueryFilterFlags,
+  filterGroups?: number,
+  predicate?: (collider: Collider) => boolean,
+): CastShapeResult {
+  const { world } = usePhysics();
+  const collider = getRuntimeCollider(entity);
+
+  const hit = world.castShape(
+    toSimulationPoint(position),
+    getWorldRotation(entity),
+    velocity,
+    getEntityPhysicalShape(entity),
+    maxToi,
+    stopAtPenetration,
+    filterFlags,
+    filterGroups,
+    collider,
+    undefined,
+    predicate,
+  ) as CastShapeResult;
+
+  if (!hit) {
+    return undefined;
+  }
+
+  hit.entity = getRuntimeColliderEntity(hit.collider)!;
+
+  hit.point = new Vec();
+
+  hit.point.x = fromSimulationValue(velocity.x * hit.toi);
+  hit.point.y = fromSimulationValue(velocity.y * hit.toi);
+
+  hit.normal1 = fromSimulationPoint(hit.normal1);
+  hit.normal2 = fromSimulationPoint(hit.normal2);
+
+  return hit;
+}
+
+type CastResult = { entity: Entity; point: Vector };
+type CastShapeResult = (ShapeColliderTOI & CastResult) | undefined;
+export function castEntityShape(
+  entity: Entity,
+  velocity: Vector,
+  maxToi: number,
+  stopAtPenetration: boolean = true,
+  filterFlags?: QueryFilterFlags,
+  filterGroups?: number,
+  predicate?: (collider: Collider) => boolean,
+): CastShapeResult {
+  const { world } = usePhysics();
+  const collider = getRuntimeCollider(entity);
+
+  const hit = world.castShape(
+    getPhysicsWorldPosition(entity),
+    getWorldRotation(entity),
+    velocity,
+    collider.shape,
+    maxToi,
+    stopAtPenetration,
+    filterFlags,
+    filterGroups,
+    collider,
+    undefined,
+    predicate,
+  ) as CastShapeResult;
+
+  if (!hit) {
+    return undefined;
+  }
+
+  hit.entity = getRuntimeColliderEntity(hit.collider)!;
+
+  hit.point = new Vec();
+
+  hit.point.x = fromSimulationValue(velocity.x * hit.toi);
+  hit.point.y = fromSimulationValue(velocity.y * hit.toi);
+
+  return hit;
+}
+type CastRayResult = (RayColliderToi & CastResult) | undefined;
 export function castRay(
   from: Entity | Vector,
   to: Entity | Vector, // entity position or direction
   collisionGroup?: number,
   maxToi: number = 4,
   excludeCollider?: Collider,
-) {
+): CastRayResult {
   const { world, RAPIER } = usePhysics();
 
   const fromEntity = typeof from === "number";
@@ -209,20 +297,23 @@ export function castRay(
   const hit = world.castRay(
     ray,
     maxToi,
-    false,
+    true,
     undefined,
     collisionGroup,
     excludeCollider,
-  );
+  ) as CastRayResult;
+
   if (hit != null) {
     debugger;
     // The first collider hit has the handle `hit.colliderHandle` and it hit after
     // the ray travelled a distance equal to `ray.dir * toi`.
-    let hitPoint = ray.pointAt(hit.toi); // Same as: `ray.origin + ray.dir * toi`
-    return {
-      point: fromSimulationPoint(hitPoint),
-      entity: hit.collider.parent()!.userData as number,
-    };
+    let hitPoint = ray.pointAt(hit.toi);
+
+    hit.point = fromSimulationPoint(hitPoint);
+
+    hit.entity = getRuntimeColliderEntity(hit.collider)!;
+
+    return hit;
   }
 
   return undefined;

@@ -134,5 +134,9 @@ export function toSimulationPoint(vec: Vector, factor = SCALE_FACTOR) {
 }
 
 export function toSimulationValue(value: number, factor = SCALE_FACTOR) {
-  return number / value;
+  return value / factor;
+}
+
+export function fromSimulationValue(value: number, factor = SCALE_FACTOR) {
+  return value * factor;
 }

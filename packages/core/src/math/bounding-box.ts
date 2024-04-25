@@ -79,7 +79,6 @@ export class BoundingBox {
    * @return bounding box half height
    */
   public getHalfHeight(): number {
-    debugger;
     return (this.max.y - this.min.y) / 2;
   }
 
