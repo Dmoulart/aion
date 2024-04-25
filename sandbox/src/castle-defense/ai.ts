@@ -36,6 +36,7 @@ export const CanReach = defineWorldState(
       Collider.collisionGroups[source],
       100.0,
     );
+
     if (hit) {
       const hasHitTarget = hit.entity === target;
 

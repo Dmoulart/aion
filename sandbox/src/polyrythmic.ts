@@ -1,4 +1,4 @@
-import { defineComponent, i32, query } from "aion-ecs";
+import { defineComponent, i32 } from "aion-ecs";
 import { defineEngine, defineLoop, emit, on } from "aion-engine";
 import {
   Transform,
@@ -13,12 +13,6 @@ import {
   Stroke,
   getX,
   getY,
-  rotate,
-  rotateAround,
-  getPosition,
-  getWorldPosition,
-  getRotation,
-  moveAround,
 } from "aion-preset";
 import { Colors, setBackgroundColor, windowCenter } from "aion-render";
 

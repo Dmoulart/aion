@@ -1,4 +1,4 @@
-import { Vector, millitimestamp, vec } from "aion-core";
+import { millitimestamp } from "aion-core";
 import {
   createTransform,
   createCollider,
@@ -6,9 +6,7 @@ import {
   useECS,
   Transform,
   usePhysics,
-  getPhysicsWorldPosition,
   Fill,
-  getRuntimeBodyEntity,
   castRay,
   rotateTowards,
   createBody,
@@ -18,16 +16,13 @@ import {
   getWorldRotation,
   Collision,
   getCollidingEntity,
-  getParentOf,
-  getColliderEntity,
-  getRuntimeColliderEntity,
   findPhysicalEntityInsideBoundingBox,
 } from "aion-preset";
 import {
   OBSTACLE_COLLISION_GROUP,
   TURRET_COLLISION_GROUP,
 } from "./collision-groups";
-import { Colors, fillRect } from "aion-render";
+import { Colors } from "aion-render";
 import { usePrefabs } from "./prefabs";
 import {
   Entity,
@@ -39,7 +34,7 @@ import {
   u32,
 } from "aion-ecs";
 import { Health, IsEnemy } from "./components";
-import { on, once } from "aion-engine";
+import { on } from "aion-engine";
 import { damage } from "./health";
 
 export const Gun = defineComponent({
@@ -91,7 +86,7 @@ export function createTurret(x: number, y: number) {
       Stroke: "black",
       AutoTarget: {
         targetComponent: IsEnemy,
-        range: 200,
+        range: 800,
       },
       Gun: {
         freq: 350,
@@ -219,7 +214,6 @@ function isTargetReachable(
   collisionGroup: number = TURRET_COLLISION_GROUP,
 ) {
   const result = castRay(source, target, collisionGroup);
-  console.log({ result });
   if (result) {
     const hit = result.entity;
     return hit === target;

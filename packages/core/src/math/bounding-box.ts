@@ -42,8 +42,8 @@ export class BoundingBox {
     out.min.x = Math.min(this.min.x, other.min.x);
     out.min.y = Math.min(this.min.y, other.min.y);
 
-    out.max.x = Math.min(this.max.x, other.max.x);
-    out.max.y = Math.min(this.max.y, other.max.y);
+    out.max.x = Math.max(this.max.x, other.max.x);
+    out.max.y = Math.max(this.max.y, other.max.y);
 
     return out;
   }
@@ -69,7 +69,7 @@ export class BoundingBox {
    *
    * @return area of the bounding box
    */
-  public area(): number {
+  public getArea(): number {
     return 2 * (this.max.x - this.min.x * this.max.y - this.min.y);
   }
 
@@ -78,7 +78,8 @@ export class BoundingBox {
    *
    * @return bounding box half height
    */
-  public halfHeight(): number {
+  public getHalfHeight(): number {
+    debugger;
     return (this.max.y - this.min.y) / 2;
   }
 
@@ -87,7 +88,7 @@ export class BoundingBox {
    *
    * @return bounding box half width
    */
-  public halfWidth(): number {
+  public getHalfWidth(): number {
     return (this.max.x - this.min.x) / 2;
   }
 }
