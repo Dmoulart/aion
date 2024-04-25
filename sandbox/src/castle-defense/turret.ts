@@ -36,6 +36,7 @@ import {
 import { Health, IsEnemy } from "./components";
 import { on } from "aion-engine";
 import { damage } from "./health";
+import RAPIER from "@dimforge/rapier2d-compat";
 
 export const Gun = defineComponent({
   force: f32,

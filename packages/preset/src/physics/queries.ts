@@ -23,6 +23,8 @@ import type {
   Collider,
   ShapeColliderTOI,
   RayColliderToi,
+  RigidBody,
+  Shape,
 } from "@dimforge/rapier2d-compat";
 
 export function intersectionsWithRay(
@@ -226,7 +228,7 @@ export function castEntityShapeFrom(
   return hit;
 }
 
-type CastResult = { entity: Entity; point: Vector };
+type CastResult = { entity: Entity; point: Vector; blocked: boolean };
 type CastShapeResult = (ShapeColliderTOI & CastResult) | undefined;
 export function castEntityShape(
   entity: Entity,
@@ -267,6 +269,55 @@ export function castEntityShape(
 
   return hit;
 }
+
+export function castShape(
+  position: Vector,
+  rotation: number,
+  velocity: Vector,
+  shape: Shape,
+  maxToi: number,
+  stopAtPenetration: boolean = true,
+  filterFlags?: QueryFilterFlags,
+  filterGroups?: number,
+  excludeCollider?: Collider,
+  excludeRigidBody?: RigidBody,
+  predicate?: (collider: Collider) => boolean,
+): CastShapeResult {
+  const { world } = usePhysics();
+
+  const hit = world.castShape(
+    toSimulationPoint(position),
+    rotation,
+    velocity,
+    shape,
+    maxToi,
+    stopAtPenetration,
+    filterFlags,
+    filterGroups,
+    excludeCollider,
+    excludeRigidBody,
+    predicate,
+  ) as CastShapeResult;
+
+  if (!hit) {
+    return undefined;
+  }
+
+  hit.entity = getRuntimeColliderEntity(hit.collider)!;
+
+  hit.point = new Vec();
+
+  hit.point.x = fromSimulationValue(velocity.x * hit.toi) + position.x;
+  hit.point.y = fromSimulationValue(velocity.y * hit.toi) + position.y;
+
+  hit.witness1 = fromSimulationPoint(hit.witness1);
+  hit.witness2 = fromSimulationPoint(hit.witness2);
+
+  hit.blocked = hit.toi === 0;
+
+  return hit;
+}
+
 type CastRayResult = (RayColliderToi & CastResult) | undefined;
 export function castRay(
   from: Entity | Vector,

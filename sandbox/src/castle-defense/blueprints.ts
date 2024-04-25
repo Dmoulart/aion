@@ -10,45 +10,47 @@ import {
   castRay,
   getRuntimeCollider,
   getRuntimeBody,
+  castShape,
+  usePhysics,
+  getWorldRotation,
+  fromSimulationPoint,
+  getWorldPosition,
 } from "aion-preset";
 import { Entity } from "aion-ecs";
-import { downDirection, upDirection } from "aion-core";
+import { Vec, downDirection, upDirection } from "aion-core";
 import { key, click } from "aion-input";
+import { once } from "aion-engine";
+import { circle } from "aion-render";
+import { getFloor } from "./floor";
 
 export function placeBluePrint(
   entity: Entity,
   construct: (x: number, y: number) => Entity,
 ) {
   const { remove } = useECS();
+  const { RAPIER } = usePhysics();
 
-  const result = castRay(
-    getMouseWorldPosition(),
-    downDirection(),
-    undefined,
-    20,
-    getRuntimeCollider(entity),
-  );
-  // const result = castEntityShapeFrom(
+  // const result = castRay(
   //   getMouseWorldPosition(),
-  //   entity,
   //   downDirection(),
-  //   50,
+  //   undefined,
+  //   20,
+  //   getRuntimeCollider(entity),
   // );
 
-  console.log(result?.entity);
+  const result = castShape(
+    getMouseWorldPosition(),
+    getWorldRotation(entity),
+    new Vec(0, 1),
+    getRuntimeCollider(entity).shape,
+    20,
+    true,
+    undefined,
+    undefined,
+    getRuntimeCollider(entity),
+  );
 
-  // const intersect = someIntersectingEntities(entity, (entity) => {
-  //   return !has(Floor, entity);
-  // });
-  // console.log({ intersect });
-  // console.log(intersect);
-
-  // console.log(result);
-
-  if (result && result.toi > 0) {
-    const bbox = getBoundingBox(entity);
-    result.point.y -= bbox.getHalfHeight();
-
+  if (result && !result.blocked) {
     setRuntimeBodyPosition(entity, result.point);
 
     if (click()) {
