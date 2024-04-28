@@ -50,27 +50,62 @@ export function initPhysics(options?: InitPhysicsOptions) {
 
   on("update", () => {
     const { attach, detach, query, has, world: w } = useECS();
-    // sync body with transform /!\
-    // query(RuntimeBody, Transform).each((ent) => {
-    //   const body = getRuntimeBody(ent);
 
-    //   // rounding is bad for perfs. compare local positions ?
-    //   const worldPosition = getWorldPosition(ent).round();
-    //   const worldRotation = getWorldRotation(ent);
+    // sync collider without body with transform /!\
+    query(RuntimeCollider, not(RuntimeBody), Transform).each((ent) => {
+      const body = getRuntimeCollider(ent);
 
-    //   const colliderTranslation = fromSimulationPoint(
-    //     body.translation(),
-    //   ).round();
-    //   const colliderRotation = body.rotation();
+      const worldPosition = getWorldPosition(ent);
+      const worldRotation = getWorldRotation(ent);
 
-    //   if (!worldPosition.equals(colliderTranslation)) {
-    //     body.setTranslation(toSimulationPoint(worldPosition), false);
-    //   }
+      const colliderTranslation = fromSimulationPoint(body.translation());
+      const colliderRotation = body.rotation();
 
-    //   if (worldRotation !== colliderRotation) {
-    //     body.setRotation(worldRotation, false);
-    //   }
-    // });
+      if (!worldPosition.equals(colliderTranslation)) {
+        body.setTranslation(toSimulationPoint(worldPosition));
+      }
+
+      if (worldRotation !== colliderRotation) {
+        body.setRotation(worldRotation);
+      }
+    });
+
+    // sync bofy without collider with transform /!\
+    query(RuntimeBody, not(RuntimeCollider), Transform).each((ent) => {
+      const body = getRuntimeBody(ent);
+
+      const worldPosition = getWorldPosition(ent);
+      const worldRotation = getWorldRotation(ent);
+
+      const colliderTranslation = fromSimulationPoint(body.translation());
+      const colliderRotation = body.rotation();
+
+      if (!worldPosition.equals(colliderTranslation)) {
+        body.setTranslation(toSimulationPoint(worldPosition), false);
+      }
+
+      if (worldRotation !== colliderRotation) {
+        body.setRotation(worldRotation, false);
+      }
+    });
+
+    // sync body and collider with transform /!\
+    query(RuntimeBody, RuntimeCollider, Transform).each((ent) => {
+      const body = getRuntimeBody(ent);
+
+      const worldPosition = getWorldPosition(ent);
+      const worldRotation = getWorldRotation(ent);
+
+      const colliderTranslation = fromSimulationPoint(body.translation());
+      const colliderRotation = body.rotation();
+
+      if (!worldPosition.equals(colliderTranslation)) {
+        body.setTranslation(toSimulationPoint(worldPosition), false);
+      }
+      if (worldRotation !== colliderRotation) {
+        body.setRotation(worldRotation, false);
+      }
+    });
     // // sync body with transform /!\
     // query(RuntimeCollider, not(RuntimeBody), Transform).each((ent) => {
     //   const collider = getRuntimeCollider(ent);

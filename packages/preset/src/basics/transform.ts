@@ -294,3 +294,18 @@ function rotateTowardsAngle(entity: Entity, targetAngle: number, step: number) {
     setLocalRotation(entity, targetAngle);
   }
 }
+
+export function rotateAroundPoint(entity: Entity, point: Vec, angle: number) {
+  const position = getWorldPosition(entity);
+  const distanceX = position.x - point.x;
+  const distanceY = position.y - point.y;
+
+  // Calculate the new position after rotation
+  const newX =
+    distanceX * Math.cos(angle) - distanceY * Math.sin(angle) + point.x;
+  const newY =
+    distanceX * Math.sin(angle) + distanceY * Math.cos(angle) + point.y;
+
+  // Set the new position
+  setWorldPosition(entity, new Vec(newX, newY));
+}

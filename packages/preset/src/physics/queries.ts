@@ -196,6 +196,29 @@ export function findPhysicalEntityInsideBoundingBox(
   return entity;
 }
 
+export function forEachPhysicalEntityInsideBoundingBox(
+  position: Vector,
+  width: number,
+  height: number,
+  cb: (entity: Entity) => void,
+) {
+  const { world } = usePhysics();
+
+  let entity: Entity | undefined = undefined;
+
+  world.collidersWithAabbIntersectingAabb(
+    toSimulationPoint(position),
+    toSimulationPoint(vec(width, height)),
+    (collider) => {
+      const owner = getRuntimeColliderEntity(collider)!;
+      cb(owner);
+      return true;
+    },
+  );
+
+  return entity;
+}
+
 // export function intersectionsWithRay(
 //   from: Entity | Vector,
 //   to: Entity | Vector, // entity position or direction

@@ -3,18 +3,12 @@ import {
   useECS,
   Transform,
   getMouseWorldPosition,
-  getRuntimeBody,
-  Body,
-  RuntimeBody,
   usePhysics,
-  RuntimeCollider,
-  getRuntimeCollider,
 } from "aion-preset";
 import { createWall } from "../wall";
 import { Blueprint, placeBluePrint } from "../blueprints";
 import { getWindowElement } from "aion-render";
 import { createTurret } from "../turret";
-import { onEnterQuery, onExitQuery } from "aion-ecs";
 
 let construct = createWall;
 let newConstruct = false;

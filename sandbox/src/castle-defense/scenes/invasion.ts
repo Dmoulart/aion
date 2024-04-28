@@ -50,12 +50,10 @@ export default () => {
 
   on("render", () => {
     query(Health).each((entity) => {
-      if (getHealth(entity) !== 1000) {
-        const { top, left } = getRectWorldBounds(entity);
+      const { top, left } = getRectWorldBounds(entity);
 
-        font("Arial 48px");
-        fillText(getHealth(entity).toString(), left, top, "white");
-      }
+      font("Arial 48px");
+      fillText(getHealth(entity).toString(), left, top, "white");
     });
   });
 
