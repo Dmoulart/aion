@@ -131,6 +131,11 @@ export function getRuntimeCollider(entity: Entity) {
   return world.getCollider(RuntimeCollider[entity]!);
 }
 
+export function getColliderShape(entity: Entity) {
+  const { world } = usePhysics();
+  return world.getCollider(RuntimeCollider[entity]!).shape;
+}
+
 export function getRuntimeColliderShape(entity: Entity) {
   const { world } = usePhysics();
   return world.getCollider(RuntimeCollider[entity]!).shape;

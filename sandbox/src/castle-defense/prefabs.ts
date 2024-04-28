@@ -80,6 +80,7 @@ export const usePrefabs = singleton(() => {
     Fill,
     Stroke,
     Collider,
+    Body,
   });
 
   const Canon = prefab({
@@ -87,7 +88,6 @@ export const usePrefabs = singleton(() => {
     Rect,
     Fill,
     Stroke,
-    Collider,
     Gun,
     AutoTarget,
   });

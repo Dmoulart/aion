@@ -72,6 +72,9 @@ export function createTurret(x: number, y: number) {
       auto: 1,
       collisionGroups: OBSTACLE_COLLISION_GROUP,
     }),
+    Body: createBody({
+      type: RAPIER.RigidBodyType.KinematicPositionBased,
+    }),
   });
 
   // eye

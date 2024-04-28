@@ -18,17 +18,16 @@ export default () => {
 
   initUI();
 
-  on("update", () => {
+  return on("update", () => {
     if (newConstruct) {
+      debugger;
       remove(blueprint);
       const { x, y } = getMouseWorldPosition();
       blueprint = construct(x, y);
       attach(Blueprint, blueprint);
       newConstruct = false;
     }
-  });
 
-  return on("update", () => {
     query(Blueprint, Transform).each((entity) =>
       placeBluePrint(entity, construct),
     );

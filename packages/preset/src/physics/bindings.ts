@@ -125,12 +125,24 @@ export function getPhysicsWorldPosition(entity: Entity) {
   return toSimulationPoint(getWorldPosition(entity));
 }
 
-export function fromSimulationPoint(vec: Vector, factor = SCALE_FACTOR) {
-  return new Vec(vec.x * factor, vec.y * factor);
+export function fromSimulationPoint(
+  vec: Vector,
+  out: Vector = new Vec(),
+  factor = SCALE_FACTOR,
+) {
+  out.x = vec.x * factor;
+  out.y = vec.y * factor;
+  return out;
 }
 
-export function toSimulationPoint(vec: Vector, factor = SCALE_FACTOR) {
-  return new Vec(vec.x / factor, vec.y / factor);
+export function toSimulationPoint(
+  vec: Vector,
+  out: Vector = new Vec(),
+  factor = SCALE_FACTOR,
+) {
+  out.x = vec.x / factor;
+  out.y = vec.y / factor;
+  return out;
 }
 
 export function toSimulationValue(value: number, factor = SCALE_FACTOR) {

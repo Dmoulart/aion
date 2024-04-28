@@ -90,6 +90,10 @@ export class BoundingBox {
   public getHalfWidth(): number {
     return (this.max.x - this.min.x) / 2;
   }
+
+  public getHalfExtents(): Vector {
+    return new Vec(this.getHalfHeight(), this.getHalfWidth());
+  }
 }
 
 /**

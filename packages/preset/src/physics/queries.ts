@@ -25,6 +25,8 @@ import type {
   RayColliderToi,
   RigidBody,
   Shape,
+  InteractionGroups,
+  PointColliderProjection,
 } from "@dimforge/rapier2d-compat";
 
 export function intersectionsWithRay(
@@ -269,7 +271,44 @@ export function castEntityShape(
 
   return hit;
 }
+// OK
+export function projectPoint(
+  point: Vector,
+  solid: boolean,
+  filterFlags?: QueryFilterFlags,
+  filterGroups?: InteractionGroups,
+  excludeCollider?: Collider,
+  excludeRigidBody?: RigidBody,
+  predicate?: (collider: Collider) => boolean,
+): (PointColliderProjection & CastResult) | undefined {
+  const { world } = usePhysics();
 
+  const from = toSimulationPoint(point);
+
+  const hit = world.projectPoint(
+    from,
+    solid,
+    filterFlags,
+    filterGroups,
+    excludeCollider,
+    excludeRigidBody,
+    predicate,
+  ) as PointColliderProjection & CastResult;
+
+  if (!hit) {
+    return undefined;
+  }
+
+  hit.entity = getRuntimeColliderEntity(hit.collider)!;
+
+  hit.point = fromSimulationPoint(hit.point, hit.point);
+
+  hit.blocked = hit.point.x === from.x && hit.point.y === from.y;
+
+  return hit;
+}
+
+// OK
 export function castShape(
   position: Vector,
   rotation: number,
@@ -398,39 +437,39 @@ export function findPhysicalEntityInsideBoundingBox(
   return entity;
 }
 
-export function projectPoint(
-  position: Vector,
-  predicate?: (entity: Entity) => boolean,
-  filterFlags?: QueryFilterFlags,
-  filterGroups?: number,
-) {
-  const { world } = usePhysics();
+// export function projectPoint(
+//   position: Vector,
+//   predicate?: (entity: Entity) => boolean,
+//   filterFlags?: QueryFilterFlags,
+//   filterGroups?: number,
+// ) {
+//   const { world } = usePhysics();
 
-  const hit = world.projectPoint(
-    toSimulationPoint(position),
-    false,
-    filterFlags,
-    filterGroups,
-    undefined,
-    undefined,
-    predicate
-      ? (collider) => {
-          const entity = getRuntimeColliderEntity(collider);
+//   const hit = world.projectPoint(
+//     toSimulationPoint(position),
+//     false,
+//     filterFlags,
+//     filterGroups,
+//     undefined,
+//     undefined,
+//     predicate
+//       ? (collider) => {
+//           const entity = getRuntimeColliderEntity(collider);
 
-          if (entity) {
-            return predicate(entity);
-          }
+//           if (entity) {
+//             return predicate(entity);
+//           }
 
-          return false;
-        }
-      : undefined,
-  );
+//           return false;
+//         }
+//       : undefined,
+//   );
 
-  if (hit) {
-    const entity = getRuntimeColliderEntity(hit.collider);
+//   if (hit) {
+//     const entity = getRuntimeColliderEntity(hit.collider);
 
-    return { entity, point: fromSimulationPoint(hit.point) };
-  }
+//     return { entity, point: fromSimulationPoint(hit.point) };
+//   }
 
-  return undefined;
-}
+//   return undefined;
+// }
