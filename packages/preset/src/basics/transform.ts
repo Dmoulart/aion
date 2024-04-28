@@ -222,7 +222,17 @@ export function getLocalRotation(entity: Entity): number {
 export const getRotation = getLocalRotation;
 
 export function getWorldRotation(entity: Entity): number {
-  return getMatrixRotation(getWorldMatrix(entity));
+  let rotation = getLocalRotation(entity);
+
+  let parent = getParentOf(entity);
+
+  while (parent) {
+    const parentRotation = getLocalRotation(parent);
+    rotation += parentRotation;
+    parent = getParentOf(parent);
+  }
+
+  return rotation;
 }
 
 export function getTransformRotation(transform: Transform): number {
