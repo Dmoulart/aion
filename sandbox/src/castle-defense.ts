@@ -60,8 +60,8 @@ engine.run();
 
 export function plugins() {
   const preset = aionPreset({
-    renderDebug: true,
-    debugEntityID: true,
+    renderDebug: false,
+    debugEntityID: false,
   });
 
   beforeStart(createFloor);
