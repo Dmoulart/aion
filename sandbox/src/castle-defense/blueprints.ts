@@ -9,9 +9,11 @@ import {
   projectPoint,
   getMouseWorldX,
 } from "aion-preset";
-import { Entity } from "aion-ecs";
+import { Entity, createTag } from "aion-ecs";
 import { downDirection, vec } from "aion-core";
 import { key, click } from "aion-input";
+
+export const Blueprint = createTag();
 
 export function placeBluePrint(
   entity: Entity,
@@ -35,7 +37,7 @@ export function placeBluePrint(
   );
 
   // will only occur when building very very high structures
-  if (result?.blocked) {
+  if (result && result.blocked) {
     console.warn("Blocked", "@todo : handle very hight structures");
     const hit = projectPoint(position, false);
     if (hit) {

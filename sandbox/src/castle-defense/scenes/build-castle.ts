@@ -1,10 +1,20 @@
 import { on } from "aion-engine";
-import { useECS, Transform, getMouseWorldPosition } from "aion-preset";
-import { Blueprint } from "../components";
+import {
+  useECS,
+  Transform,
+  getMouseWorldPosition,
+  getRuntimeBody,
+  Body,
+  RuntimeBody,
+  usePhysics,
+  RuntimeCollider,
+  getRuntimeCollider,
+} from "aion-preset";
 import { createWall } from "../wall";
-import { placeBluePrint } from "../blueprints";
+import { Blueprint, placeBluePrint } from "../blueprints";
 import { getWindowElement } from "aion-render";
 import { createTurret } from "../turret";
+import { onEnterQuery, onExitQuery } from "aion-ecs";
 
 let construct = createWall;
 let newConstruct = false;
@@ -12,11 +22,23 @@ let newConstruct = false;
 export default () => {
   const ecs = useECS();
   const { attach, query, remove } = ecs;
+  const { RAPIER } = usePhysics();
 
   let blueprint = createWall();
   attach(Blueprint, blueprint);
 
   initUI();
+  // const onCreatedBlueprint = onEnterQuery(
+  //   query(Blueprint, RuntimeBody, RuntimeCollider),
+  // );
+
+  // onCreatedBlueprint((entity) => {
+  //   const body = getRuntimeBody(entity)!;
+  //   body.setBodyType(RAPIER.RigidBodyType.KinematicPositionBased, false);
+
+  //   const collider = getRuntimeCollider(entity)!;
+  //   collider.setSensor(true);
+  // });
 
   return on("update", () => {
     if (newConstruct) {

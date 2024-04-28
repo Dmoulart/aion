@@ -9,7 +9,6 @@ export const EnemySpawn = defineComponent({
 export const Floor = createTag();
 export const IsEnemy = createTag();
 export const IsTreasure = createTag();
-export const Blueprint = createTag();
 export const Building = createTag();
 
 // export const Destroyable = { Building, Health };
