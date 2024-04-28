@@ -394,7 +394,6 @@ export function castRay(
   ) as CastRayResult;
 
   if (hit != null) {
-    debugger;
     // The first collider hit has the handle `hit.colliderHandle` and it hit after
     // the ray travelled a distance equal to `ray.dir * toi`.
     let hitPoint = ray.pointAt(hit.toi);

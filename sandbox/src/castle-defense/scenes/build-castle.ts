@@ -20,7 +20,6 @@ export default () => {
 
   return on("update", () => {
     if (newConstruct) {
-      debugger;
       remove(blueprint);
       const { x, y } = getMouseWorldPosition();
       blueprint = construct(x, y);
