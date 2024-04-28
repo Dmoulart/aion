@@ -1,13 +1,13 @@
 import {
   useECS,
   exitCurrentScene,
-  setRuntimeBodyPosition,
   getRuntimeCollider,
   castShape,
   getWorldRotation,
   getRuntimeColliderShape,
   projectPoint,
   getMouseWorldX,
+  setWorldPosition,
 } from "aion-preset";
 import { Entity, createTag } from "aion-ecs";
 import { downDirection, vec } from "aion-core";
@@ -54,11 +54,11 @@ export function placeBluePrint(
       );
 
       if (nearestPointOnShapeLimit) {
-        setRuntimeBodyPosition(entity, nearestPointOnShapeLimit.point);
+        setWorldPosition(entity, nearestPointOnShapeLimit.point);
       }
     }
   } else if (result && !result.blocked) {
-    setRuntimeBodyPosition(entity, result.point);
+    setWorldPosition(entity, result.point);
 
     if (click()) {
       construct(result.point.x, result.point.y);

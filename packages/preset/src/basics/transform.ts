@@ -216,11 +216,6 @@ export function flipY(entity: Entity) {
   transform[1]! *= -1;
 }
 
-export function getLocalRotation(entity: Entity): number {
-  return Transform[entity]![2]!;
-}
-export const getRotation = getLocalRotation;
-
 export function getWorldRotation(entity: Entity): number {
   let rotation = getLocalRotation(entity);
 
@@ -234,6 +229,10 @@ export function getWorldRotation(entity: Entity): number {
 
   return rotation;
 }
+export function getLocalRotation(entity: Entity): number {
+  return Transform[entity]![2]!;
+}
+export const getRotation = getLocalRotation;
 
 export function getTransformRotation(transform: Transform): number {
   return transform[2]!;

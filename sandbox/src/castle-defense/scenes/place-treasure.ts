@@ -5,11 +5,11 @@ import {
   createCollider,
   createBody,
   screenToWorldPosition,
-  setRuntimeBodyPosition,
   Rect,
   exitCurrentScene,
   useECS,
   usePhysics,
+  setWorldPosition,
 } from "aion-preset";
 import { Colors } from "aion-render";
 import { OBSTACLE_COLLISION_GROUP } from "../collision-groups";
@@ -44,7 +44,7 @@ export default () => {
   const cleanup = on("update", () => {
     const { x, y } = screenToWorldPosition(getMouse());
 
-    setRuntimeBodyPosition(player, { x, y });
+    setWorldPosition(player, { x, y });
 
     if (isClicking()) {
       Treasure({

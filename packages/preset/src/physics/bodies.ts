@@ -81,16 +81,6 @@ export function setBodyOptions(bodyDesc: RAPIER.RigidBodyDesc, entity: Entity) {
   bodyDesc.setDominanceGroup(Body.dominanceGroup[entity]!);
 }
 
-export function setRuntimeBodyPosition(entity: Entity, position: Vector) {
-  // @todo : relative, world position ?
-  setPosition(entity, position);
-
-  const body = getRuntimeBody(entity);
-  if (body) {
-    body.setTranslation(toSimulationPoint(position), true);
-  }
-}
-
 export function getRuntimeBody(entity: Entity) {
   const { world } = usePhysics();
   return world.getRigidBody(RuntimeBody[entity]!);
