@@ -25,6 +25,7 @@ import {
   RuntimeBody,
   RuntimeCollider,
   getRuntimeBody,
+  getWorldScale,
 } from "../index.js";
 import { none, not } from "aion-ecs";
 import { handleCollisionEvent } from "./collisions.js";
@@ -64,7 +65,11 @@ export function initPhysics(options?: InitPhysicsOptions) {
       if (!worldPosition.equals(colliderTranslation)) {
         body.setTranslation(toSimulationPoint(worldPosition));
       }
-
+      // getScaleCompensatedRotation(
+      //   colliderRotation,
+      //   getWorldScale(ent).x,
+      //   getWorldScale(ent).y,
+      // );
       if (worldRotation !== colliderRotation) {
         body.setRotation(worldRotation);
       }
@@ -102,31 +107,11 @@ export function initPhysics(options?: InitPhysicsOptions) {
       if (!worldPosition.equals(colliderTranslation)) {
         body.setTranslation(toSimulationPoint(worldPosition), false);
       }
+
       if (worldRotation !== colliderRotation) {
         body.setRotation(worldRotation, false);
       }
     });
-    // // sync body with transform /!\
-    // query(RuntimeCollider, not(RuntimeBody), Transform).each((ent) => {
-    //   const collider = getRuntimeCollider(ent);
-
-    //   // rounding is bad for perfs. compare local positions ?
-    //   const worldPosition = getWorldPosition(ent).round();
-    //   const worldRotation = getWorldRotation(ent);
-
-    //   const colliderTranslation = fromSimulationPoint(
-    //     collider.translation(),
-    //   ).round();
-    //   const colliderRotation = collider.rotation();
-
-    //   if (!worldPosition.equals(colliderTranslation)) {
-    //     collider.setTranslation(worldPosition);
-    //   }
-
-    //   if (worldRotation !== colliderRotation) {
-    //     collider.setRotation(worldRotation);
-    //   }
-    // });
 
     // child colliders controlled by bodies up in the hierarchy
     //@todo we only support child controlled by body up one level in the hierarchy

@@ -157,6 +157,16 @@ export function setTransformY(transform: Transform, y: number) {
   transform[4]! = y;
 }
 
+export function getWorldScale(entity: Entity): Vec {
+  const matrix = getWorldMatrix(entity);
+
+  // Extract scaling components from the world matrix
+  const scaleX = Math.sqrt(matrix[0]! ** 2 + matrix[1]! ** 2);
+  const scaleY = Math.sqrt(matrix[2]! ** 2 + matrix[3]! ** 2);
+
+  return new Vec(scaleX, scaleY);
+}
+
 export function getLocalScale(entity: Entity): Vec {
   const transform = Transform[entity]!;
   return new Vec(transform[0]!, transform[1]!);
