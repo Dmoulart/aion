@@ -13,7 +13,8 @@ import {
 export function getEntityPhysicalShape(entity: Entity) {
   const { RAPIER } = usePhysics();
   const { has } = useECS();
-  let shape: RAPIER.Shape;
+
+  let shape: RAPIER.Shape | undefined;
 
   if (has(Rect, entity)) {
     shape = new RAPIER.Cuboid(

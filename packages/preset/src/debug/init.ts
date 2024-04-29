@@ -27,19 +27,19 @@ export function initDebug(options?: InitDebugOptions) {
   }
 }
 
-export function logEntityComponent(entity: Entity, component: Component) {
-  for (const field in component) {
-    console.log(field, component[field][entity]);
-  }
-}
+// export function logEntityComponent(entity: Entity, component: Component) {
+//   for (const field in component) {
+//     console.log(field, component[field][entity]);
+//   }
+// }
 
-export function getEntityComponentAsObject(
-  entity: Entity,
-  component: Component,
-) {
-  const obj = {};
-  for (const field in component) {
-    obj[field] = component[field][entity];
-  }
-  return obj;
-}
+// export function getEntityComponentAsObject(
+//   entity: Entity,
+//   component: Component,
+// ) {
+//   const obj = {};
+//   for (const field in component) {
+//     obj[field] = component[field][entity];
+//   }
+//   return obj;
+// }

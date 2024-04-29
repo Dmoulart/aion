@@ -129,9 +129,11 @@ export function initPhysics(options?: InitPhysicsOptions) {
             const parentScale = getLocalScale(parent);
 
             const position = toSimulationPoint(getLocalPosition(ent));
+
             //@todo not sure if this is correct code. Works with flipped transforms (-1 values)
             // but other values have not been tested
-            position.scaleEq(parentScale.x, parentScale.y);
+            position.x *= parentScale.x;
+            position.y *= parentScale.y;
 
             collider.setTranslationWrtParent(position);
           }

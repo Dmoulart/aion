@@ -83,8 +83,21 @@ export function getLocalPosition(entity: Entity): Vec {
 export const getPosition = getLocalPosition;
 
 export function getWorldPosition(entity: Entity): Vec {
-  const mat = getWorldMatrix(entity);
-  return new Vec(mat![4]!, mat[5]!);
+  debugger;
+  let position = getLocalPosition(entity);
+
+  let parent = getParentOf(entity);
+
+  while (parent) {
+    const parentPosition = getLocalPosition(parent);
+
+    position.x += parentPosition.x;
+    position.y += parentPosition.y;
+
+    parent = getParentOf(parent);
+  }
+
+  return position;
 }
 
 export function getX(entity: Entity): number {
@@ -158,13 +171,20 @@ export function setTransformY(transform: Transform, y: number) {
 }
 
 export function getWorldScale(entity: Entity): Vec {
-  const matrix = getWorldMatrix(entity);
+  let scale = getLocalScale(entity);
 
-  // Extract scaling components from the world matrix
-  const scaleX = Math.sqrt(matrix[0]! ** 2 + matrix[1]! ** 2);
-  const scaleY = Math.sqrt(matrix[2]! ** 2 + matrix[3]! ** 2);
+  let parent = getParentOf(entity);
 
-  return new Vec(scaleX, scaleY);
+  while (parent) {
+    const parentScale = getLocalScale(parent);
+
+    scale.x += parentScale.x;
+    scale.y += parentScale.y;
+
+    parent = getParentOf(parent);
+  }
+
+  return scale;
 }
 
 export function getLocalScale(entity: Entity): Vec {
@@ -316,6 +336,7 @@ function rotateTowardsAngle(entity: Entity, targetAngle: number, step: number) {
 
 export function rotateAroundPoint(entity: Entity, point: Vec, angle: number) {
   const position = getWorldPosition(entity);
+
   const distanceX = position.x - point.x;
   const distanceY = position.y - point.y;
 

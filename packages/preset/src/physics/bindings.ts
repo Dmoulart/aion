@@ -107,8 +107,12 @@ export function initPhysicsSystems() {
       if (has(Collider, descendant)) {
         const collider = createRuntimeCollider(descendant, world, body);
         const position = toSimulationPoint(getLocalPosition(descendant));
+
         //@todo sync rotation with scale like in init.js
-        position.scaleEq(ancestorScale.x, ancestorScale.y);
+        // position.scaleEq(ancestorScale.x, ancestorScale.y);
+        //
+        position.x *= ancestorScale.x;
+        position.y *= ancestorScale.y;
 
         collider.setTranslationWrtParent(position);
         collider.setRotationWrtParent(getLocalRotation(descendant));
