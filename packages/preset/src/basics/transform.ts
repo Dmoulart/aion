@@ -127,15 +127,15 @@ export function setWorldPosition(entity: Entity, position: Vector): void {
   let parent = getParentOf(entity);
 
   if (parent) {
-    //@todo perf: matrix calculation is not necessary here I think
     const parentWorldPosition = getWorldPosition(parent);
+
     setLocalPosition(entity, {
       x: position.x - parentWorldPosition.x,
       y: position.y - parentWorldPosition.y,
     });
+  } else {
+    setLocalPosition(entity, position);
   }
-
-  setLocalPosition(entity, position);
 }
 
 export function translate(entity: Entity, { x, y }: Vector): void {
