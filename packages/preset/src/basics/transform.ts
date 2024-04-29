@@ -53,6 +53,7 @@ export function getWorldMatrix(entity: Entity) {
   const childMatrix = getLocalMatrix(entity);
 
   let parent = getParentOf(entity);
+
   if (parent) {
     let parentMatrix: Matrix = createIdentityMatrix();
 
@@ -83,7 +84,6 @@ export function getLocalPosition(entity: Entity): Vec {
 export const getPosition = getLocalPosition;
 
 export function getWorldPosition(entity: Entity): Vec {
-  debugger;
   let position = getLocalPosition(entity);
 
   let parent = getParentOf(entity);
@@ -129,13 +129,11 @@ export function setWorldPosition(entity: Entity, position: Vector): void {
   if (parent) {
     const parentWorldPosition = getWorldPosition(parent);
 
-    setLocalPosition(entity, {
-      x: position.x - parentWorldPosition.x,
-      y: position.y - parentWorldPosition.y,
-    });
-  } else {
-    setLocalPosition(entity, position);
+    position.x -= parentWorldPosition.x;
+    position.y -= parentWorldPosition.y;
   }
+
+  setLocalPosition(entity, position);
 }
 
 export function translate(entity: Entity, { x, y }: Vector): void {
