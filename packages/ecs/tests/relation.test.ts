@@ -107,17 +107,17 @@ describe("Relation", () => {
 
     addQuery(world, query);
 
-    expect(query.first() === child);
+    expect(query.first()).toEqual(child);
 
     removeEntity(world, child);
 
-    expect(query.first() === 0);
+    expect(query.first()).toBeFalsy();
 
     const child2 = createEntity(world);
 
     attach(world, ChildOf(parent), child2);
 
-    expect(query.first() === child2);
+    expect(query.first()).toEqual(child2);
 
     const allChildrenQuery = createQuery(all(...ChildOf("*")));
 
@@ -131,7 +131,7 @@ describe("Relation", () => {
       }
     });
 
-    expect(hasNewChild);
+    expect(hasNewChild).toBeTruthy();
   });
   it("can automatically remove children", () => {
     const world = createWorld(100);
@@ -149,13 +149,8 @@ describe("Relation", () => {
 
     addQuery(world, query);
 
-    expect(query.first() === 1);
-
     removeEntity(world, parent);
-    console.log(hasComponent(world, ChildOf(parent), child));
-    console.log(query.archetypes[0]?.entities.dense);
-    console.log(query.first());
 
-    expect(query.first() === 0);
+    expect(query.first()).toBeFalsy();
   });
 });
