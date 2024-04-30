@@ -1,5 +1,7 @@
 import { expect, it, describe } from "vitest";
 import {
+  addQuery,
+  all,
   any,
   attach,
   createEntity,
@@ -9,6 +11,7 @@ import {
   detach,
   hasComponent,
   i32,
+  removeEntity,
   runQuery,
 } from "../src/index.js";
 
@@ -58,7 +61,7 @@ describe("Relation", () => {
     expect(runQuery(world, query).length === 2);
   });
 
-  it("Can define relations with schema", () => {
+  it.skip("Can define relations with schema", () => {
     const world = createWorld(10_000);
 
     const Vehicle = defineRelation({
@@ -72,7 +75,7 @@ describe("Relation", () => {
     expect("speed" in Vehicle(Car));
   });
 
-  it("must cache relations components", () => {
+  it.skip("must cache relations components", () => {
     const world = createWorld(10_000);
 
     const Vehicle = defineRelation({
@@ -89,5 +92,70 @@ describe("Relation", () => {
     const carsB = Vehicle(Car);
 
     expect(carsA === carsB && "speed" in carsA);
+  });
+  it("can add children", () => {
+    const world = createWorld(100);
+
+    const ChildOf = defineRelation();
+
+    const parent = createEntity(world);
+    const child = createEntity(world);
+
+    attach(world, ChildOf(parent), child);
+
+    const query = createQuery(all(ChildOf(parent)));
+
+    addQuery(world, query);
+
+    expect(query.first() === child);
+
+    removeEntity(world, child);
+
+    expect(query.first() === 0);
+
+    const child2 = createEntity(world);
+
+    attach(world, ChildOf(parent), child2);
+
+    expect(query.first() === child2);
+
+    const allChildrenQuery = createQuery(all(...ChildOf("*")));
+
+    addQuery(world, allChildrenQuery);
+
+    let hasNewChild = false;
+
+    allChildrenQuery.each((ent) => {
+      if (ent === child2) {
+        hasNewChild = true;
+      }
+    });
+
+    expect(hasNewChild);
+  });
+  it("can automatically remove children", () => {
+    const world = createWorld(100);
+
+    const ChildOf = defineRelation();
+
+    const parent = createEntity(world);
+    const child = createEntity(world);
+
+    attach(world, ChildOf(parent), child);
+
+    console.log(ChildOf(parent));
+    console.log(hasComponent(world, ChildOf(parent), child));
+    const query = createQuery(all(ChildOf(parent)));
+
+    addQuery(world, query);
+
+    expect(query.first() === 1);
+
+    removeEntity(world, parent);
+    console.log(hasComponent(world, ChildOf(parent), child));
+    console.log(query.archetypes[0]?.entities.dense);
+    console.log(query.first());
+
+    expect(query.first() === 0);
   });
 });

@@ -2,14 +2,16 @@ import type { AnyBitSet } from "./bit-set.js";
 import { SparseSet } from "./sparse-set.js";
 
 export class SparseBitSet implements AnyBitSet {
-  bits!: Uint32Array;
+  // With a UInt32 adding (with xor method) 31 will give a negative number which does not work
+  // Here I'm maybe missing something
+  bits!: Int32Array;
   //@todo there is a maybe a more efficient way to do a sparse bit set.
   set!: SparseSet;
   size!: number;
 
   constructor(size: number = 10) {
     this.size = size;
-    this.bits = new Uint32Array(size);
+    this.bits = new Int32Array(size);
     this.set = new SparseSet();
   }
 
@@ -124,7 +126,7 @@ export class SparseBitSet implements AnyBitSet {
 
     this.size += diff;
 
-    const newMask = new Uint32Array(this.size);
+    const newMask = new Int32Array(this.size);
 
     newMask.set(this.bits);
 

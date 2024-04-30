@@ -3,6 +3,7 @@ import {
   type Component,
   type ComponentsGroup,
   getComponentID,
+  type ComponentID,
 } from "./component.js";
 import type { World } from "./world.js";
 import type { Archetype } from "./archetype.js";
@@ -198,7 +199,7 @@ export function createQuery(...terms: QueryTerm[]): Query {
     first() {
       for (let i = 0; i < this.archetypes.length; i++) {
         const ents = this.archetypes[i]!.entities.dense;
-        if (ents.length) {
+        if (ents.length > 0) {
           return ents[0];
         }
       }

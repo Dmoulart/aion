@@ -29,12 +29,10 @@ import {
   type PrefabInstanceOptions,
   prefab,
 } from "./prefab.js";
-import { lo } from "./id.js";
 //@todo: remove capacity ?
 export const DEFAULT_WORLD_CAPACITY = 100_000;
 
-export const WORLD_MAX_SIZE = lo(Number.MAX_SAFE_INTEGER); // ???
-
+export const WORLD_MAX_SIZE = Number.MAX_SAFE_INTEGER & ((1 << 20) - 1); //  lo(Number.MAX_SAFE_INTEGER); // ???
 export type World = {
   /**
    * The removed entities

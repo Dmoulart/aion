@@ -1,4 +1,4 @@
-import { expect, it, describe } from "vitest";
+import { expect, it, describe, beforeEach } from "vitest";
 import {
   createEntity,
   removeEntity,
@@ -6,9 +6,13 @@ import {
   entityExists,
   insertEntity,
 } from "../src/index.js";
-import { cursor } from "../src/id.js";
+import { cursor, resetIDCursor } from "../src/id.js";
 
 describe("Entity", () => {
+  beforeEach(() => {
+    resetIDCursor();
+  });
+
   it("can create a new entity", () => {
     const world = createWorld();
     const eid = createEntity(world);
@@ -22,7 +26,7 @@ describe("Entity", () => {
     createEntity(world);
     createEntity(world);
 
-    expect(cursor).toStrictEqual(3);
+    expect(createEntity(world)).toStrictEqual(3);
   });
 
   it("recycle deleted entities", () => {

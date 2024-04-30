@@ -180,11 +180,12 @@ describe("Component", () => {
     for (let i = 0; i < 100; i++) {
       defineComponent(i32);
     }
-    const Component32 = defineComponent(i32);
+    const Component101 = defineComponent(i32);
 
     const eid = createEntity(world);
-    attach(world, Component32, eid);
-    const query = runQuery(world, createQuery(all(Component32)));
+    attach(world, Component101, eid);
+    const query = runQuery(world, createQuery(all(Component101)));
     expect(query[0]!.entities.dense[0] === eid);
+    // expect(query.first() === eid);
   });
 });

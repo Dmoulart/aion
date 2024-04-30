@@ -1,4 +1,4 @@
-import { expect, it, describe } from "vitest";
+import { expect, it, describe, beforeEach } from "vitest";
 import {
   defineComponent,
   createEntity,
@@ -10,8 +10,13 @@ import {
   prefab,
   entityExists,
 } from "../src/index.js";
+import { resetIDCursor } from "../dist/id.js";
 
 describe("World", () => {
+  beforeEach(() => {
+    resetIDCursor();
+  });
+
   it("throws when world capacity exceeded", () => {
     const world = createWorld(2);
     createEntity(world);
@@ -29,6 +34,7 @@ describe("World", () => {
     const TestComponent = defineComponent({
       field: i8,
     });
+
     const TestComponent2 = defineComponent({
       field: i8,
     });
