@@ -4,29 +4,37 @@ import {
   type ComponentID,
 } from "./component.js";
 import { type Entity, type ID } from "./entity.js";
-import { nextID, pair } from "./id.js";
+import { hi, lo, nextID, pair } from "./id.js";
+import {
+  SparseBitSet,
+  type AnyBitSet,
+  withMask,
+  type QueryTerm,
+} from "./index.js";
 import type { Schema } from "./schemas.js";
 import { DEFAULT_WORLD_CAPACITY } from "./world.js";
 
 const isWildcard = (str: unknown): str is "*" => str === "*";
 
-const relations = new Map<ID, Component | ID>();
+const relations = new Set<ID>();
+export const RELATIONS_MASKS = new Map<ID, AnyBitSet>();
 
-export function defineRelation<S extends Schema>(
-  schema?: S,
-  size: number = DEFAULT_WORLD_CAPACITY,
-) {
+type QueryTermOrID<T extends Entity | "*"> = T extends Entity ? ID : QueryTerm;
+
+export function defineRelation(size: number = DEFAULT_WORLD_CAPACITY) {
   const baseID = nextID();
 
-  const instances: Array<ComponentID | ID> = [];
+  const instances: Array<ID> = [];
+
+  const mask: AnyBitSet = new SparseBitSet();
+
+  RELATIONS_MASKS.set(baseID, mask);
 
   return function <T extends Entity | "*">(
     entityOrWildcard: T,
-  ): T extends "*" ? Array<ComponentID | ID> : Component<S> {
+  ): QueryTermOrID<T> {
     if (isWildcard(entityOrWildcard)) {
-      return instances as T extends "*"
-        ? Array<ComponentID | ID>
-        : Component<S>;
+      return withMask(RELATIONS_MASKS.get(baseID)!, baseID) as QueryTermOrID<T>;
     }
 
     const entity = entityOrWildcard as Entity;
@@ -34,28 +42,21 @@ export function defineRelation<S extends Schema>(
     const id = pair(entity, baseID);
 
     if (relations.has(id)) {
-      const componentOrID = relations.get(id);
-      //@todo: proper typing
-      return componentOrID as T extends "*"
-        ? Array<ComponentID | ID>
-        : Component<S>;
-    }
-    let ret: Component | ID;
-
-    if (schema) {
-      throw new Error("Relations with schema not implemented");
-      //@todo proper typing
-      //@ts-expect-error
-      ret = defineComponent(schema, size, id);
-    } else {
-      ret = id;
+      return id as QueryTermOrID<T>;
     }
 
     instances.push(id);
-    relations.set(id, ret);
-    return ret as unknown as T extends "*"
-      ? Array<ComponentID | ID>
-      : Component<S>;
-    // return ret as T extends "*" ? Array<ComponentID | ID> : Component<S>;
+    console.log("set mask", id);
+    mask.or(id);
+
+    relations.add(id);
+    return id as QueryTermOrID<T>;
   };
+}
+export function getRelationID(relation: ID) {
+  return lo(relation);
+}
+
+export function getRelationTarget(relation: ID) {
+  return hi(relation);
 }

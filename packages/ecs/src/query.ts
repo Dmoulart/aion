@@ -8,8 +8,9 @@ import {
 import type { World } from "./world.js";
 import type { Archetype } from "./archetype.js";
 import type { Entity, ID } from "./entity.js";
-import { BitSetImpl, SparseSet } from "./collections/index.js";
+import { BitSetImpl, SparseSet, type AnyBitSet } from "./collections/index.js";
 import { collectIDs } from "./id.js";
+import { getRelationID, getRelationTarget } from "./relation.js";
 
 /**
  * A matcher represents the conditional expression used for every query operators.
@@ -26,6 +27,7 @@ export const QueryTermType = {
   Any: 1,
   None: 2,
   Not: 3,
+  Every: 4,
 } as const;
 export type QueryTerm = { type: number; matcher: Matcher; ids: ID[] };
 
@@ -38,6 +40,14 @@ export const all = (...compsOrIDs: (Component | ID)[]): QueryTerm => {
     type: QueryTermType.All,
     ids,
     matcher: (arch: Archetype) => arch.mask.contains(mask),
+  };
+};
+
+export const withMask = (mask: AnyBitSet, id: ID): QueryTerm => {
+  return {
+    type: QueryTermType.Every,
+    ids: [id],
+    matcher: (arch: Archetype) => arch.mask.intersects(mask),
   };
 };
 

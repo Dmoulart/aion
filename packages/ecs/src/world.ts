@@ -8,7 +8,6 @@ import {
 import { type Archetype, createArchetype } from "./archetype.js";
 import {
   type QueryHandler,
-  addQuery,
   any,
   type Query,
   none,

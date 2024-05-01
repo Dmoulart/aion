@@ -13,6 +13,7 @@ import {
   i32,
   removeEntity,
   runQuery,
+  ChildOf,
 } from "../src/index.js";
 
 describe("Relation", () => {
@@ -96,8 +97,6 @@ describe("Relation", () => {
   it("can add children", () => {
     const world = createWorld(100);
 
-    const ChildOf = defineRelation();
-
     const parent = createEntity(world);
     const child = createEntity(world);
 
@@ -136,21 +135,17 @@ describe("Relation", () => {
   it("can automatically remove children", () => {
     const world = createWorld(100);
 
-    const ChildOf = defineRelation();
-
     const parent = createEntity(world);
     const child = createEntity(world);
 
     attach(world, ChildOf(parent), child);
 
-    console.log(ChildOf(parent));
-    console.log(hasComponent(world, ChildOf(parent), child));
     const query = createQuery(all(ChildOf(parent)));
 
     addQuery(world, query);
 
     removeEntity(world, parent);
 
-    expect(query.first()).toBeFalsy();
+    expect(query.first()).toBeUndefined();
   });
 });

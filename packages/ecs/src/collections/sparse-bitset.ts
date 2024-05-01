@@ -9,7 +9,7 @@ export class SparseBitSet implements AnyBitSet {
   set!: SparseSet;
   size!: number;
 
-  constructor(size: number = 10) {
+  constructor(size: number = 1) {
     this.size = size;
     this.bits = new Int32Array(size);
     this.set = new SparseSet();
