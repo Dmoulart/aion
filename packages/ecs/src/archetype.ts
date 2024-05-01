@@ -39,7 +39,7 @@ let nextAid = 0;
  * @param mask
  * @returns new archetype
  */
-export const createArchetype = (mask = new BitSetImpl(2)): Archetype => {
+export const createArchetype = (mask = new BitSetImpl(1)): Archetype => {
   const id = ++nextAid;
 
   return {
@@ -59,6 +59,7 @@ export const createArchetype = (mask = new BitSetImpl(2)): Archetype => {
  */
 export const buildArchetype = (components: ID[], world: World) => {
   let archetype = world.rootArchetype;
+
   for (const component of components) {
     if (archetype.edge[component]) {
       archetype = archetype.edge[component]!;
@@ -66,6 +67,7 @@ export const buildArchetype = (components: ID[], world: World) => {
       archetype = deriveArchetype(archetype, component, world);
     }
   }
+
   return archetype;
 };
 

@@ -79,7 +79,7 @@ export class SparseBitSet2 implements AnyBitSet {
   contains(other: SparseBitSet2) {
     const otherLen = other.set.dense.length;
 
-    if (otherLen > this.set.dense.length) {
+    if (otherLen === 0 || otherLen > this.set.dense.length) {
       return false;
     }
 
@@ -154,18 +154,18 @@ export class SparseBitSet2 implements AnyBitSet {
   }
 }
 
-const set = new SparseBitSet2();
-set.or(1);
-console.log("add 1", set.bits.length);
-set.or(100_000);
-console.log("add 100_000", set.bits.length);
-console.log("set has one", set.has(1));
-console.log("set has 100_000", set.has(100_000));
-console.log("set1 bits", set.bits, set.set.dense);
+// const set = new SparseBitSet2();
+// set.or(1);
+// console.log("add 1", set.bits.length);
+// set.or(100_000);
+// console.log("add 100_000", set.bits.length);
+// console.log("set has one", set.has(1));
+// console.log("set has 100_000", set.has(100_000));
+// console.log("set1 bits", set.bits, set.set.dense);
 
-const set2 = new SparseBitSet2();
-set2.or(100_000);
-set2.or(1);
-console.log("set2 bits", set2.bits, set2.set.dense);
-console.log("set2 should intersect", set2.intersects(set));
-console.log("set2 should not contain", set2.contains(set));
+// const set2 = new SparseBitSet2();
+// set2.or(100_000);
+// set2.or(1);
+// console.log("set2 bits", set2.bits, set2.set.dense);
+// console.log("set2 should intersect", set2.intersects(set));
+// console.log("set2 should not contain", set2.contains(set));

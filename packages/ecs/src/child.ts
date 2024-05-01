@@ -1,7 +1,6 @@
 import { attach } from "./component.js";
-import { removeEntity, type ID, createEntity, entityExists } from "./entity.js";
-import { SparseBitSet } from "./index.js";
-import { onEnterQuery, onExitQuery, query, withMask } from "./query.js";
+import { removeEntity, type ID, createEntity } from "./entity.js";
+import { onEnterQuery, onExitQuery, query } from "./query.js";
 import {
   RELATIONS_MASKS,
   defineRelation,
@@ -11,10 +10,6 @@ import {
 import { createWorld, type World } from "./world.js";
 
 export const ParentOf = defineRelation();
-
-function getChild(id: ID) {
-  return getRelationTarget(id);
-}
 
 function initHierarchy(world: World) {
   // const parentOfBaseID = getRelationID(ParentOf(0));
@@ -43,23 +38,28 @@ const mask = RELATIONS_MASKS.get(getRelationID(ParentOf(child)))!;
 
 console.log("parent:", parent);
 console.log("child:", child);
+console.log("child2:", child2);
 console.log("parent of child", ParentOf(child));
 console.log("parent relationship id ", getRelationID(ParentOf(child)));
 console.log("parent relationship target ", getRelationTarget(ParentOf(child)));
 console.log("mask has relation", mask.has(ParentOf(child)));
 
-attach(w, ParentOf(child), parent);
-// attach(w, ParentOf(child2), parent);
-
+// console.log(mask);
 const everyParents = query(w, ParentOf("*"));
 const parentsOfChild = query(w, ParentOf(child));
+const onParentCreated = onEnterQuery(everyParents);
+
+onParentCreated((p) => console.log("parent created ?", p));
+
+attach(w, ParentOf(child), parent);
+attach(w, ParentOf(child2), parent);
+
 console.log("Every parents", everyParents.first());
 console.log("Parents of child", parentsOfChild.first());
 
-const onChildRemove = onExitQuery(everyParents);
-const onFirstChildRemove = onExitQuery(parentsOfChild);
+const onParentRemove = onExitQuery(everyParents);
 
-onChildRemove((parent) => {
+onParentRemove(() => {
   console.log("child removed");
 
   // removeEntity(w, getChild());

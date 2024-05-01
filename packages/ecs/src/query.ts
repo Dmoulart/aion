@@ -3,14 +3,12 @@ import {
   type Component,
   type ComponentsGroup,
   getComponentID,
-  type ComponentID,
 } from "./component.js";
 import type { World } from "./world.js";
 import type { Archetype } from "./archetype.js";
 import type { Entity, ID } from "./entity.js";
 import { BitSetImpl, SparseSet, type AnyBitSet } from "./collections/index.js";
 import { collectIDs } from "./id.js";
-import { getRelationID, getRelationTarget } from "./relation.js";
 
 /**
  * A matcher represents the conditional expression used for every query operators.
@@ -43,11 +41,11 @@ export const all = (...compsOrIDs: (Component | ID)[]): QueryTerm => {
   };
 };
 
-export const withMask = (mask: AnyBitSet, id: ID): QueryTerm => {
+export const testMatcher = (mask: AnyBitSet, id: ID): QueryTerm => {
   return {
     type: QueryTermType.Every,
     ids: [id],
-    matcher: (arch: Archetype) => arch.mask.intersects(mask),
+    matcher: (arch: Archetype) => mask.contains(arch.mask), // arch.mask.intersects(mask),
   };
 };
 

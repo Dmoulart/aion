@@ -1,17 +1,11 @@
-import {
-  type Component,
-  defineComponent,
-  type ComponentID,
-} from "./component.js";
 import { type Entity, type ID } from "./entity.js";
 import { hi, lo, nextID, pair } from "./id.js";
 import {
-  SparseBitSet,
   type AnyBitSet,
-  withMask,
   type QueryTerm,
+  BitSetImpl,
+  testMatcher,
 } from "./index.js";
-import type { Schema } from "./schemas.js";
 import { DEFAULT_WORLD_CAPACITY } from "./world.js";
 
 const isWildcard = (str: unknown): str is "*" => str === "*";
@@ -26,7 +20,7 @@ export function defineRelation(size: number = DEFAULT_WORLD_CAPACITY) {
 
   const instances: Array<ID> = [];
 
-  const mask: AnyBitSet = new SparseBitSet();
+  const mask: AnyBitSet = new BitSetImpl();
 
   RELATIONS_MASKS.set(baseID, mask);
 
@@ -34,7 +28,10 @@ export function defineRelation(size: number = DEFAULT_WORLD_CAPACITY) {
     entityOrWildcard: T,
   ): QueryTermOrID<T> {
     if (isWildcard(entityOrWildcard)) {
-      return withMask(RELATIONS_MASKS.get(baseID)!, baseID) as QueryTermOrID<T>;
+      return testMatcher(
+        RELATIONS_MASKS.get(baseID)!,
+        baseID,
+      ) as QueryTermOrID<T>;
     }
 
     const entity = entityOrWildcard as Entity;
