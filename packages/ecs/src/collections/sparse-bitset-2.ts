@@ -117,7 +117,7 @@ export class SparseBitSet2 implements AnyBitSet {
 
       const indexA = this.set.sparse[value]!;
 
-      const indexB = other.set.sparse[value]!;
+      const indexB = i;
 
       const a = this.bits[indexA]!;
       const b = other.bits[indexB]!;

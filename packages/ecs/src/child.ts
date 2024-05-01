@@ -1,7 +1,7 @@
 import { attach } from "./component.js";
 import { removeEntity, type ID, createEntity, entityExists } from "./entity.js";
 import { SparseBitSet } from "./index.js";
-import { every, onEnterQuery, onExitQuery, query, withMask } from "./query.js";
+import { onEnterQuery, onExitQuery, query, withMask } from "./query.js";
 import {
   RELATIONS_MASKS,
   defineRelation,
