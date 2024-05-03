@@ -42,13 +42,12 @@ const child = createEntity(w);
 const child2 = createEntity(w);
 
 const onChildCreated = onEnterQuery(query(w, ChildOf("*")));
-
-attach(w, ChildOf(parent), child);
-attach(w, ChildOf(parent), child2);
-
 onChildCreated((e) => {
   console.log("child created", e);
 });
+
+attach(w, ChildOf(parent), child);
+attach(w, ChildOf(parent), child2);
 
 // const mask = RELATIONS_MASKS.get(ParentOf)!;
 
