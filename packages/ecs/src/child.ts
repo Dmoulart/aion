@@ -1,5 +1,12 @@
 import { attach } from "./component.js";
-import { removeEntity, type ID, createEntity } from "./entity.js";
+import {
+  removeEntity,
+  type ID,
+  createEntity,
+  type Entity,
+  entityExists,
+} from "./entity.js";
+import type { SparseBitSet2 } from "./index.js";
 import { onEnterQuery, onExitQuery, query } from "./query.js";
 import {
   RELATIONS_MASKS,
@@ -49,6 +56,25 @@ const everyParents = query(w, ParentOf("*"));
 const parentsOfChild = query(w, ParentOf(child));
 const onParentCreated = onEnterQuery(everyParents);
 
+function getChildren(world: World, entity: Entity) {
+  const parentMask = world.entitiesArchetypes[entity]!.mask as SparseBitSet2;
+  const allParents = RELATIONS_MASKS.get(
+    getRelationID(ParentOf(0)),
+  ) as SparseBitSet2;
+
+  const children = parentMask.intersection(allParents).toValues();
+
+  const out: Entity[] = [];
+
+  for (const child of children) {
+    out.push(getRelationTarget(child));
+  }
+
+  return out;
+
+  // (world.entitiesArchetypes[entity]!.mask as SparseBitSet2).intersection()
+}
+
 onParentCreated((p) => console.log("parent created ?", p));
 
 attach(w, ParentOf(child), parent);
@@ -56,12 +82,12 @@ attach(w, ParentOf(child2), parent);
 
 console.log("Every parents", everyParents.first());
 console.log("Parents of child", parentsOfChild.first());
-
+console.log(getChildren(w, parent));
 const onParentRemove = onExitQuery(everyParents);
 
-onParentRemove(() => {
+onParentRemove((parent) => {
   console.log("child removed");
-
+  getChildren(w, parent).forEach((child) => removeEntity(w, child));
   // removeEntity(w, getChild());
 });
 // console.log(RELATIONS_MASKS.get(getRelationID(ParentOf(child))));
@@ -69,5 +95,7 @@ onParentRemove(() => {
 // console.log({ child, traget: getRelationTarget(ParentOf(child)) });
 
 // console.log("first", parents.first());
-
+console.log("child exists", entityExists(w, child), entityExists(w, child2));
+console.log("parent removal");
 removeEntity(w, parent);
+console.log("child exists", entityExists(w, child), entityExists(w, child2));

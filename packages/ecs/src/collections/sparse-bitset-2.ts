@@ -177,31 +177,42 @@ export class SparseBitSet2 implements AnyBitSet {
     }
     return result;
   }
+
+  toValues(out: Array<number> = []) {
+    const denseLength = this.set.dense.length;
+
+    for (let i = 0; i < denseLength; i++) {
+      const index = this.set.dense[i]!;
+      const bits = this.bits[i]!;
+
+      // If bits is zero, skip this index
+      if (bits === 0) continue;
+
+      // Iterate through each bit in bits
+      for (let j = 0; j < 32; j++) {
+        // Check if the j-th bit is set
+        if ((bits & (1 << j)) !== 0) {
+          const value = (index << 5) + j; // Calculate the value
+          out.push(value);
+        }
+      }
+    }
+
+    return out;
+  }
 }
-
-// const set = new SparseBitSet2();
-// set.or(1);
-// console.log("add 1", set.bits.length);
-// set.or(100_000);
-// console.log("add 100_000", set.bits.length);
-// console.log("set has one", set.has(1));
-// console.log("set has 100_000", set.has(100_000));
-// console.log("set1 bits", set.bits, set.set.dense);
-
-// const set2 = new SparseBitSet2();
-// set2.or(100_000);
-// set2.or(1);
-// console.log("set2 bits", set2.bits, set2.set.dense);
-// console.log("set2 should intersect", set2.intersects(set));
-// console.log("set2 should not contain", set2.contains(set));
 
 const a = new SparseBitSet2();
 a.or(2);
 a.or(10_000);
+a.or(3);
 
 const b = new SparseBitSet2();
 b.or(10_000);
 b.or(2);
+b.or(3);
 
 const c = a.intersection(b);
 console.log(c, c.has(2), c.has(10_001), c.has(10_000));
+
+console.log(c.toValues());
