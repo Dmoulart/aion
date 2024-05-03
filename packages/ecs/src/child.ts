@@ -41,7 +41,7 @@ const parent = createEntity(w);
 const child = createEntity(w);
 const child2 = createEntity(w);
 
-const mask = RELATIONS_MASKS.get(getRelationID(ParentOf(child)))!;
+const mask = RELATIONS_MASKS.get(ParentOf)!;
 
 console.log("parent:", parent);
 console.log("child:", child);
@@ -58,9 +58,7 @@ const onParentCreated = onEnterQuery(everyParents);
 
 function getChildren(world: World, entity: Entity) {
   const parentMask = world.entitiesArchetypes[entity]!.mask as SparseBitSet2;
-  const allParents = RELATIONS_MASKS.get(
-    getRelationID(ParentOf(0)),
-  ) as SparseBitSet2;
+  const allParents = RELATIONS_MASKS.get(ParentOf) as SparseBitSet2;
 
   const children = parentMask.intersection(allParents).toValues();
 
