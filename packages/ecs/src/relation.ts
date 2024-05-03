@@ -27,7 +27,7 @@ export function defineRelation(size: number = DEFAULT_WORLD_CAPACITY) {
   const mask: AnyBitSet = new BitSetImpl();
 
   const relation = function <T extends Entity | "*">(
-    entityOrWildcard: T,
+    entityOrWildcard: T
   ): QueryTermOrID<T> {
     if (isWildcard(entityOrWildcard)) {
       return testMatcher(mask, baseID) as QueryTermOrID<T>;
@@ -42,7 +42,6 @@ export function defineRelation(size: number = DEFAULT_WORLD_CAPACITY) {
     }
 
     instances.push(id);
-    console.log("set mask", id);
     mask.or(id);
 
     relations.add(id);

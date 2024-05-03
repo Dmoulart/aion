@@ -202,17 +202,17 @@ export class SparseBitSet2 implements AnyBitSet {
   }
 }
 
-const a = new SparseBitSet2();
-a.or(2);
-a.or(10_000);
-a.or(3);
+// const a = new SparseBitSet2();
+// a.or(2);
+// a.or(10_000);
+// a.or(3);
 
-const b = new SparseBitSet2();
-b.or(10_000);
-b.or(2);
-b.or(3);
+// const b = new SparseBitSet2();
+// b.or(10_000);
+// b.or(2);
+// b.or(3);
 
-const c = a.intersection(b);
-console.log(c, c.has(2), c.has(10_001), c.has(10_000));
+// const c = a.intersection(b);
+// console.log(c, c.has(2), c.has(10_001), c.has(10_000));
 
-console.log(c.toValues());
+// console.log(c.toValues());
