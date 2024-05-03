@@ -152,6 +152,31 @@ export class SparseBitSet2 implements AnyBitSet {
 
     this.bits = newMask;
   }
+
+  intersection(other: SparseBitSet2) {
+    const len = Math.min(this.set.dense.length, other.set.dense.length);
+    const result = new SparseBitSet2(len);
+
+    for (let indexB = 0; indexB < len; indexB++) {
+      const offset = other.set.dense[indexB]!;
+
+      const indexA = this.set.sparse[offset]!;
+
+      if (indexA === undefined) {
+        continue;
+      }
+
+      const bits = this.bits[indexA]! & other.bits[indexB]!;
+
+      if (bits > 0) {
+        result.set.dense[indexB] = offset;
+        result.set.sparse[offset] = indexB;
+
+        result.bits[indexB] = bits;
+      }
+    }
+    return result;
+  }
 }
 
 // const set = new SparseBitSet2();
@@ -169,3 +194,14 @@ export class SparseBitSet2 implements AnyBitSet {
 // console.log("set2 bits", set2.bits, set2.set.dense);
 // console.log("set2 should intersect", set2.intersects(set));
 // console.log("set2 should not contain", set2.contains(set));
+
+const a = new SparseBitSet2();
+a.or(2);
+a.or(10_000);
+
+const b = new SparseBitSet2();
+b.or(10_000);
+b.or(2);
+
+const c = a.intersection(b);
+console.log(c, c.has(2), c.has(10_001), c.has(10_000));
