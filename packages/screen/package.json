@@ -1,0 +1,24 @@
+{
+  "name": "aion-screen",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "scripts": {
+    "build": "tsc --build",
+    "watch": "tsc -w"
+  },
+  "dependencies": {
+    "aion-core": "workspace:*",
+    "pixi.js": "^8.1.1"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
