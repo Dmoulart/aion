@@ -1,5 +1,6 @@
 import { type Component, isComponent, getComponentID } from "./component.js";
 import type { ID } from "./entity.js";
+import type { Relation } from "./index.js";
 
 /**
  * The global ID cursor
@@ -42,6 +43,14 @@ export function isID(value: unknown): value is ID {
 
 export function collectIDs(compsOrIDs: (Component | ID)[]): ID[] {
   return compsOrIDs.map((compOrID) =>
-    isComponent(compOrID) ? getComponentID(compOrID) : compOrID,
+    isComponent(compOrID) ? getComponentID(compOrID) : compOrID
   );
+}
+
+export function getID(component: ID | Component | Relation) {
+  return typeof component === "number" // id
+    ? component
+    : typeof component === "function" && "baseID" in component // relation
+    ? component.baseID
+    : getComponentID(component); // component
 }

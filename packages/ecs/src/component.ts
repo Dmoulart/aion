@@ -9,7 +9,7 @@ import type { World } from "./world.js";
 import { type ID, NonExistantEntity } from "./entity.js";
 import { deriveArchetype, onArchetypeChange } from "./archetype.js";
 import { type Entity } from "./entity.js";
-import { nextID } from "./id.js";
+import { getID, nextID } from "./id.js";
 import {
   type Schema,
   type MultipleTypesSchema,
@@ -20,13 +20,17 @@ import {
   isPrimitiveType,
   isSingleTypeSchema,
 } from "./schemas.js";
+import { getRelationID, isRelation, type Relation } from "./relation.js";
 
 export type ComponentID<S extends Schema = Schema> = ID & { __brand: S };
 
 export const $cid: unique symbol = Symbol("$cid");
 
-export type InferSchemaFromID<ID extends ComponentID> =
-  ID extends ComponentID<infer Schema> ? Schema : never;
+export type InferSchemaFromID<ID extends ComponentID> = ID extends ComponentID<
+  infer Schema
+>
+  ? Schema
+  : never;
 
 export type Component<S extends Schema = Schema> = {
   [$cid]: ComponentID<S>;
@@ -46,25 +50,25 @@ export type Columns<S extends Schema> = S extends MultipleTypesSchema
       [column in keyof S]: Column<S[column]>;
     }
   : S extends SingleTypeSchema
-    ? Column<S>
-    : never;
+  ? Column<S>
+  : never;
 
 // A component field is a typed array or an array of typed array.
 export type Column<T extends Type> = T extends PrimitiveType
   ? InstanceType<T>
   : T extends ArrayType
-    ? Array<InstanceType<InferArrayType<T>>>
-    : T extends CustomType
-      ? ReturnType<T>
-      : never;
+  ? Array<InstanceType<InferArrayType<T>>>
+  : T extends CustomType
+  ? ReturnType<T>
+  : never;
 
 export type Value<T extends Type> = T extends PrimitiveType
   ? number
   : T extends ArrayType
-    ? InstanceType<InferArrayType<T>>
-    : T extends CustomType
-      ? ReturnType<T>[number]
-      : never;
+  ? InstanceType<InferArrayType<T>>
+  : T extends CustomType
+  ? ReturnType<T>[number]
+  : never;
 
 /**
  * Create a component store from a component definition.
@@ -74,7 +78,7 @@ export type Value<T extends Type> = T extends PrimitiveType
  */
 const createComponentColumns = <S extends Schema>(
   schema: S,
-  size: number,
+  size: number
 ): Columns<S> => {
   if (isSingleTypeSchema(schema)) {
     return createColumn(schema, size) as any;
@@ -91,7 +95,7 @@ const createComponentColumns = <S extends Schema>(
 
 function createColumn(
   type: SingleTypeSchema | MultipleTypesSchema[keyof MultipleTypesSchema],
-  size: number,
+  size: number
 ) {
   if (isArrayType(type)) {
     const [TypedArray, arraySize] = type;
@@ -124,7 +128,7 @@ export const components: Component[] = [];
 export const defineComponent = <S extends Schema>(
   schema: S,
   size = 10_000,
-  id?: number,
+  id?: number
 ): Component<S> => {
   const componentID = (id ?? nextID()) as ComponentID<S>;
 
@@ -161,13 +165,13 @@ export function attach(world: World, component: Component, eid: Entity): void;
 export function attach(
   world: World,
   idOrComponent: ID | Component,
-  eid: Entity,
+  eid: Entity
 ) {
   const oldArchetype = world.entitiesArchetypes[eid]!;
 
   if (!oldArchetype) {
     throw new NonExistantEntity(
-      `Trying to add component to a non existant entity with id : ${eid}`,
+      `Trying to add component to a non existant entity with id : ${eid}`
     );
   }
 
@@ -175,6 +179,9 @@ export function attach(
     typeof idOrComponent === "object" ? idOrComponent[$cid] : idOrComponent;
 
   if (oldArchetype.mask.has(id)) return;
+
+  const baseID = isRelation(id) ? getRelationID(id) : id;
+  ON_BEFORE_ADD_COMPONENT?.[baseID]?.(id, eid, world);
 
   const newArchetype = deriveArchetype(oldArchetype, id, world);
 
@@ -200,13 +207,13 @@ export function detach(world: World, component: Component, eid: Entity): void;
 export function detach(
   world: World,
   idOrComponent: ID | Component,
-  eid: Entity,
+  eid: Entity
 ): void {
   const oldArchetype = world.entitiesArchetypes[eid];
 
   if (!oldArchetype) {
     throw new NonExistantEntity(
-      `Trying to remove component from a non existant entity with id :${eid}`,
+      `Trying to remove component from a non existant entity with id :${eid}`
     );
   }
 
@@ -214,6 +221,9 @@ export function detach(
     typeof idOrComponent === "object" ? idOrComponent[$cid] : idOrComponent;
 
   if (!oldArchetype.mask.has(id)) return;
+
+  const baseID = isRelation(id) ? getRelationID(id) : id;
+  ON_BEFORE_ADD_COMPONENT?.[baseID]?.(id, eid, world);
 
   const newArchetype = deriveArchetype(oldArchetype, id, world);
 
@@ -237,23 +247,23 @@ export function hasComponent(world: World, id: Entity, eid: Entity): boolean;
 export function hasComponent(
   world: World,
   id: ComponentID,
-  eid: Entity,
+  eid: Entity
 ): boolean;
 export function hasComponent(
   world: World,
   component: Component,
-  eid: Entity,
+  eid: Entity
 ): boolean;
 export function hasComponent(
   world: World,
   idOrComponent: ID | ComponentID | Component,
-  eid: Entity,
+  eid: Entity
 ): boolean {
   const archetype = world.entitiesArchetypes[eid];
 
   if (!archetype) {
     throw new NonExistantEntity(
-      `Trying to check component existence of a non existant entity with id : ${eid}`,
+      `Trying to check component existence of a non existant entity with id : ${eid}`
     );
   }
 
@@ -268,9 +278,39 @@ export function getEntityComponents(world: World, entity: Entity): ID[] {
 
   if (!archetype) {
     throw new NonExistantEntity(
-      `Trying to get entity components from a non existant entity : ${entity}`,
+      `Trying to get entity components from a non existant entity : ${entity}`
     );
   }
 
   return archetype.components as ID[];
+}
+
+type OnBeforeAddComponentCallback = (
+  id: ID,
+  entity: Entity,
+  world: World
+) => void;
+
+const ON_BEFORE_ADD_COMPONENT: OnBeforeAddComponentCallback[] = [];
+
+export function onBeforeAddComponent(
+  component: Component | ID | Relation,
+  cb: OnBeforeAddComponentCallback
+) {
+  ON_BEFORE_ADD_COMPONENT[getID(component)] = cb;
+}
+
+type OnBeforeRemoveComponentCallback = (
+  id: ID,
+  entity: Entity,
+  world: World
+) => void;
+
+const ON_BEFORE_REMOVE_COMPONENT: OnBeforeRemoveComponentCallback[] = [];
+
+export function onBeforeRemoveComponent(
+  component: Component | ID | Relation,
+  cb: OnBeforeAddComponentCallback
+) {
+  ON_BEFORE_REMOVE_COMPONENT[getID(component)] = cb;
 }

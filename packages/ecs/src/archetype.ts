@@ -6,6 +6,16 @@ import {
   registerQueryHandlersForArchetype,
   type RegisteredQueryHandler,
 } from "./query.js";
+import {
+  getComponentID,
+  getRelationID,
+  isExclusiveRelation,
+  isRelation,
+  type Component,
+  type ComponentID,
+  type Relation,
+} from "./index.js";
+import { getID } from "./id.js";
 
 //@todo make this a class for better perfs ?
 export type Archetype = {
@@ -29,6 +39,10 @@ export type Archetype = {
    * The components ids posessed by the archetype
    */
   components: Readonly<ID[]>;
+  /**
+   * The base relations ids posessed by the archetype
+   */
+  relations: Readonly<ID[]>;
 };
 
 // The next archetype id.
@@ -48,6 +62,7 @@ export const createArchetype = (mask = new BitSetImpl(1)): Archetype => {
     edge: [],
     mask,
     components: [],
+    relations: [],
   };
 };
 
@@ -84,7 +99,7 @@ export const buildArchetype = (components: ID[], world: World) => {
 export const deriveArchetype = (
   base: Archetype,
   id: ID,
-  world: World,
+  world: World
 ): Archetype => {
   const adjacent = base.edge[id];
 
@@ -94,20 +109,41 @@ export const deriveArchetype = (
 
   const mask = base.mask.clone();
   mask.xor(id);
+
+  const aid = ++nextAid;
+
+  const baseID = getRelationID(id);
+
+  const idIsRelation = isRelation(id);
+
+  const relations = [...base.relations];
+
+  if (idIsRelation) {
+    const preexistingRelation = base.relations[baseID]!;
+    if (preexistingRelation && isExclusiveRelation(baseID)) {
+      mask.xor(preexistingRelation);
+    }
+    relations[baseID] = id;
+  }
+
   //@todo class instance
   const archetype: Archetype = {
-    id: ++nextAid,
+    id: aid,
     entities: new SparseSet(),
     edge: [],
     mask,
     components: [...base.components, id],
+    relations,
   };
 
   // Register in archetype graph
   base.edge[id] = archetype;
   archetype.edge[id] = base;
 
+  ON_ARCHETYPE_CREATED?.[baseID]?.(id, baseID, archetype, base);
+
   world.archetypes.push(archetype);
+
   // @todo is queries.values fast ?
   for (const query of world.queries.values()) {
     if (matchQuery(query, archetype)) {
@@ -131,7 +167,7 @@ export function onArchetypeChange(
   world: World,
   eid: Entity,
   oldArchetype: Archetype,
-  newArchetype: Archetype,
+  newArchetype: Archetype
 ) {
   const exitHandlers = world.handlers.exit[oldArchetype.id];
   const enterHandlers = world.handlers.enter[newArchetype.id];
@@ -139,11 +175,11 @@ export function onArchetypeChange(
   if (exitHandlers) {
     for (const fn of exitHandlers) {
       const query = world.queries.get(
-        (fn as RegisteredQueryHandler).queryHash,
+        (fn as RegisteredQueryHandler).queryHash
       )!;
       // avoid calling handlers when we're changing archertype but staying in the same query
       if (!query.archetypesSet.has(newArchetype.id)) {
-        fn(eid);
+        fn(eid, newArchetype, oldArchetype);
       }
     }
   }
@@ -151,12 +187,31 @@ export function onArchetypeChange(
   if (enterHandlers) {
     for (const fn of enterHandlers) {
       const query = world.queries.get(
-        (fn as RegisteredQueryHandler).queryHash,
+        (fn as RegisteredQueryHandler).queryHash
       )!;
       // avoid calling handlers when we're changing archetype but staying in the same query'
       if (!query.archetypesSet.has(oldArchetype.id)) {
-        fn(eid);
+        fn(eid, newArchetype, oldArchetype);
       }
     }
   }
+}
+
+export function getArchetypeLastID(archetype: Archetype): ID {
+  return archetype.components.at(-1) as ID;
+}
+type OnArchetypeCreatedCallback = (
+  id: ID,
+  baseID: ID,
+  derived: Archetype,
+  base: Archetype
+) => void;
+
+const ON_ARCHETYPE_CREATED: OnArchetypeCreatedCallback[] = [];
+
+export function onArchetypeCreated(
+  component: Component | ID | Relation,
+  cb: OnArchetypeCreatedCallback
+) {
+  ON_ARCHETYPE_CREATED[getID(component)] = cb;
 }

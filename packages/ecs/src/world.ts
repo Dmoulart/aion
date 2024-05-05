@@ -28,6 +28,7 @@ import {
   type PrefabInstanceOptions,
   prefab,
 } from "./prefab.js";
+import { BitSetImpl, type AnyBitSet } from "./index.js";
 //@todo: remove capacity ?
 export const DEFAULT_WORLD_CAPACITY = 100_000;
 
@@ -45,6 +46,12 @@ export type World = {
    * An array with entity id as index and corresponding archetype at the given index
    */
   entitiesArchetypes: (Archetype | undefined)[];
+
+  /**
+   * A mapping of component ID to archetypes containing this component
+   */
+  componentIndex: AnyBitSet[];
+
   /**
    * The root archetype, which is the archetype corresponding to empty components
    */
@@ -72,7 +79,7 @@ export type World = {
 export const createWorld = (size = DEFAULT_WORLD_CAPACITY): World => {
   if (size > WORLD_MAX_SIZE) {
     throw new AboveWorldMaxSize(
-      `World's' capacity cannot exceed ${WORLD_MAX_SIZE}`,
+      `World's' capacity cannot exceed ${WORLD_MAX_SIZE}`
     );
   }
 
@@ -81,8 +88,9 @@ export const createWorld = (size = DEFAULT_WORLD_CAPACITY): World => {
   return {
     rootArchetype: root,
     archetypes: [root],
-    deletedEntities: [] as Entity[],
-    entitiesArchetypes: [] as Archetype[],
+    deletedEntities: [],
+    entitiesArchetypes: [],
+    componentIndex: [],
     queries: new Map(),
     handlers: {
       enter: [] as Array<QueryHandler[]>,
@@ -101,12 +109,12 @@ export const createECS = (world: World = createWorld()) => {
     has: hasComponent.bind(null, world),
     prefab: prefab.bind(null, world) as <Definition extends PrefabDefinition>(
       definition: Definition,
-      options?: PrefabInstanceOptions<Definition>,
+      options?: PrefabInstanceOptions<Definition>
     ) => ReturnType<typeof prefab<Definition>>, // hoolyyy mollyy
     attach: attach.bind(null, world),
     detach: detach.bind(null, world),
     query: query.bind(null, world) as <
-      T extends (QueryTerm | Component | ComponentsGroup | ID)[],
+      T extends (QueryTerm | Component | ComponentsGroup | ID)[]
     >(
       ...termsOrComponents: T
     ) => Query,

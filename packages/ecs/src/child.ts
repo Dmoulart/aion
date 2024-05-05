@@ -1,4 +1,9 @@
-import { attach } from "./component.js";
+import { getArchetypeLastID, onArchetypeCreated } from "./archetype.js";
+import {
+  attach,
+  onBeforeAddComponent,
+  onBeforeRemoveComponent,
+} from "./component.js";
 import {
   removeEntity,
   type ID,
@@ -6,8 +11,17 @@ import {
   type Entity,
   entityExists,
 } from "./entity.js";
-import type { SparseBitSet2 } from "./index.js";
-import { onEnterQuery, onExitQuery, query } from "./query.js";
+import { nextID } from "./id.js";
+import { SparseSet, hasComponent, type SparseBitSet2 } from "./index.js";
+import {
+  addQuery,
+  any,
+  createQuery,
+  onEnterQuery,
+  onExitQuery,
+  query,
+  runQuery,
+} from "./query.js";
 import {
   RELATIONS_MASKS,
   defineRelation,
@@ -16,20 +30,50 @@ import {
 } from "./relation.js";
 import { createECS, createWorld, type World } from "./world.js";
 
-export const ChildOf = defineRelation();
+export const ChildOf = defineRelation({ exclusive: true });
+export const Parent = nextID();
+
+onArchetypeCreated(ChildOf, (id) => {
+  // world.componentIndex[baseID] ??= new BitSetImpl();
+  // world.componentIndex[baseID]!.or(id);
+  // console.log("hello");
+  // ChildOf.mask.or(id);
+});
+
+const parents: (SparseSet | undefined)[] = [];
+const children = [];
+
+function getChildren(entity: Entity) {
+  return parents[entity]?.dense!;
+}
 
 function initHierarchy(world: World) {
-  // const parentOfBaseID = getRelationID(ParentOf(0));
-  // const parents = query(
-  //   world,
-  //   withMask(RELATIONS_MASKS.get(parentOfBaseID)!, parentOfBaseID),
-  // );
-  // const onAddChild = onEnterQuery(parents);
-  // const onChildRemove = onExitQuery(parents);
-  // onChildRemove((parent) => {
-  //   console.log("child removed");
-  //   removeEntity(world, getChild(parent));
-  // });
+  const onParentDestroyed = onExitQuery(query(w, Parent));
+
+  onParentDestroyed((parent) => {
+    for (const child of getChildren(parent)) {
+      removeEntity(world, child);
+    }
+    //clear sparseset?
+    parents[parent] = undefined;
+  });
+
+  onBeforeAddComponent(ChildOf, (id, entity, w) => {
+    ChildOf.mask.or(id);
+    const parent = getRelationTarget(id);
+    attach(w, Parent, parent);
+
+    parents[parent] ??= new SparseSet();
+    const set = parents[parent];
+    set?.insert(entity);
+  });
+
+  onBeforeRemoveComponent(ChildOf, (id, entity) => {
+    ChildOf.mask.xor(id);
+
+    const parent = getRelationTarget(id);
+    parents[parent]?.remove(entity);
+  });
 }
 
 const w = createWorld();
@@ -42,12 +86,24 @@ const child = createEntity(w);
 const child2 = createEntity(w);
 
 const onChildCreated = onEnterQuery(query(w, ChildOf("*")));
-onChildCreated((e) => {
+
+onChildCreated((e, arch) => {
   console.log("child created", e);
 });
 
 attach(w, ChildOf(parent), child);
 attach(w, ChildOf(parent), child2);
+
+attach(w, ChildOf(child), child2);
+
+console.log("childrenOfParent", getChildren(parent));
+console.log("childrenOfChild", getChildren(child));
+console.log("child 2 parent", hasComponent(w, ChildOf(parent), child2));
+
+// removeEntity(w, parent);
+
+console.log("ex", entityExists(w, child));
+console.log("ex", entityExists(w, child2));
 
 // const mask = RELATIONS_MASKS.get(ParentOf)!;
 
