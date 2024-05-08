@@ -35,6 +35,8 @@ import {
   forEachPhysicalEntityInsideBoundingBox,
   getRectWidth,
   getRectHeight,
+  rotationAroundPoint,
+  getRuntimeBody,
 } from "aion-preset";
 import {
   Colors,
@@ -42,12 +44,14 @@ import {
   windowCenter,
   windowCenterX,
   windowCenterY,
+  windowHeight,
 } from "aion-render";
 
 const engine = defineEngine(
   () =>
     aionPreset({
       renderDebug: true,
+      gravity: { x: 0, y: 0 },
     }),
   () => {
     const { createCircle } = useAion();
@@ -95,13 +99,13 @@ const engine = defineEngine(
     const detector = Detector({
       Transform: createTransform(windowCenterX(), windowCenterY() - 500),
       Rect: {
-        h: 100,
+        h: windowHeight(),
         w: 10,
       },
       Fill: "blue",
       Collider: createCollider({
         auto: 1,
-        // isSensor: 1,
+        isSensor: 1,
         collisionGroups: defineCollisionGroup()
           .isPartOfGroups(0b01)
           .canInteractWith(0b01)
@@ -123,11 +127,15 @@ const engine = defineEngine(
       emit("draw");
     });
 
-    const onZoneTrigger = onEnterQuery(query(Collision));
+    const onZoneTrigger = onEnterQuery(query(Collision, IsDetector));
+
+    let audio: HTMLAudioElement;
+    document.onmouseover = () => {
+      audio = new Audio("audio_file.mp3");
+    };
 
     onZoneTrigger((entity) => {
       console.log("hello");
-      var audio = new Audio("audio_file.mp3");
       audio.play();
     });
 
@@ -156,7 +164,7 @@ const engine = defineEngine(
             .get(),
         }),
         Body: createBody({
-          type: RAPIER.RigidBodyType.KinematicPositionBased,
+          type: RAPIER.RigidBodyType.Dynamic,
         }),
       });
     }
@@ -164,7 +172,14 @@ const engine = defineEngine(
     on("update", () => {
       query(Transform, Ring).each((e) => {
         const position = getWorldPosition(center);
-        rotateAroundPoint(e, position, Vel[e]);
+        // rotateAroundPoint(e, position, Vel[e]);
+        const epos = getWorldPosition(e);
+        const newPos = rotationAroundPoint(epos, position, Vel[e]);
+
+        const v = newPos.sub(epos);
+
+        const body = getRuntimeBody(e);
+        body.setLinvel(v, true);
 
         // forEachPhysicalEntityInsideBoundingBox(
         //   getWorldPosition(detector),
@@ -178,7 +193,7 @@ const engine = defineEngine(
         // );
       });
     });
-  },
+  }
 );
 
 engine.run();

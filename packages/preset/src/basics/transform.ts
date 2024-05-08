@@ -19,7 +19,7 @@ export function createTransform(
   y: number = 0,
   rotation = 0,
   scaleX = 1,
-  scaleY = 1,
+  scaleY = 1
 ): Transform {
   const mat = createIdentityMatrix();
 
@@ -38,7 +38,7 @@ export function getTransform(entity: Entity): Transform {
 
 export function cloneTransform(
   entity: Entity,
-  out: Transform = new Float32Array(6),
+  out: Transform = new Float32Array(6)
 ): Transform {
   out.set(Transform[entity]!);
   return out;
@@ -71,7 +71,7 @@ export function getWorldMatrix(entity: Entity) {
 
 export function getLocalMatrix(
   entity: Entity,
-  out: Matrix = createIdentityMatrix(),
+  out: Matrix = createIdentityMatrix()
 ): Matrix {
   return createMatrixFromTransform(getTransform(entity), out);
 }
@@ -281,7 +281,7 @@ export function rotate(entity: Entity, radians: number) {
 
 export function createMatrixFromTransform(
   transform: Transform,
-  out: Matrix = createIdentityMatrix(),
+  out: Matrix = createIdentityMatrix()
 ): Matrix {
   const [scaleX, scaleY, rotation, x, y] = transform;
 
@@ -299,38 +299,38 @@ export function createMatrixFromTransform(
   return out;
 }
 
-export function rotateTowards(source: Entity, target: Entity, step: number) {
-  // Get positions of source and target entities
-  const sourcePosition = getWorldPosition(source);
-  const targetPosition = getWorldPosition(target);
+// export function rotateTowards(source: Entity, target: Entity, step: number) {
+//   // Get positions of source and target entities
+//   const sourcePosition = getWorldPosition(source);
+//   const targetPosition = getWorldPosition(target);
 
-  // Calculate the angle between source and target
-  const angle = Math.atan2(
-    targetPosition.y - sourcePosition.y,
-    targetPosition.x - sourcePosition.x,
-  );
+//   // Calculate the angle between source and target
+//   const angle = Math.atan2(
+//     targetPosition.y - sourcePosition.y,
+//     targetPosition.x - sourcePosition.x
+//   );
 
-  // Rotate the source entity towards the target entity
-  rotateTowardsAngle(source, angle, step);
-}
+//   // Rotate the source entity towards the target entity
+//   rotateTowardsAngle(source, angle, step);
+// }
 
-function rotateTowardsAngle(entity: Entity, targetAngle: number, step: number) {
-  const currentRotation = getLocalRotation(entity);
+// function rotateTowardsAngle(entity: Entity, targetAngle: number, step: number) {
+//   const currentRotation = getLocalRotation(entity);
 
-  // Calculate the angle difference between current rotation and target angle
-  let angleDiff = targetAngle - currentRotation;
+//   // Calculate the angle difference between current rotation and target angle
+//   let angleDiff = targetAngle - currentRotation;
 
-  // Normalize the angle difference to be within the range of -Math.PI to Math.PI
-  angleDiff = ((angleDiff + Math.PI) % (2 * Math.PI)) - Math.PI;
+//   // Normalize the angle difference to be within the range of -Math.PI to Math.PI
+//   angleDiff = ((angleDiff + Math.PI) % (2 * Math.PI)) - Math.PI;
 
-  // If the angle difference is greater than step, rotate by step, else directly set the target angle
-  if (Math.abs(angleDiff) > step) {
-    const rotationDirection = Math.sign(angleDiff);
-    rotate(entity, step * rotationDirection);
-  } else {
-    setLocalRotation(entity, targetAngle);
-  }
-}
+//   // If the angle difference is greater than step, rotate by step, else directly set the target angle
+//   if (Math.abs(angleDiff) > step) {
+//     const rotationDirection = Math.sign(angleDiff);
+//     rotate(entity, step * rotationDirection);
+//   } else {
+//     setLocalRotation(entity, targetAngle);
+//   }
+// }
 
 export function rotateAroundPoint(entity: Entity, point: Vec, angle: number) {
   const position = getWorldPosition(entity);
@@ -346,4 +346,17 @@ export function rotateAroundPoint(entity: Entity, point: Vec, angle: number) {
 
   // Set the new position
   setWorldPosition(entity, new Vec(newX, newY));
+}
+
+export function rotationAroundPoint(position: Vec, point: Vec, angle: number) {
+  const distanceX = position.x - point.x;
+  const distanceY = position.y - point.y;
+
+  // Calculate the new position after rotation
+  const newX =
+    distanceX * Math.cos(angle) - distanceY * Math.sin(angle) + point.x;
+  const newY =
+    distanceX * Math.sin(angle) + distanceY * Math.cos(angle) + point.y;
+
+  return new Vec(newX, newY);
 }
