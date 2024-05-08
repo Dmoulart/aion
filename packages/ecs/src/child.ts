@@ -64,15 +64,15 @@ function initHierarchy(world: World) {
     attach(w, Parent, parent);
 
     parents[parent] ??= new SparseSet();
-    const set = parents[parent];
-    set?.insert(entity);
+    const set = parents[parent]!;
+    set.insert(entity);
   });
 
   onBeforeRemoveComponent(ChildOf, (id, entity) => {
     ChildOf.mask.xor(id);
 
     const parent = getRelationTarget(id);
-    parents[parent]?.remove(entity);
+    parents[parent]!.remove(entity);
   });
 }
 
@@ -96,11 +96,11 @@ attach(w, ChildOf(parent), child2);
 
 attach(w, ChildOf(child), child2);
 
-console.log("childrenOfParent", getChildren(parent));
-console.log("childrenOfChild", getChildren(child));
+// console.log("childrenOfParent", getChildren(parent));
+// console.log("childrenOfChild", getChildren(child));
 console.log("child 2 parent", hasComponent(w, ChildOf(parent), child2));
 
-// removeEntity(w, parent);
+removeEntity(w, parent);
 
 console.log("ex", entityExists(w, child));
 console.log("ex", entityExists(w, child2));
