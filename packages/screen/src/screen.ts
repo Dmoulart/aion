@@ -53,30 +53,7 @@ export async function createScreen(options?: CreateScreenOptions) {
 
   container.appendChild(app.canvas);
 
-  // const canvas = document.createElement("canvas");
-  // canvas.classList.add("aion-canvas");
-
-  // const ctx = canvas.getContext("2d");
-
-  // if (!ctx) {
-  //   throw new Error("Cannot get canvas context");
-  // }
-
-  // windowEl.appendChild(canvas);
-
-  // parent.appendChild(windowEl);
-
-  // canvas.width = windowEl.clientWidth;
-  // canvas.height = windowEl.clientHeight;
-
-  // window.addEventListener("resize", () => {
-  //   canvas.width = windowEl.clientWidth;
-  //   canvas.height = windowEl.clientHeight;
-  // });
-
   return {
     app,
-    // canvas,
-    // ctx,
   };
 }
