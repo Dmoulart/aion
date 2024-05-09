@@ -1,4 +1,8 @@
-import { Application, Graphics, type ApplicationOptions } from "pixi.js";
+import {
+  Application,
+  Graphics as PixiGraphics,
+  type ApplicationOptions,
+} from "pixi.js";
 
 export type CreateScreenOptions = {
   parent?: string | HTMLElement | undefined;
@@ -53,7 +57,10 @@ export async function createScreen(options?: CreateScreenOptions) {
 
   container.appendChild(app.canvas);
 
+  parent.appendChild(container);
+
   return {
     app,
   };
 }
+export const Graphics = PixiGraphics;
