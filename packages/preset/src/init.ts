@@ -25,10 +25,8 @@ import { debugRender } from "./physics/debug.js";
 
 export type AionPresetOptions = InitPhysicsOptions & InitDebugOptions;
 
-const Aion = defineModule([initWindow, initInputListener]);
-Aion({
-  
-})
+// const Aion = defineModule([initWindow, initInputListener]);
+// Aion({})
 
 export function aionPreset(options?: AionPresetOptions) {
   initWindow();

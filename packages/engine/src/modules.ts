@@ -5,23 +5,26 @@ export type Plugin<
   O extends Record<string, any> | undefined = undefined
 > = (engine: BaseEngine, options?: O) => T;
 
+export type PluginMap = Record<string, Plugin<any, any>>;
+
 // Extract the return types of each plugin in the array
-type PluginReturnTypes<T extends Array<Plugin<any, any>>> = {
-  [Index in keyof T]: ReturnType<T[Index]>;
+export type PluginMapReturnTypes<T extends PluginMap> = {
+  [Key in keyof T]: ReturnType<T[Key]>;
 };
 
-// Concatenate the return types into a single object type
-export type ConcatenatedReturnType<T extends Array<Plugin<any, any>>> =
-  UnionToIntersection<PluginReturnTypes<T>[number]>;
-
 // Extract the parameter types of each plugin in the array
-type PluginParameterTypes<T extends Array<Plugin<any, any>>> = {
+export type PluginMapParameterTypes<T extends PluginMap> = {
   [Index in keyof T]: Parameters<T[Index]>[1];
 };
 
-// Concatenate the parameter types into a single object type
-type ConcatenatedParameterType<T extends Array<Plugin<any, any>>> =
-  UnionToIntersection<PluginParameterTypes<T>[number]>;
+// Extract the return types of each plugin in the array
+export type PluginArrayReturnTypes<T extends Array<Plugin>> = {
+  [Key in keyof T]: ReturnType<T[Key]>;
+};
+// Concatenate the return types into a single object type
+export type ConcatenatedPluginArrayReturnType<
+  T extends Array<Plugin<any, any>>
+> = UnionToIntersection<PluginArrayReturnTypes<T>[number]>;
 
 // Utility to convert union to intersection
 type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
@@ -31,18 +34,18 @@ type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
   : never;
 
 // a module is a concatenation of plugins
-export type Module<T extends Array<Plugin<any, any>>> = (
-  options: ConcatenatedParameterType<T>
-) => Plugin<ConcatenatedReturnType<T>>;
+export type Module<T extends PluginMap> = (
+  options: PluginMapParameterTypes<T>
+) => Plugin<PluginMapReturnTypes<T>>;
 
-export function defineModule<T extends Array<Plugin<any, any>>>(
-  plugins: T
-): Module<T> {
-  return (options: ConcatenatedParameterType<T>) => {
+export function defineModule<T extends PluginMap>(plugins: T): Module<T> {
+  return (options: PluginMapParameterTypes<T>) => {
     return (engine: BaseEngine) => {
-      const moduleData = {} as ConcatenatedReturnType<T>;
+      const moduleData = {} as PluginMapReturnTypes<T>;
 
-      for (const plugin of plugins) {
+      for (const name in plugins) {
+        const plugin = plugins[name]!;
+
         Object.assign(moduleData as any, plugin(engine, options));
       }
 
@@ -51,4 +54,8 @@ export function defineModule<T extends Array<Plugin<any, any>>>(
   };
 }
 
-// const preset = defineModule([])
+const preset = defineModule({
+  ecs: (engine, opts: { record: string }) => ({
+    test: "ok",
+  }),
+});

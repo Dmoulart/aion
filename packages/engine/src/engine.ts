@@ -1,6 +1,10 @@
 import { ctx } from "./ctx.js";
 import { createEventEmitter, type EventEmitter } from "./event.js";
-import { type ConcatenatedReturnType, type Plugin } from "./modules.js";
+import {
+  defineModule,
+  type ConcatenatedPluginArrayReturnType,
+  type Plugin,
+} from "./modules.js";
 export interface BaseEngine {
   running: boolean;
   events: EventEmitter<BaseEvents>;
@@ -28,7 +32,7 @@ export function defineEngine<T extends Array<Plugin>>(
   plugins: T,
   setup: () => void,
   options?: DefineEngineOptions
-): Engine<ConcatenatedReturnType<T>> {
+): Engine<ConcatenatedPluginArrayReturnType<T>> {
   const config = { ...DEFAULT_OPTIONS, ...(options ?? {}) };
 
   const beforeStartCallbacks: BeforeStartCallback[] = [];
@@ -61,7 +65,7 @@ export function defineEngine<T extends Array<Plugin>>(
   };
 
   const pluginsData = ctx.call(baseEngine, () => {
-    const moduleData = {} as ConcatenatedReturnType<T>;
+    const moduleData = {} as ConcatenatedPluginArrayReturnType<T>;
 
     for (const plugin of plugins) {
       Object.assign(moduleData as any, plugin(engine));
@@ -73,7 +77,7 @@ export function defineEngine<T extends Array<Plugin>>(
   const engineWithPlugins = Object.assign(baseEngine, pluginsData);
 
   const engine = Object.assign(engineWithPlugins, {
-    use: ctx.use as () => Engine<ConcatenatedReturnType<T>>,
+    use: ctx.use as () => Engine<ConcatenatedPluginArrayReturnType<T>>,
   });
 
   function step() {
@@ -82,3 +86,26 @@ export function defineEngine<T extends Array<Plugin>>(
 
   return engine;
 }
+
+// const module = defineModule({
+//   ecs: (engine, options: { gravity: number }) => {
+//     return "prout" as const;
+//   },
+// });
+
+// const e = defineEngine(
+//   [
+//     () => {
+//       return { ok: "test" };
+//     },
+//     module({
+//       ecs: {
+//         gravity: 1,
+//       },
+//     }),
+//   ],
+//   () => {
+//     const g = useGame();
+//   }
+// );
+// const useGame = e.use;
