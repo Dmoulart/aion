@@ -8,7 +8,7 @@ import {
   type InitPhysicsOptions,
 } from "./physics/index.js";
 import { Circle, Fill, Rect, Stroke } from "./components.js";
-import { on } from "aion-engine";
+import { defineModule, on } from "aion-engine";
 import {
   Camera,
   createTransform,
@@ -24,6 +24,11 @@ import {
 import { debugRender } from "./physics/debug.js";
 
 export type AionPresetOptions = InitPhysicsOptions & InitDebugOptions;
+
+const Aion = defineModule([initWindow, initInputListener]);
+Aion({
+  
+})
 
 export function aionPreset(options?: AionPresetOptions) {
   initWindow();

@@ -1,6 +1,6 @@
 import { ctx } from "./ctx.js";
 import { createEventEmitter, type EventEmitter } from "./event.js";
-
+import { type ConcatenatedReturnType, type Plugin } from "./modules.js";
 export interface BaseEngine {
   running: boolean;
   events: EventEmitter<BaseEvents>;
@@ -24,13 +24,11 @@ export type BaseEvents = { update: void; draw: void };
 
 export type Engine<T = BaseEngine> = BaseEngine & T & { use: () => Engine<T> };
 
-export type Plugin<T> = (engine: BaseEngine) => T;
-
-export function defineEngine<T>(
-  init: Plugin<T>,
+export function defineEngine<T extends Array<Plugin>>(
+  plugins: T,
   setup: () => void,
-  options?: DefineEngineOptions,
-): Engine<T> {
+  options?: DefineEngineOptions
+): Engine<ConcatenatedReturnType<T>> {
   const config = { ...DEFAULT_OPTIONS, ...(options ?? {}) };
 
   const beforeStartCallbacks: BeforeStartCallback[] = [];
@@ -45,7 +43,7 @@ export function defineEngine<T>(
       engine.running = true;
 
       ctx.call(engine, () =>
-        beforeStartCallbacks.forEach((cb) => cb(baseEngine)),
+        beforeStartCallbacks.forEach((cb) => cb(baseEngine))
       );
 
       ctx.call(engine, setup);
@@ -62,12 +60,20 @@ export function defineEngine<T>(
     },
   };
 
-  const plugins = ctx.call(baseEngine, () => init(baseEngine));
+  const pluginsData = ctx.call(baseEngine, () => {
+    const moduleData = {} as ConcatenatedReturnType<T>;
 
-  const engineWithPlugins = Object.assign(baseEngine, plugins);
+    for (const plugin of plugins) {
+      Object.assign(moduleData as any, plugin(engine));
+    }
 
-  const engine: Engine<T> = Object.assign(engineWithPlugins, {
-    use: ctx.use as () => Engine<T>,
+    return moduleData;
+  });
+
+  const engineWithPlugins = Object.assign(baseEngine, pluginsData);
+
+  const engine = Object.assign(engineWithPlugins, {
+    use: ctx.use as () => Engine<ConcatenatedReturnType<T>>,
   });
 
   function step() {
