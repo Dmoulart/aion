@@ -32,9 +32,7 @@ export async function createScreen(options?: CreateScreenOptions) {
     let el = document.querySelector<HTMLElement>(options.parent);
 
     if (!el) {
-      console.error(
-        "Cannot find window parent element - will fallback to body"
-      );
+      console.error("Cannot find scren parent element - will fallback to body");
     } else {
       parent = el;
     }

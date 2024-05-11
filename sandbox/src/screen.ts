@@ -44,6 +44,7 @@ const engine = defineEngine(
     });
 
     const entity = ecs.create();
+
     setPosition(entity, { x: 0, y: 0 });
 
     Rect.h[entity] = 100;

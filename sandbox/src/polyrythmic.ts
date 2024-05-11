@@ -31,10 +31,6 @@ import {
   createBody,
   usePhysics,
   defineCollisionGroup,
-  findPhysicalEntityInsideBoundingBox,
-  forEachPhysicalEntityInsideBoundingBox,
-  getRectWidth,
-  getRectHeight,
 } from "aion-preset";
 import {
   Colors,
@@ -178,7 +174,7 @@ const engine = defineEngine(
         // );
       });
     });
-  },
+  }
 );
 
 engine.run();
