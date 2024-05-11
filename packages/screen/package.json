@@ -1,5 +1,5 @@
 {
-  "name": "aion-preset",
+  "name": "aion-screen",
   "version": "0.0.1",
   "type": "module",
   "main": "dist/index.js",
@@ -13,13 +13,7 @@
   },
   "dependencies": {
     "aion-core": "workspace:*",
-    "aion-render": "workspace:*",
-    "aion-ecs": "workspace:*",
-    "aion-input": "workspace:*",
-    "aion-engine": "workspace:*",
-    "aion-screen": "workspace:*",
-    "@dimforge/rapier2d": "^0.12.0",
-    "gl-matrix": "^3.4.3"
+    "pixi.js": "^8.1.1"
   },
   "devDependencies": {
     "bun-types": "latest"

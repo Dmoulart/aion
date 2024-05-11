@@ -13,3 +13,4 @@ export * from "./debug/index.js";
 export * from "./animation/index.js";
 export * from "./geometry/index.js";
 export * from "./input/index.js";
+export * from "./renderer/index.js";
