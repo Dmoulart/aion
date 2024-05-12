@@ -9,7 +9,6 @@ import {
 import { defineEngine, defineLoop, emit, on } from "aion-engine";
 import {
   Transform,
-  aionPreset,
   createTransform,
   setCameraPosition,
   setWorldPosition,
