@@ -26,7 +26,7 @@ export const CharacterController = defineComponent({
 });
 
 export const RuntimeCharacterController = defineComponent(
-  Array<RAPIER.KinematicCharacterController | undefined>,
+  Array<RAPIER.KinematicCharacterController | undefined>
 );
 
 // Up direction as an array
@@ -50,7 +50,7 @@ const DEFAULT_CHARACTER_CONTROLLER_OPTIONS: PrefabInstanceOptions<{
 export function createCharacterController(
   options: PrefabInstanceOptions<{
     CharacterController: typeof CharacterController;
-  }>["CharacterController"],
+  }>["CharacterController"]
 ) {
   return {
     ...DEFAULT_CHARACTER_CONTROLLER_OPTIONS,
@@ -60,7 +60,7 @@ export function createCharacterController(
 
 export function setRuntimeCharacterController(
   entity: Entity,
-  controller: RAPIER.KinematicCharacterController,
+  controller: RAPIER.KinematicCharacterController
 ) {
   RuntimeCharacterController[entity] = controller;
 }
@@ -74,18 +74,18 @@ export function initCharacterControllerSystem() {
     CharacterController,
     any(Body, Collider),
     any(RuntimeBody, RuntimeCollider),
-    not(RuntimeCharacterController),
+    not(RuntimeCharacterController)
   );
 
   const onCreatedCharacterController = onEnterQuery(characterControllersQuery);
 
   const onRemovedCharacterController = onExitQuery(
-    query(CharacterController, RuntimeCharacterController),
+    query(CharacterController, RuntimeCharacterController)
   );
 
   onCreatedCharacterController((ent) => {
     const controller = world.createCharacterController(
-      CharacterController.offset[ent]!,
+      CharacterController.offset[ent]!
     );
 
     setCharacterControllerOptions(ent, controller);
@@ -102,7 +102,7 @@ export function initCharacterControllerSystem() {
 
 export function setCharacterControllerOptions(
   entity: Entity,
-  controller: RAPIER.KinematicCharacterController,
+  controller: RAPIER.KinematicCharacterController
 ) {
   const snapToGround = CharacterController.snapToGround[entity]!;
 
@@ -111,7 +111,7 @@ export function setCharacterControllerOptions(
   }
 
   controller.setSlideEnabled(
-    Boolean(CharacterController.slideEnabled[entity]!),
+    Boolean(CharacterController.slideEnabled[entity]!)
   );
 
   const upDirection = CharacterController.upDirection[entity]!;
@@ -128,7 +128,7 @@ export function setCharacterControllerOptions(
     controller.enableAutostep(
       autoStepMaxHeight,
       autoStepMinWidth,
-      Boolean(autoStepIncludeRigidBodies),
+      Boolean(autoStepIncludeRigidBodies)
     );
   }
 }

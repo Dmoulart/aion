@@ -1,4 +1,4 @@
-import { createECS, components } from "aion-ecs";
+import { createECS, components, createWorld } from "aion-ecs";
 import { initWindow, windowCenterX, windowCenterY } from "aion-render";
 import { initInputListener } from "aion-input";
 import {
@@ -26,17 +26,8 @@ import {
 export type AionPresetOptions = InitPhysicsOptions & InitDebugOptions;
 
 export const AionPreset = defineModule({
-  window: initWindow,
-  input: initInputListener,
-  scenes: initScenes,
-  physics: initPhysics,
-  ai: initAI,
-  animations: initAnimations,
-  debug: initDebug,
-  hierarchy: initHierarchy,
-  $ecs: createECS,
-  setup: () => {
-    const $ecs = useECS();
+  $ecs: () => {
+    const $ecs = createECS();
 
     const createRect = $ecs.prefab({ Transform, Rect, Stroke, Fill });
 
@@ -75,11 +66,8 @@ export const AionPreset = defineModule({
 
     on("draw", () => render($camera));
 
-    // if (options?.renderDebug) {
-    //   on("draw", () => debugRender($camera));
-    // }
-
     return {
+      ...$ecs,
       $camera,
       createRect,
       createCube,
@@ -88,9 +76,15 @@ export const AionPreset = defineModule({
       createCamera,
     };
   },
+  $physics: initPhysics,
+  window: initWindow,
+  input: initInputListener,
+  scenes: initScenes,
+  ai: initAI,
+  animations: initAnimations,
+  debug: initDebug,
+  hierarchy: initHierarchy,
 });
-
-// Aion({})
 
 // export function aionPreset(options?: AionPresetOptions) {
 //   initWindow();

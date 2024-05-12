@@ -3,6 +3,7 @@ import { createEventEmitter, type EventEmitter } from "./event.js";
 import {
   defineModule,
   type ConcatenatedPluginArrayReturnType,
+  type ModulePlugin,
   type Plugin,
 } from "./modules.js";
 export interface BaseEngine {
@@ -65,13 +66,13 @@ export function defineEngine<T extends Array<Plugin>>(
   };
 
   const pluginsData = ctx.call(baseEngine, () => {
-    const moduleData = {} as ConcatenatedPluginArrayReturnType<T>;
+    const pluginsData = {} as ConcatenatedPluginArrayReturnType<T>;
 
     for (const plugin of plugins) {
-      Object.assign(moduleData as any, plugin());
+      Object.assign(pluginsData as any, plugin());
     }
 
-    return moduleData;
+    return pluginsData;
   });
 
   const engineWithPlugins = Object.assign(baseEngine, pluginsData);
@@ -86,26 +87,3 @@ export function defineEngine<T extends Array<Plugin>>(
 
   return engine;
 }
-
-// const module = defineModule({
-//   ecs: (engine, options: { gravity: number }) => {
-//     return "prout" as const;
-//   },
-// });
-
-// const e = defineEngine(
-//   [
-//     () => {
-//       return { ok: "test" };
-//     },
-//     module({
-//       ecs: {
-//         gravity: 1,
-//       },
-//     }),
-//   ],
-//   () => {
-//     const g = useGame();
-//   }
-// );
-// const useGame = e.use;

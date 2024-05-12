@@ -75,7 +75,7 @@ export type World = {
 export const createWorld = (size = DEFAULT_WORLD_CAPACITY): World => {
   if (size > WORLD_MAX_SIZE) {
     throw new AboveWorldMaxSize(
-      `World's' capacity cannot exceed ${WORLD_MAX_SIZE}`,
+      `World's' capacity cannot exceed ${WORLD_MAX_SIZE}`
     );
   }
 
@@ -104,12 +104,12 @@ export const createECS = (world: World = createWorld()) => {
     has: hasComponent.bind(null, world),
     prefab: prefab.bind(null, world) as <Definition extends PrefabDefinition>(
       definition: Definition,
-      options?: PrefabInstanceOptions<Definition>,
+      options?: PrefabInstanceOptions<Definition>
     ) => ReturnType<typeof prefab<Definition>>, // hoolyyy mollyy
     attach: attach.bind(null, world),
     detach: detach.bind(null, world),
     query: query.bind(null, world) as <
-      T extends (QueryTerm | Component | ComponentsGroup | ID)[],
+      T extends (QueryTerm | Component | ComponentsGroup | ID)[]
     >(
       ...termsOrComponents: T
     ) => Query,
