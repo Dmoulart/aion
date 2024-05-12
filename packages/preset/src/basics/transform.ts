@@ -19,17 +19,16 @@ export function createTransform(
   y: number = 0,
   rotation = 0,
   scaleX = 1,
-  scaleY = 1
+  scaleY = 1,
+  transform: Matrix = createIdentityMatrix()
 ): Transform {
-  const mat = createIdentityMatrix();
+  transform[0] = scaleX;
+  transform[1] = scaleY;
+  transform[2] = rotation;
+  transform[3] = x;
+  transform[4] = y;
 
-  mat[0] = scaleX;
-  mat[1] = scaleY;
-  mat[2] = rotation;
-  mat[3] = x;
-  mat[4] = y;
-
-  return mat;
+  return transform;
 }
 
 export function getTransform(entity: Entity): Transform {

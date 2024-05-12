@@ -1,29 +1,33 @@
 import { defineEngine, on } from "aion-engine";
 import {
   AionPreset,
-  createTransform,
+  actor,
+  centerCameraOnEntity,
+  fill,
   getMouseWorldPosition,
+  position,
+  rect,
   rotate,
   setPosition,
-  useECS,
+  stroke,
+  transform,
 } from "aion-preset";
+import { setBackgroundColor } from "aion-render";
 
 const engine = defineEngine([AionPreset({})], () => {
-  const { createRect } = useECS();
+  const rectangle = actor(
+    transform(10, 10),
+    rect(),
+    fill("red"),
+    stroke("black")
+  );
 
-  const rect = createRect({
-    Transform: createTransform(0, 0),
-    Fill: "blue",
-    Rect: {
-      w: 50,
-      h: 50,
-    },
-    Stroke: "black",
-  });
+  setBackgroundColor("grey");
 
-  on("update", () => {
-    setPosition(rect, getMouseWorldPosition());
-    rotate(rect, 0.01);
+  on("draw", () => {
+    // centerCameraOnEntity(rectangle);
+    setPosition(rectangle, getMouseWorldPosition());
+    rotate(rectangle, 0.01);
   });
 });
 
