@@ -8,7 +8,6 @@ import {
   getWorldPosition,
   getLocalRotation,
   getWorldRotation,
-  inverseMatrix,
 } from "../index.js";
 import {
   windowCenterX,
@@ -25,7 +24,7 @@ export const Camera = defineComponent({
 });
 
 export function useCamera() {
-  return useAion().$camera;
+  return useAion().$ecs.$camera;
 }
 
 export function getCameraLocalPosition(camera = useCamera()) {
@@ -67,7 +66,7 @@ export function getCameraRotation(camera = useCamera()) {
 
 export function getProjectionMatrix(
   camera: Entity,
-  matrix = mat2d.create(),
+  matrix = mat2d.create()
 ): Matrix {
   const zoom = Camera.zoom[camera]!;
 

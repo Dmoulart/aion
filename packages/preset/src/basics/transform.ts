@@ -121,6 +121,7 @@ export function setLocalPosition(entity: Entity, { x, y }: Vector): void {
   transform[3] = x;
   transform[4] = y;
 }
+
 export const setPosition = setLocalPosition;
 
 export function setWorldPosition(entity: Entity, position: Vector): void {

@@ -27,7 +27,7 @@ export function createInputListener(options?: InputListenerOptions) {
 
     if (!el) {
       console.error(
-        `Cannot find input root element ${options.el} - will fallback to body`,
+        `Cannot find input root element ${options.el} - will fallback to body`
       );
     } else {
       root = el;
