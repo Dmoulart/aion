@@ -68,7 +68,7 @@ export function defineEngine<T extends Array<Plugin>>(
     const moduleData = {} as ConcatenatedPluginArrayReturnType<T>;
 
     for (const plugin of plugins) {
-      Object.assign(moduleData as any, plugin(engine));
+      Object.assign(moduleData as any, plugin());
     }
 
     return moduleData;

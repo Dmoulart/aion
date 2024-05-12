@@ -20,84 +20,148 @@ import {
   initAnimations,
   Transform,
   initHierarchy,
+  useECS,
 } from "./index.js";
-import { debugRender } from "./physics/debug.js";
 
 export type AionPresetOptions = InitPhysicsOptions & InitDebugOptions;
 
-// const Aion = defineModule([initWindow, initInputListener]);
+export const AionPreset = defineModule({
+  window: initWindow,
+  input: initInputListener,
+  scenes: initScenes,
+  physics: initPhysics,
+  ai: initAI,
+  animations: initAnimations,
+  debug: initDebug,
+  hierarchy: initHierarchy,
+  $ecs: createECS,
+  setup: () => {
+    const $ecs = useECS();
+
+    const createRect = $ecs.prefab({ Transform, Rect, Stroke, Fill });
+
+    const createCube = $ecs.prefab({
+      Transform,
+      Rect,
+      Stroke,
+      Fill,
+      Body,
+      Collider,
+    });
+
+    const createBall = $ecs.prefab({
+      Transform,
+      Circle,
+      Stroke,
+      Fill,
+      Body,
+      Collider,
+    });
+
+    const createCircle = $ecs.prefab({ Transform, Circle, Stroke, Fill });
+
+    const createCamera = $ecs.prefab({
+      Transform,
+      Camera,
+    });
+
+    const $camera = createCamera({
+      Camera: {
+        default: 1,
+        zoom: 1,
+      },
+      Transform: createTransform(0, 0),
+    });
+
+    on("draw", () => render($camera));
+
+    // if (options?.renderDebug) {
+    //   on("draw", () => debugRender($camera));
+    // }
+
+    return {
+      $camera,
+      createRect,
+      createCube,
+      createCircle,
+      createBall,
+      createCamera,
+    };
+  },
+});
+
 // Aion({})
 
-export function aionPreset(options?: AionPresetOptions) {
-  initWindow();
-  initInputListener();
+// export function aionPreset(options?: AionPresetOptions) {
+//   initWindow();
+//   initInputListener();
 
-  const { $scenes, currentSceneCleanup } = initScenes();
+//   const { $scenes, currentSceneCleanup } = initScenes();
 
-  const $physics = initPhysics(options);
+//   const $physics = initPhysics(options);
 
-  initAI();
+//   initAI();
 
-  initAnimations();
+//   initAnimations();
 
-  initDebug(options);
+//   initDebug(options);
 
-  initHierarchy();
+//   initHierarchy();
 
-  const $ecs = createECS();
+//   const $ecs = createECS();
 
-  const createRect = $ecs.prefab({ Transform, Rect, Stroke, Fill });
+//   const createRect = $ecs.prefab({ Transform, Rect, Stroke, Fill });
 
-  const createCube = $ecs.prefab({
-    Transform,
-    Rect,
-    Stroke,
-    Fill,
-    Body,
-    Collider,
-  });
+//   const createCube = $ecs.prefab({
+//     Transform,
+//     Rect,
+//     Stroke,
+//     Fill,
+//     Body,
+//     Collider,
+//   });
 
-  const createBall = $ecs.prefab({
-    Transform,
-    Circle,
-    Stroke,
-    Fill,
-    Body,
-    Collider,
-  });
+//   const createBall = $ecs.prefab({
+//     Transform,
+//     Circle,
+//     Stroke,
+//     Fill,
+//     Body,
+//     Collider,
+//   });
 
-  const createCircle = $ecs.prefab({ Transform, Circle, Stroke, Fill });
+//   const createCircle = $ecs.prefab({ Transform, Circle, Stroke, Fill });
 
-  const createCamera = $ecs.prefab({
-    Transform,
-    Camera,
-  });
+//   const createCamera = $ecs.prefab({
+//     Transform,
+//     Camera,
+//   });
 
-  const $camera = createCamera({
-    Camera: {
-      default: 1,
-      zoom: 1,
-    },
-    Transform: createTransform(0, 0),
-  });
+//   const $camera = createCamera({
+//     Camera: {
+//       default: 1,
+//       zoom: 1,
+//     },
+//     Transform: createTransform(0, 0),
+//   });
 
-  on("draw", () => render($camera));
+//   on("draw", () => render($camera));
 
-  if (options?.renderDebug) {
-    on("draw", () => debugRender($camera));
-  }
+//   if (options?.renderDebug) {
+//     on("draw", () => debugRender($camera));
+//   }
 
-  return {
-    $ecs,
-    $physics,
-    $camera,
-    $scenes,
-    currentSceneCleanup,
-    ...components,
-    createRect,
-    createCube,
-    createCircle,
-    createBall,
-    createCamera,
-  };
-}
+//   return {
+//     $ecs,
+//     $physics,
+//     $camera,
+//     $scenes,
+//     currentSceneCleanup,
+//     ...components,
+//     createRect,
+//     createCube,
+//     createCircle,
+//     createBall,
+//     createCamera,
+//   };
+// }

@@ -1,9 +1,7 @@
-import type { BaseEngine } from "./engine.js";
-
 export type Plugin<
   T = void,
   O extends Record<string, any> | undefined = undefined
-> = (engine: BaseEngine, options?: O) => T;
+> = (options?: O) => T;
 
 export type PluginMap = Record<string, Plugin<any, any>>;
 
@@ -13,8 +11,21 @@ export type PluginMapReturnTypes<T extends PluginMap> = {
 };
 
 // Extract the parameter types of each plugin in the array
-export type PluginMapParameterTypes<T extends PluginMap> = {
-  [Index in keyof T]: Parameters<T[Index]>[1];
+export type PluginMapParameterTypes<T extends PluginMap> =
+  OptionalPluginMapParameterTypes<T>;
+
+export type RequiredPluginMapParameterTypes<T extends PluginMap> = {
+  [Index in keyof T]: Parameters<T[Index]>[0] extends undefined
+    ? never
+    : Parameters<T[Index]>[0];
+};
+
+export type OptionalPluginMapParameterTypes<T extends PluginMap> = {
+  [Index in keyof T]?: Parameters<T[Index]>[0] extends infer U | undefined
+    ? undefined extends U
+      ? Parameters<T[Index]>[0]
+      : never
+    : never;
 };
 
 // Extract the return types of each plugin in the array
@@ -40,13 +51,13 @@ export type Module<T extends PluginMap> = (
 
 export function defineModule<T extends PluginMap>(plugins: T): Module<T> {
   return (options: PluginMapParameterTypes<T>) => {
-    return (engine: BaseEngine) => {
+    return () => {
       const moduleData = {} as PluginMapReturnTypes<T>;
 
       for (const name in plugins) {
         const plugin = plugins[name]!;
 
-        Object.assign(moduleData as any, plugin(engine, options));
+        Object.assign(moduleData, plugin(options));
       }
 
       return moduleData;
@@ -55,7 +66,13 @@ export function defineModule<T extends PluginMap>(plugins: T): Module<T> {
 }
 
 const preset = defineModule({
-  ecs: (engine, opts: { record: string }) => ({
-    test: "ok",
-  }),
+  ecs(opts?: { record?: string }) {
+    return {
+      test: "ok",
+    };
+  },
+});
+
+preset({
+  ecs: {},
 });
