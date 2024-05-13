@@ -24,87 +24,96 @@ import { setStrokeColor } from "../render/stroke.js";
 import { addChildTo } from "../hierarchy/parenting.js";
 
 let reservedEntity: Entity = nextID();
-// export type CreateEntityCallback = (entity: Entity) => void;
-// export type CreateEntityCommand =
-//   | [ID, Record<string, any> | any]
-//   | [undefined, undefined, CreateEntityCallback];
+export type CreateEntityCallback = (entity: Entity) => void;
+export type CreateEntityCommand =
+  | [ID, Record<string, any> | any]
+  | [undefined, undefined, CreateEntityCallback];
 
-// export function entity(...commands: CreateEntityCommand[]) {
-//   const { world } = useECS();
-
-//   const ids = new Set<ID>();
-
-//   const cbs = new Set<CreateEntityCallback>();
-
-//   for (const command of commands) {
-//     const id = command[0];
-//     if (id !== undefined) {
-//       ids.add(id);
-//     } else {
-//       cbs.add(command[2]);
-//     }
-//   }
-
-//   const archetype = buildArchetype(Array.from(ids), world);
-
-//   const entity = createEntity(world, archetype);
-
-//   cbs.forEach((cb) => cb(entity));
-
-//   return entity;
-// }
-
-export function actor(...components: (ID | Component | undefined)[]) {
+export function entity(...commands: CreateEntityCommand[]) {
   const { world } = useECS();
 
-  let ids = collectIDs(components.filter(Boolean) as Array<ID | Component>);
+  const ids = new Set<ID>();
 
-  //@todo : perfs
-  ids = [...new Set(ids)];
+  const cbs = new Set<CreateEntityCallback>();
 
-  const archetype = buildArchetype(ids, world);
+  for (const command of commands) {
+    const id = command[0];
+    if (id !== undefined) {
+      ids.add(id);
+    } else {
+      cbs.add(command[2]);
+    }
+  }
 
-  const entity = insertEntity(world, reservedEntity, archetype);
+  const archetype = buildArchetype(Array.from(ids), world);
 
-  reservedEntity = nextID();
+  const entity = createEntity(world, archetype);
+
+  cbs.forEach((cb) => cb(entity));
 
   return entity;
 }
 
-export function transform(x = 0, y = 0, rotation = 0, scaleX = 1, scaleY = 1) {
-  createTransform(x, y, rotation, scaleX, scaleY, Transform[reservedEntity]);
-
-  return Transform;
+export function transform(
+  x = 0,
+  y = 0,
+  rotation = 0,
+  scaleX = 1,
+  scaleY = 1
+): CreateEntityCommand {
+  return [Transform[$cid], createTransform(x, y, rotation, scaleX, scaleY)];
 }
+// export function actor(...components: (ID | Component | undefined)[]) {
+//   const { world } = useECS();
 
-export function position(x = 0, y = 0) {
-  setPosition(reservedEntity, { x, y });
-  return Transform;
-}
+//   let ids = collectIDs(components.filter(Boolean) as Array<ID | Component>);
 
-export function rotation(radians = 0) {
-  setRotation(reservedEntity, radians);
-  return Transform;
-}
+//   //@todo : perfs
+//   ids = [...new Set(ids)];
 
-export function fill(color = "blue") {
-  setFillColor(reservedEntity, color);
-  return Fill;
-}
+//   const archetype = buildArchetype(ids, world);
 
-export function stroke(color = "black") {
-  setStrokeColor(reservedEntity, color);
-  return Stroke;
-}
+//   const entity = insertEntity(world, reservedEntity, archetype);
 
-export function rect(w = 50, h = 50) {
-  Rect.w[reservedEntity] = w;
-  Rect.h[reservedEntity] = h;
-  return Rect;
-}
+//   reservedEntity = nextID();
 
-export function child(...components: (ID | Component | undefined)[]) {
-  const childEntity = actor(...components);
-  addChildTo(reservedEntity, childEntity);
-  return childEntity;
-}
+//   return entity;
+// }
+
+// export function transform(x = 0, y = 0, rotation = 0, scaleX = 1, scaleY = 1) {
+//   createTransform(x, y, rotation, scaleX, scaleY, Transform[reservedEntity]);
+
+//   return Transform;
+// }
+
+// export function position(x = 0, y = 0) {
+//   setPosition(reservedEntity, { x, y });
+//   return Transform;
+// }
+
+// export function rotation(radians = 0) {
+//   setRotation(reservedEntity, radians);
+//   return Transform;
+// }
+
+// export function fill(color = "blue") {
+//   setFillColor(reservedEntity, color);
+//   return Fill;
+// }
+
+// export function stroke(color = "black") {
+//   setStrokeColor(reservedEntity, color);
+//   return Stroke;
+// }
+
+// export function rect(w = 50, h = 50) {
+//   Rect.w[reservedEntity] = w;
+//   Rect.h[reservedEntity] = h;
+//   return Rect;
+// }
+
+// export function child(...components: (ID | Component | undefined)[]) {
+//   const childEntity = actor(...components);
+//   addChildTo(reservedEntity, childEntity);
+//   return childEntity;
+// }

@@ -61,7 +61,7 @@ export function createEnemy(pos: Vector, target?: Entity) {
     }),
     Health: 100,
   });
-  const { createRect, createCircle } = useAion();
+  const { createRect, createCircle } = useECS();
 
   addChildTo(
     enemy,
@@ -81,7 +81,7 @@ export function createEnemy(pos: Vector, target?: Entity) {
       Weapon: {
         hit: 100,
       },
-    }),
+    })
   );
 
   // eye
@@ -94,7 +94,7 @@ export function createEnemy(pos: Vector, target?: Entity) {
       },
       Fill: Colors["mine-shaft:900"],
       Stroke: "black",
-    }),
+    })
   );
 
   const eyebrow = createRect({
@@ -121,7 +121,7 @@ export function createEnemy(pos: Vector, target?: Entity) {
       },
       Fill: Colors["mine-shaft:900"],
       Stroke: "black",
-    }),
+    })
   );
 
   return enemy;
