@@ -2,10 +2,8 @@ import { defineEngine, on } from "aion-engine";
 import {
   AionPreset,
   actor,
-  centerCameraOnEntity,
   fill,
   getMouseWorldPosition,
-  position,
   rect,
   rotate,
   setPosition,
@@ -20,6 +18,7 @@ const engine = defineEngine([AionPreset({})], () => {
     rect(),
     fill("red"),
     stroke("black")
+    // actor(transform(10, 10), rect(), fill("blue"), stroke("black"))
   );
 
   setBackgroundColor("grey");
