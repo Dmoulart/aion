@@ -10,3 +10,4 @@ export * from "./encoder.js";
 export * from "./chunk.js";
 export * from "./tag.js";
 // export * from "./child.js";
+export * from "./id.js";

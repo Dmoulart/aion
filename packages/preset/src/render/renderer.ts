@@ -39,7 +39,7 @@ export function render(camera: Entity) {
   query(Transform, any(Stroke, Fill), any(Rect, Circle), not(Parent)).each(
     (ent) => {
       draw(ctx, ent);
-    },
+    }
   );
 
   // too
@@ -98,7 +98,7 @@ export function preDraw(ctx: CanvasRenderingContext2D, matrix: Matrix) {
     matrix[2]!,
     matrix[3]!,
     matrix[4]!,
-    matrix[5]!,
+    matrix[5]!
   );
 }
 

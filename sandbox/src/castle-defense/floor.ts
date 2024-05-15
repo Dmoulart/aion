@@ -21,8 +21,7 @@ export function getFloorBounds() {
 }
 
 export function createFloor() {
-  const { attach } = useECS();
-  const { createCube } = useAion();
+  const { attach, createCube } = useECS();
   const { RAPIER } = usePhysics();
   const floor = createCube({
     Transform: createTransform(windowCenterX(), windowCenterY()),

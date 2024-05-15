@@ -15,7 +15,8 @@
     "aion-ecs": "workspace:*",
     "aion-input": "workspace:*",
     "aion-engine": "workspace:*",
-    "aion-preset": "workspace:*"
+    "aion-preset": "workspace:*",
+    "aion-screen": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^4.9.3",

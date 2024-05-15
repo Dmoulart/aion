@@ -1,4 +1,4 @@
-import { createECS, components } from "aion-ecs";
+import { createECS, components, createWorld } from "aion-ecs";
 import { initWindow, windowCenterX, windowCenterY } from "aion-render";
 import { initInputListener } from "aion-input";
 import {
@@ -8,7 +8,7 @@ import {
   type InitPhysicsOptions,
 } from "./physics/index.js";
 import { Circle, Fill, Rect, Stroke } from "./components.js";
-import { on } from "aion-engine";
+import { defineLoop, defineModule, emit, on } from "aion-engine";
 import {
   Camera,
   createTransform,
@@ -21,80 +21,73 @@ import {
   Transform,
   initHierarchy,
 } from "./index.js";
-import { debugRender } from "./physics/debug.js";
 
 export type AionPresetOptions = InitPhysicsOptions & InitDebugOptions;
 
-export function aionPreset(options?: AionPresetOptions) {
-  initWindow();
-  initInputListener();
+export const AionPreset = defineModule({
+  $ecs: () => {
+    const $ecs = createECS();
 
-  const { $scenes, currentSceneCleanup } = initScenes();
+    const createRect = $ecs.prefab({ Transform, Rect, Stroke, Fill });
 
-  const $physics = initPhysics(options);
+    const createCube = $ecs.prefab({
+      Transform,
+      Rect,
+      Stroke,
+      Fill,
+      Body,
+      Collider,
+    });
 
-  initAI();
+    const createBall = $ecs.prefab({
+      Transform,
+      Circle,
+      Stroke,
+      Fill,
+      Body,
+      Collider,
+    });
 
-  initAnimations();
+    const createCircle = $ecs.prefab({ Transform, Circle, Stroke, Fill });
 
-  initDebug(options);
+    const createCamera = $ecs.prefab({
+      Transform,
+      Camera,
+    });
 
-  initHierarchy();
+    const $camera = createCamera({
+      Camera: {
+        default: 1,
+        zoom: 1,
+      },
+      Transform: createTransform(0, 0),
+    });
 
-  const $ecs = createECS();
+    on("draw", () => render($camera));
 
-  const createRect = $ecs.prefab({ Transform, Rect, Stroke, Fill });
+    return {
+      ...$ecs,
+      $camera,
+      createRect,
+      createCube,
+      createCircle,
+      createBall,
+      createCamera,
+    };
+  },
+  $physics: initPhysics,
+  window: initWindow,
+  input: initInputListener,
+  scenes: initScenes,
+  ai: initAI,
+  animations: initAnimations,
+  debug: initDebug,
+  hierarchy: initHierarchy,
+  loop() {
+    defineLoop(() => {
+      emit("update");
 
-  const createCube = $ecs.prefab({
-    Transform,
-    Rect,
-    Stroke,
-    Fill,
-    Body,
-    Collider,
-  });
-
-  const createBall = $ecs.prefab({
-    Transform,
-    Circle,
-    Stroke,
-    Fill,
-    Body,
-    Collider,
-  });
-
-  const createCircle = $ecs.prefab({ Transform, Circle, Stroke, Fill });
-
-  const createCamera = $ecs.prefab({
-    Transform,
-    Camera,
-  });
-
-  const $camera = createCamera({
-    Camera: {
-      default: 1,
-      zoom: 1,
-    },
-    Transform: createTransform(0, 0),
-  });
-
-  on("draw", () => render($camera));
-
-  if (options?.renderDebug) {
-    on("draw", () => debugRender($camera));
-  }
-
-  return {
-    $ecs,
-    $physics,
-    $camera,
-    $scenes,
-    currentSceneCleanup,
-    ...components,
-    createRect,
-    createCube,
-    createCircle,
-    createBall,
-    createCamera,
-  };
-}
+      emit("draw");
+    });
+  },
+});

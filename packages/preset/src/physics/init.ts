@@ -144,13 +144,13 @@ export function initPhysics(options?: InitPhysicsOptions) {
             const rotation = getScaleCompensatedRotation(
               getLocalRotation(ent),
               parentScale.x,
-              parentScale.y,
+              parentScale.y
             );
 
             collider.setRotationWrtParent(rotation);
           }
         }
-      },
+      }
     );
 
     // Step the simulation forward.

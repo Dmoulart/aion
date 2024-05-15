@@ -20,16 +20,15 @@ export function createTransform(
   rotation = 0,
   scaleX = 1,
   scaleY = 1,
+  transform: Matrix = createIdentityMatrix()
 ): Transform {
-  const mat = createIdentityMatrix();
+  transform[0] = scaleX;
+  transform[1] = scaleY;
+  transform[2] = rotation;
+  transform[3] = x;
+  transform[4] = y;
 
-  mat[0] = scaleX;
-  mat[1] = scaleY;
-  mat[2] = rotation;
-  mat[3] = x;
-  mat[4] = y;
-
-  return mat;
+  return transform;
 }
 
 export function getTransform(entity: Entity): Transform {
@@ -38,7 +37,7 @@ export function getTransform(entity: Entity): Transform {
 
 export function cloneTransform(
   entity: Entity,
-  out: Transform = new Float32Array(6),
+  out: Transform = new Float32Array(6)
 ): Transform {
   out.set(Transform[entity]!);
   return out;
@@ -71,7 +70,7 @@ export function getWorldMatrix(entity: Entity) {
 
 export function getLocalMatrix(
   entity: Entity,
-  out: Matrix = createIdentityMatrix(),
+  out: Matrix = createIdentityMatrix()
 ): Matrix {
   return createMatrixFromTransform(getTransform(entity), out);
 }
@@ -121,6 +120,7 @@ export function setLocalPosition(entity: Entity, { x, y }: Vector): void {
   transform[3] = x;
   transform[4] = y;
 }
+
 export const setPosition = setLocalPosition;
 
 export function setWorldPosition(entity: Entity, position: Vector): void {
@@ -281,7 +281,7 @@ export function rotate(entity: Entity, radians: number) {
 
 export function createMatrixFromTransform(
   transform: Transform,
-  out: Matrix = createIdentityMatrix(),
+  out: Matrix = createIdentityMatrix()
 ): Matrix {
   const [scaleX, scaleY, rotation, x, y] = transform;
 
@@ -307,7 +307,7 @@ export function rotateTowards(source: Entity, target: Entity, step: number) {
   // Calculate the angle between source and target
   const angle = Math.atan2(
     targetPosition.y - sourcePosition.y,
-    targetPosition.x - sourcePosition.x,
+    targetPosition.x - sourcePosition.x
   );
 
   // Rotate the source entity towards the target entity
@@ -346,4 +346,17 @@ export function rotateAroundPoint(entity: Entity, point: Vec, angle: number) {
 
   // Set the new position
   setWorldPosition(entity, new Vec(newX, newY));
+}
+
+export function rotationAroundPoint(position: Vec, point: Vec, angle: number) {
+  const distanceX = position.x - point.x;
+  const distanceY = position.y - point.y;
+
+  // Calculate the new position after rotation
+  const newX =
+    distanceX * Math.cos(angle) - distanceY * Math.sin(angle) + point.x;
+  const newY =
+    distanceX * Math.sin(angle) + distanceY * Math.cos(angle) + point.y;
+
+  return new Vec(newX, newY);
 }
