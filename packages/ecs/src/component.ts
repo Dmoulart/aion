@@ -181,7 +181,7 @@ export function attach(
   if (oldArchetype.mask.has(id)) return;
 
   const baseID = isRelation(id) ? getRelationID(id) : id;
-  ON_BEFORE_ADD_COMPONENT?.[baseID]?.(id, eid, world);
+  ON_BEFORE_ADD_COMPONENT[baseID]?.(id, eid, world);
 
   const newArchetype = deriveArchetype(oldArchetype, id, world);
 
@@ -223,7 +223,7 @@ export function detach(
   if (!oldArchetype.mask.has(id)) return;
 
   const baseID = isRelation(id) ? getRelationID(id) : id;
-  ON_BEFORE_ADD_COMPONENT?.[baseID]?.(id, eid, world);
+  ON_BEFORE_REMOVE_COMPONENT[baseID]?.(id, eid, world);
 
   const newArchetype = deriveArchetype(oldArchetype, id, world);
 

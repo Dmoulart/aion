@@ -1,4 +1,4 @@
-import { getArchetypeLastID, onArchetypeCreated } from "./archetype.js";
+import { onArchetypeCreated } from "./archetype.js";
 import {
   attach,
   onBeforeAddComponent,
@@ -12,7 +12,7 @@ import {
   entityExists,
 } from "./entity.js";
 import { nextID } from "./id.js";
-import { SparseSet, hasComponent, type SparseBitSet2 } from "./index.js";
+import { SparseSet, getEntityRelationTarget } from "./index.js";
 import {
   addQuery,
   any,
@@ -40,11 +40,14 @@ onArchetypeCreated(ChildOf, (id) => {
   // ChildOf.mask.or(id);
 });
 
-const parents: (SparseSet | undefined)[] = [];
-const children = [];
+const children: (SparseSet | undefined)[] = [];
 
 function getChildren(entity: Entity) {
-  return parents[entity]?.dense!;
+  return children[entity]?.dense!;
+}
+
+function getParent(world: World, entity: Entity) {
+  return getEntityRelationTarget(world, entity, ChildOf);
 }
 
 function initHierarchy(world: World) {
@@ -54,25 +57,28 @@ function initHierarchy(world: World) {
     for (const child of getChildren(parent)) {
       removeEntity(world, child);
     }
-    //clear sparseset?
-    parents[parent] = undefined;
+
+    children[parent]!.clear();
   });
 
   onBeforeAddComponent(ChildOf, (id, entity, w) => {
+    console.log("before add child to ", entity);
     ChildOf.mask.or(id);
     const parent = getRelationTarget(id);
     attach(w, Parent, parent);
 
-    parents[parent] ??= new SparseSet();
-    const set = parents[parent]!;
+    children[parent] ??= new SparseSet();
+    const set = children[parent]!;
+
     set.insert(entity);
   });
 
   onBeforeRemoveComponent(ChildOf, (id, entity) => {
+    console.log("remove child");
     ChildOf.mask.xor(id);
 
     const parent = getRelationTarget(id);
-    parents[parent]!.remove(entity);
+    children[parent]!.remove(entity);
   });
 }
 
@@ -82,28 +88,31 @@ initHierarchy(w);
 
 const parent = createEntity(w);
 
-const child = createEntity(w);
-const child2 = createEntity(w);
-
 const onChildCreated = onEnterQuery(query(w, ChildOf("*")));
 
 onChildCreated((e, arch) => {
   console.log("child created", e);
 });
 
+const child = createEntity(w);
+const grandchild = createEntity(w);
+const secondparent = createEntity(w);
+
+console.log("child", child);
+console.log("grandchild", grandchild);
+console.log("secondparent", secondparent);
+
 attach(w, ChildOf(parent), child);
-attach(w, ChildOf(parent), child2);
+console.log("attach child to parent ");
+attach(w, ChildOf(child), grandchild);
+console.log("attach child to grandchild");
+console.log("parent of child", getParent(w, child));
+attach(w, ChildOf(secondparent), child);
+console.log("ChildOf(secondparent)", getRelationTarget(ChildOf(secondparent)));
+console.log("attach child to second parent");
+console.log("parent of child", getParent(w, child));
 
-attach(w, ChildOf(child), child2);
-
-// console.log("childrenOfParent", getChildren(parent));
-// console.log("childrenOfChild", getChildren(child));
-console.log("child 2 parent", hasComponent(w, ChildOf(parent), child2));
-
-removeEntity(w, parent);
-
-console.log("ex", entityExists(w, child));
-console.log("ex", entityExists(w, child2));
+// console.log("ex", entityExists(w, child2));
 
 // const mask = RELATIONS_MASKS.get(ParentOf)!;
 

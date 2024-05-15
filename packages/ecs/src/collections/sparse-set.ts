@@ -51,4 +51,12 @@ export class SparseSet {
   count() {
     return this.dense.length;
   }
+
+  /**
+   * Clear all the set values.
+   */
+  clear() {
+    this.dense = [];
+    this.sparse = [];
+  }
 }

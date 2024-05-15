@@ -9,6 +9,7 @@ import {
 import {
   getComponentID,
   getRelationID,
+  getRelationTarget,
   isExclusiveRelation,
   isRelation,
   type Component,
@@ -113,6 +114,7 @@ export const deriveArchetype = (
   const aid = ++nextAid;
 
   const baseID = getRelationID(id);
+  // console.log({ baseID, id });
 
   const idIsRelation = isRelation(id);
 
@@ -121,9 +123,20 @@ export const deriveArchetype = (
   if (idIsRelation) {
     const preexistingRelation = base.relations[baseID]!;
     if (preexistingRelation && isExclusiveRelation(baseID)) {
+      console.log(
+        "mask.has(preexistingRelation)",
+        mask.has(preexistingRelation)
+      );
       mask.xor(preexistingRelation);
+      console.log(
+        "mask.has(preexistingRelation)",
+        mask.has(preexistingRelation)
+      );
     }
-    relations[baseID] = id;
+    relations[baseID] = getRelationTarget(id);
+    console.log("new archetype with relation", getRelationTarget(id));
+    // console.log(relations);
+    // console.log({ baseID, id });
   }
 
   //@todo class instance
@@ -140,7 +153,7 @@ export const deriveArchetype = (
   base.edge[id] = archetype;
   archetype.edge[id] = base;
 
-  ON_ARCHETYPE_CREATED?.[baseID]?.(id, baseID, archetype, base);
+  // ON_ARCHETYPE_CREATED?.[baseID]?.(id, baseID, archetype, base);
 
   world.archetypes.push(archetype);
 
@@ -197,9 +210,11 @@ export function onArchetypeChange(
   }
 }
 
-export function getArchetypeLastID(archetype: Archetype): ID {
-  return archetype.components.at(-1) as ID;
+export function getArchetypeRelation(id: ID, archetype: Archetype) {
+  console.log("get archetype relations", archetype.relations);
+  return archetype.relations[id];
 }
+
 type OnArchetypeCreatedCallback = (
   id: ID,
   baseID: ID,

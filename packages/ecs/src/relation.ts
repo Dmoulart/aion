@@ -1,3 +1,4 @@
+import { getArchetypeRelation } from "./archetype.js";
 import { type Entity, type ID } from "./entity.js";
 import { hi, lo, nextID, pair } from "./id.js";
 import {
@@ -5,8 +6,8 @@ import {
   type QueryTerm,
   BitSetImpl,
   testMatcher,
+  type World,
 } from "./index.js";
-import { DEFAULT_WORLD_CAPACITY } from "./world.js";
 
 const isWildcard = (str: unknown): str is "*" => str === "*";
 
@@ -67,4 +68,14 @@ export function isExclusiveRelation(relation: ID) {
 
 export function isRelation(id: ID) {
   return getRelationID(id) !== id;
+}
+export function getEntityRelationTarget(
+  world: World,
+  entity: Entity,
+  relation: Relation
+) {
+  return getArchetypeRelation(
+    relation.baseID,
+    world.entitiesArchetypes[entity]!
+  )!;
 }
