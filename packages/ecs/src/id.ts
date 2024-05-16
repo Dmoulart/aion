@@ -56,17 +56,15 @@ export function getID(component: ID | Component | Relation) {
     : getComponentID(component); // component
 }
 
-export function getRelationID(relation: ID) {
-  return lo(relation);
-}
-
-export function getRelationTarget(relation: ID) {
-  return hi(relation);
-}
-
 export function isExclusiveRelation(relation: ID) {
   return relations[relation]?.exclusive;
 }
+
+export const getRelationID = lo;
+
+export const getBaseID = lo;
+
+export const getRelationTarget = hi;
 
 export function isRelation(id: ID) {
   return getRelationID(id) !== id;

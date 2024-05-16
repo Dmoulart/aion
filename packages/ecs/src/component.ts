@@ -9,7 +9,7 @@ import type { World } from "./world.js";
 import { type ID, NonExistantEntity } from "./entity.js";
 import { deriveArchetype, onArchetypeChange } from "./archetype.js";
 import { type Entity } from "./entity.js";
-import { getID, getRelationID, isRelation, nextID } from "./id.js";
+import { getBaseID, getID, getRelationID, isRelation, nextID } from "./id.js";
 import {
   type Schema,
   type MultipleTypesSchema,
@@ -180,8 +180,7 @@ export function attach(
 
   if (oldArchetype.mask.has(id)) return;
 
-  const baseID = isRelation(id) ? getRelationID(id) : id;
-  ON_BEFORE_ADD_COMPONENT[baseID]?.(id, eid, world);
+  ON_BEFORE_ADD_COMPONENT[getBaseID(id)]?.(id, eid, world);
 
   const newArchetype = deriveArchetype(oldArchetype, id, world);
 
@@ -222,8 +221,7 @@ export function detach(
 
   if (!oldArchetype.mask.has(id)) return;
 
-  const baseID = isRelation(id) ? getRelationID(id) : id;
-  ON_BEFORE_REMOVE_COMPONENT[baseID]?.(id, eid, world);
+  ON_BEFORE_REMOVE_COMPONENT[getBaseID(id)]?.(id, eid, world);
 
   const newArchetype = deriveArchetype(oldArchetype, id, world);
 

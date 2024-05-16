@@ -115,7 +115,7 @@ describe("Query", () => {
 
     const query = defineQuery(
       any(TestComponent),
-      none(TestComponent2, TestComponent3),
+      none(TestComponent2, TestComponent3)
     );
     expect(query(world).archetypes.length).toStrictEqual(2);
   });
@@ -368,7 +368,7 @@ describe("Query", () => {
     addQuery(worldA, query);
 
     expect(() => addQuery(worldB, query)).toThrowError(
-      AlreadyRegisteredQueryError,
+      AlreadyRegisteredQueryError
     );
   });
   it("can be removed", () => {
@@ -423,10 +423,10 @@ describe("Query", () => {
     const arch = world.entitiesArchetypes[eid]!;
 
     expect(
-      world.handlers.enter[arch.id]!.find((fn) => fn === enterHandler),
+      world.handlers.enter[arch.id]!.find((fn) => fn === enterHandler)
     ).toBeFalsy();
     expect(
-      world.handlers.exit[arch.id]!.find((fn) => fn === exitHandler),
+      world.handlers.exit[arch.id]!.find((fn) => fn === exitHandler)
     ).toBeFalsy();
   });
 

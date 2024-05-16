@@ -7,6 +7,7 @@ import {
   type RegisteredQueryHandler,
 } from "./query.js";
 import {
+  getBaseID,
   getRelationID,
   getRelationTarget,
   isExclusiveRelation,
@@ -109,19 +110,16 @@ export const deriveArchetype = (
   const mask = base.mask.clone();
   mask.xor(id);
 
-  const baseID = getRelationID(id);
-  // console.log({ baseID, id });
-
-  const idIsRelation = isRelation(id);
-
   const relations = [...base.relations];
 
-  if (idIsRelation) {
+  if (isRelation(id)) {
+    const baseID = getBaseID(id);
+
     if (isExclusiveRelation(baseID)) {
       const preexistingRelation = base.relations[baseID]!;
 
       if (preexistingRelation) {
-        mask.xor(preexistingRelation);
+        mask.xor(preexistingRelation); // remove preexisting relation
       }
     }
 
@@ -149,7 +147,7 @@ export const deriveArchetype = (
   // @todo is queries.values fast ?
   for (const query of world.queries.values()) {
     if (matchQuery(query, archetype)) {
-      query.archetypesSet.insert(archetype.id);
+      query.archetypesSet.insert(archetype.id); // @todo combine archetypesset and archetypes
       query.archetypes.push(archetype);
       registerQueryHandlersForArchetype(archetype, query, world);
     }
