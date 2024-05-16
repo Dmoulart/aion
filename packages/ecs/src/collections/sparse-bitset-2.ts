@@ -53,7 +53,7 @@ export class SparseBitSet2 implements AnyBitSet {
   }
 
   /**
-   * Set the given value.
+   * Set or unset the given value.
    * @param val
    */
   xor(val: number) {

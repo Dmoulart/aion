@@ -43,7 +43,7 @@ onArchetypeCreated(ChildOf, (id) => {
 const children: (SparseSet | undefined)[] = [];
 
 function getChildren(entity: Entity) {
-  return children[entity]?.dense!;
+  return children[entity]?.dense ?? [];
 }
 
 function getParent(world: World, entity: Entity) {
@@ -62,13 +62,14 @@ function initHierarchy(world: World) {
   });
 
   onBeforeAddComponent(ChildOf, (id, entity, w) => {
-    console.log("before add child to ", entity);
+    console.log("[onBeforeAddComponent]", entity);
     ChildOf.mask.or(id);
     const parent = getRelationTarget(id);
-    attach(w, Parent, parent);
 
     children[parent] ??= new SparseSet();
     const set = children[parent]!;
+
+    attach(world, Parent, parent);
 
     set.insert(entity);
   });
@@ -107,10 +108,18 @@ console.log("attach child to parent ");
 attach(w, ChildOf(child), grandchild);
 console.log("attach child to grandchild");
 console.log("parent of child", getParent(w, child));
+debugger;
 attach(w, ChildOf(secondparent), child);
-console.log("ChildOf(secondparent)", getRelationTarget(ChildOf(secondparent)));
 console.log("attach child to second parent");
 console.log("parent of child", getParent(w, child));
+console.log("children of second parent", getChildren(secondparent));
+console.log("children of child", getChildren(child));
+console.log("remove secondparent");
+removeEntity(w, secondparent);
+console.log("child exists");
+console.log(entityExists(w, child));
+console.log("grandchild exists");
+console.log(entityExists(w, grandchild));
 
 // console.log("ex", entityExists(w, child2));
 
