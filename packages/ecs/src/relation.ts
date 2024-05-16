@@ -1,4 +1,4 @@
-import { getArchetypeRelation } from "./archetype.js";
+import { getArchetypeRelationTarget } from "./archetype.js";
 import { type Entity, type ID } from "./entity.js";
 import { hi, lo, nextID, pair } from "./id.js";
 import {
@@ -10,8 +10,6 @@ import {
 } from "./index.js";
 
 const isWildcard = (str: unknown): str is "*" => str === "*";
-
-// const relations = new Set<ID>();
 
 export const RELATIONS_MASKS = new Map<
   <T extends Entity | "*">(entityOrWildcard: T) => QueryTermOrID<T>,
@@ -74,7 +72,7 @@ export function getEntityRelationTarget(
   entity: Entity,
   relation: Relation
 ) {
-  return getArchetypeRelation(
+  return getArchetypeRelationTarget(
     relation.baseID,
     world.entitiesArchetypes[entity]!
   )!;

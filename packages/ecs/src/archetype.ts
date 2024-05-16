@@ -7,13 +7,11 @@ import {
   type RegisteredQueryHandler,
 } from "./query.js";
 import {
-  getComponentID,
   getRelationID,
   getRelationTarget,
   isExclusiveRelation,
   isRelation,
   type Component,
-  type ComponentID,
   type Relation,
 } from "./index.js";
 import { getID } from "./id.js";
@@ -204,8 +202,7 @@ export function onArchetypeChange(
   }
 }
 
-export function getArchetypeRelation(id: ID, archetype: Archetype) {
-  console.log("get archetype relations", archetype.relations);
+export function getArchetypeRelationTarget(id: ID, archetype: Archetype) {
   return archetype.relations[id];
 }
 

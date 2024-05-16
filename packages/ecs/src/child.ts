@@ -1,57 +1,37 @@
-import { onArchetypeCreated } from "./archetype.js";
 import {
   attach,
   onBeforeAddComponent,
   onBeforeRemoveComponent,
 } from "./component.js";
-import {
-  removeEntity,
-  type ID,
-  createEntity,
-  type Entity,
-  entityExists,
-} from "./entity.js";
+import { removeEntity, type Entity } from "./entity.js";
 import { nextID } from "./id.js";
 import { SparseSet, getEntityRelationTarget } from "./index.js";
-import {
-  addQuery,
-  any,
-  createQuery,
-  onEnterQuery,
-  onExitQuery,
-  query,
-  runQuery,
-} from "./query.js";
-import {
-  RELATIONS_MASKS,
-  defineRelation,
-  getRelationID,
-  getRelationTarget,
-} from "./relation.js";
-import { createECS, createWorld, type World } from "./world.js";
+import { onExitQuery, query } from "./query.js";
+import { defineRelation, getRelationTarget } from "./relation.js";
+import { type World } from "./world.js";
 
 export const ChildOf = defineRelation({ exclusive: true });
 export const Parent = nextID();
 
-onArchetypeCreated(ChildOf, (id) => {
-  // world.componentIndex[baseID] ??= new BitSetImpl();
-  // world.componentIndex[baseID]!.or(id);
-  // console.log("hello");
-  // ChildOf.mask.or(id);
-});
+// onArchetypeCreated(ChildOf, (id) => {
+//   // world.componentIndex[baseID] ??= new BitSetImpl();
+//   // world.componentIndex[baseID]!.or(id);
+//   // console.log("hello");
+//   // ChildOf.mask.or(id);
+// });
 
-const children: (SparseSet | undefined)[] = [];
+export const children: (SparseSet | undefined)[] = [];
 
-function getChildren(entity: Entity) {
+export function getChildren(entity: Entity) {
   return children[entity]?.dense ?? [];
 }
 
-function getParent(world: World, entity: Entity) {
+export function getParent(world: World, entity: Entity) {
   return getEntityRelationTarget(world, entity, ChildOf);
 }
 
-function initHierarchy(world: World) {
-  const onParentDestroyed = onExitQuery(query(w, Parent));
+export function initHierarchy(world: World) {
+  const onParentDestroyed = onExitQuery(query(world, Parent));
 
   onParentDestroyed((parent) => {
     for (const child of getChildren(parent)) {
@@ -83,43 +63,43 @@ function initHierarchy(world: World) {
   });
 }
 
-const w = createWorld();
+// const w = createWorld();
 
-initHierarchy(w);
+// initHierarchy(w);
 
-const parent = createEntity(w);
+// const parent = createEntity(w);
 
-const onChildCreated = onEnterQuery(query(w, ChildOf("*")));
+// const onChildCreated = onEnterQuery(query(w, ChildOf("*")));
 
-onChildCreated((e, arch) => {
-  console.log("child created", e);
-});
+// onChildCreated((e, arch) => {
+//   console.log("child created", e);
+// });
 
-const child = createEntity(w);
-const grandchild = createEntity(w);
-const secondparent = createEntity(w);
+// const child = createEntity(w);
+// const grandchild = createEntity(w);
+// const secondparent = createEntity(w);
 
-console.log("child", child);
-console.log("grandchild", grandchild);
-console.log("secondparent", secondparent);
+// console.log("child", child);
+// console.log("grandchild", grandchild);
+// console.log("secondparent", secondparent);
 
-attach(w, ChildOf(parent), child);
-console.log("attach child to parent ");
-attach(w, ChildOf(child), grandchild);
-console.log("attach child to grandchild");
-console.log("parent of child", getParent(w, child));
-debugger;
-attach(w, ChildOf(secondparent), child);
-console.log("attach child to second parent");
-console.log("parent of child", getParent(w, child));
-console.log("children of second parent", getChildren(secondparent));
-console.log("children of child", getChildren(child));
-console.log("remove secondparent");
-removeEntity(w, secondparent);
-console.log("child exists");
-console.log(entityExists(w, child));
-console.log("grandchild exists");
-console.log(entityExists(w, grandchild));
+// attach(w, ChildOf(parent), child);
+// console.log("attach child to parent ");
+// attach(w, ChildOf(child), grandchild);
+// console.log("attach child to grandchild");
+// console.log("parent of child", getParent(w, child));
+// debugger;
+// attach(w, ChildOf(secondparent), child);
+// console.log("attach child to second parent");
+// console.log("parent of child", getParent(w, child));
+// console.log("children of second parent", getChildren(secondparent));
+// console.log("children of child", getChildren(child));
+// console.log("remove secondparent");
+// removeEntity(w, secondparent);
+// console.log("child exists");
+// console.log(entityExists(w, child));
+// console.log("grandchild exists");
+// console.log(entityExists(w, grandchild));
 
 // console.log("ex", entityExists(w, child2));
 
