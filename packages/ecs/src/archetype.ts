@@ -117,10 +117,12 @@ export const deriveArchetype = (
   const relations = [...base.relations];
 
   if (idIsRelation) {
-    const preexistingRelation = base.relations[baseID]!;
+    if (isExclusiveRelation(baseID)) {
+      const preexistingRelation = base.relations[baseID]!;
 
-    if (preexistingRelation && isExclusiveRelation(baseID)) {
-      mask.xor(preexistingRelation);
+      if (preexistingRelation) {
+        mask.xor(preexistingRelation);
+      }
     }
 
     relations[baseID] = getRelationTarget(id);
