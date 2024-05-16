@@ -1,15 +1,16 @@
 import { expect, it, describe, beforeEach } from "vitest";
-import { resetIDCursor } from "../src/id.js";
-import { createWorld } from "../src/world.js";
-import { createEntity, entityExists } from "../src/entity.js";
 import {
   attach,
+  createEntity,
+  createWorld,
   defineComponent,
   detach,
+  entityExists,
   hasComponent,
-} from "../src/component.js";
-import { i8 } from "../src/types.js";
-import { prefab } from "../src/prefab.js";
+  i8,
+  prefab,
+  resetIDCursor,
+} from "../src/index.js";
 
 describe("World", () => {
   beforeEach(() => {

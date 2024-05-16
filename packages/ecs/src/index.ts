@@ -1,5 +1,6 @@
 export * from "./world.js";
 export * from "./entity.js";
+export * from "./archetype.js";
 export * from "./component.js";
 export * from "./query.js";
 export * from "./types.js";
