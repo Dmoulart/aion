@@ -1,8 +1,8 @@
 import { expect, it, describe } from "vitest";
-import { createWorld, hasComponent, initHierarchy } from "../dist/index.js";
-import { createEntity, entityExists, removeEntity } from "../dist/entity.js";
-import { attach, detach } from "../dist/component.js";
-import { ChildOf, getChildren, getParent } from "../dist/child.js";
+import { createWorld, hasComponent, initHierarchy } from "../src/index.js";
+import { createEntity, entityExists, removeEntity } from "../src/entity.js";
+import { attach, detach } from "../src/component.js";
+import { ChildOf, getChildren, getParent } from "../src/child.js";
 
 describe("Children", () => {
   it("can create children and remove it", () => {

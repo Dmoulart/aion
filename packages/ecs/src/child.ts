@@ -5,20 +5,17 @@ import {
 } from "./component.js";
 import { removeEntity, type Entity } from "./entity.js";
 import { nextID } from "./id.js";
-import { SparseSet, getEntityRelationTarget } from "./index.js";
+import {
+  SparseSet,
+  getEntityRelationTarget,
+  getRelationTarget,
+} from "./index.js";
 import { onExitQuery, query } from "./query.js";
-import { defineRelation, getRelationTarget } from "./relation.js";
+import { defineRelation } from "./relation.js";
 import { type World } from "./world.js";
 
 export const ChildOf = defineRelation({ exclusive: true });
 export const Parent = nextID();
-
-// onArchetypeCreated(ChildOf, (id) => {
-//   // world.componentIndex[baseID] ??= new BitSetImpl();
-//   // world.componentIndex[baseID]!.or(id);
-//   // console.log("hello");
-//   // ChildOf.mask.or(id);
-// });
 
 export const children: (SparseSet | undefined)[] = [];
 
@@ -42,7 +39,6 @@ export function initHierarchy(world: World) {
   });
 
   onBeforeAddComponent(ChildOf, (id, entity, w) => {
-    console.log("[onBeforeAddComponent]", entity);
     ChildOf.mask.or(id);
     const parent = getRelationTarget(id);
 
@@ -55,7 +51,6 @@ export function initHierarchy(world: World) {
   });
 
   onBeforeRemoveComponent(ChildOf, (id, entity) => {
-    console.log("remove child");
     ChildOf.mask.xor(id);
 
     const parent = getRelationTarget(id);

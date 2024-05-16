@@ -1,13 +1,8 @@
-import { getArchetypeRelationTarget } from "./archetype.js";
+import type { AnyBitSet } from "./collections/bit-set.js";
+import { BitSetImpl } from "./collections/bitset-impl.js";
 import { type Entity, type ID } from "./entity.js";
-import { hi, lo, nextID, pair } from "./id.js";
-import {
-  type AnyBitSet,
-  type QueryTerm,
-  BitSetImpl,
-  testMatcher,
-  type World,
-} from "./index.js";
+import { nextID, pair } from "./id.js";
+import { testMatcher, type QueryTerm } from "./query.js";
 
 const isWildcard = (str: unknown): str is "*" => str === "*";
 
@@ -51,29 +46,4 @@ export function defineRelation(
   relation.mask = mask;
   relations[baseID] = options;
   return relation;
-}
-export function getRelationID(relation: ID) {
-  return lo(relation);
-}
-
-export function getRelationTarget(relation: ID) {
-  return hi(relation);
-}
-
-export function isExclusiveRelation(relation: ID) {
-  return relations[relation]?.exclusive;
-}
-
-export function isRelation(id: ID) {
-  return getRelationID(id) !== id;
-}
-export function getEntityRelationTarget(
-  world: World,
-  entity: Entity,
-  relation: Relation
-) {
-  return getArchetypeRelationTarget(
-    relation.baseID,
-    world.entitiesArchetypes[entity]!
-  )!;
 }

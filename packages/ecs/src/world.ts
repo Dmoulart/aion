@@ -28,7 +28,7 @@ import {
   type PrefabInstanceOptions,
   prefab,
 } from "./prefab.js";
-import { BitSetImpl, type AnyBitSet } from "./index.js";
+import { type AnyBitSet } from "./index.js";
 //@todo: remove capacity ?
 export const DEFAULT_WORLD_CAPACITY = 100_000;
 

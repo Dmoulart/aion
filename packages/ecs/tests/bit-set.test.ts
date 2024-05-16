@@ -1,5 +1,5 @@
 import { expect, it, describe } from "vitest";
-import { BitSet } from "../src/index.js";
+import { BitSet } from "../src/collections/bit-set.js";
 
 describe("BitSet", () => {
   it("can set value and retrieve it", () => {

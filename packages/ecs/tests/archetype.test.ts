@@ -1,12 +1,9 @@
 import { expect, it, describe } from "vitest";
 import { createArchetype, deriveArchetype } from "../src/archetype.js";
-import {
-  defineComponent,
-  createWorld,
-  i8,
-  makeComponentsMask,
-  getComponentID,
-} from "../src/index.js";
+import { defineComponent, getComponentID } from "../src/component.js";
+import { makeComponentsMask } from "../src/query.js";
+import { i8 } from "../src/types.js";
+import { createWorld } from "../src/world.js";
 
 describe("Archetype", () => {
   it("can be created with component", () => {

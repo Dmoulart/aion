@@ -1,6 +1,7 @@
+import { getArchetypeRelationTarget } from "./archetype.js";
 import { type Component, isComponent, getComponentID } from "./component.js";
 import type { ID } from "./entity.js";
-import type { Relation } from "./index.js";
+import { relations, type Relation, type Entity, type World } from "./index.js";
 
 /**
  * The global ID cursor
@@ -53,4 +54,31 @@ export function getID(component: ID | Component | Relation) {
     : typeof component === "function" && "baseID" in component // relation
     ? component.baseID
     : getComponentID(component); // component
+}
+
+export function getRelationID(relation: ID) {
+  return lo(relation);
+}
+
+export function getRelationTarget(relation: ID) {
+  return hi(relation);
+}
+
+export function isExclusiveRelation(relation: ID) {
+  return relations[relation]?.exclusive;
+}
+
+export function isRelation(id: ID) {
+  return getRelationID(id) !== id;
+}
+
+export function getEntityRelationTarget(
+  world: World,
+  entity: Entity,
+  relation: Relation
+) {
+  return getArchetypeRelationTarget(
+    relation.baseID,
+    world.entitiesArchetypes[entity]!
+  )!;
 }

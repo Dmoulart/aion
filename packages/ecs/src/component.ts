@@ -9,7 +9,7 @@ import type { World } from "./world.js";
 import { type ID, NonExistantEntity } from "./entity.js";
 import { deriveArchetype, onArchetypeChange } from "./archetype.js";
 import { type Entity } from "./entity.js";
-import { getID, nextID } from "./id.js";
+import { getID, getRelationID, isRelation, nextID } from "./id.js";
 import {
   type Schema,
   type MultipleTypesSchema,
@@ -20,7 +20,7 @@ import {
   isPrimitiveType,
   isSingleTypeSchema,
 } from "./schemas.js";
-import { getRelationID, isRelation, type Relation } from "./relation.js";
+import { type Relation } from "./relation.js";
 
 export type ComponentID<S extends Schema = Schema> = ID & { __brand: S };
 

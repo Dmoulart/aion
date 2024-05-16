@@ -109,8 +109,6 @@ export const deriveArchetype = (
   const mask = base.mask.clone();
   mask.xor(id);
 
-  const aid = ++nextAid;
-
   const baseID = getRelationID(id);
   // console.log({ baseID, id });
 
@@ -126,18 +124,15 @@ export const deriveArchetype = (
     }
 
     relations[baseID] = getRelationTarget(id);
-    // console.log("new archetype with relation", getRelationTarget(id));
-    // console.log(relations);
-    // console.log({ baseID, id });
   }
 
   //@todo class instance
   const archetype: Archetype = {
-    id: aid,
+    id: ++nextAid,
     entities: new SparseSet(),
     edge: [],
     mask,
-    components: [...base.components, id],
+    components: undefined as any, // [...base.components, id], // not used for now, will be used to clone things ?
     relations,
   };
 
