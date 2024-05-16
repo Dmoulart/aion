@@ -1,33 +1,6 @@
-import {
-  type Entity,
-  createEntity,
-  entityExists,
-  removeEntity,
-  type ID,
-} from "./entity.js";
+import { type Entity } from "./entity.js";
 import { type Archetype, createArchetype } from "./archetype.js";
-import {
-  type QueryHandler,
-  any,
-  type Query,
-  none,
-  not,
-  all,
-  query,
-  type QueryTerm,
-} from "./query.js";
-import {
-  attach,
-  detach,
-  hasComponent,
-  type Component,
-  type ComponentsGroup,
-} from "./component.js";
-import {
-  type PrefabDefinition,
-  type PrefabInstanceOptions,
-  prefab,
-} from "./prefab.js";
+import { type QueryHandler, type Query } from "./query.js";
 import { type AnyBitSet } from "./index.js";
 //@todo: remove capacity ?
 export const DEFAULT_WORLD_CAPACITY = 100_000;
@@ -97,31 +70,6 @@ export const createWorld = (size = DEFAULT_WORLD_CAPACITY): World => {
       exit: [] as Array<QueryHandler[]>,
     },
     size,
-  };
-};
-
-export const createECS = (world: World = createWorld()) => {
-  return {
-    world,
-    create: createEntity.bind(null, world),
-    remove: removeEntity.bind(null, world),
-    exists: entityExists.bind(null, world),
-    has: hasComponent.bind(null, world),
-    prefab: prefab.bind(null, world) as <Definition extends PrefabDefinition>(
-      definition: Definition,
-      options?: PrefabInstanceOptions<Definition>
-    ) => ReturnType<typeof prefab<Definition>>, // hoolyyy mollyy
-    attach: attach.bind(null, world),
-    detach: detach.bind(null, world),
-    query: query.bind(null, world) as <
-      T extends (QueryTerm | Component | ComponentsGroup | ID)[]
-    >(
-      ...termsOrComponents: T
-    ) => Query,
-    all,
-    any,
-    none,
-    not,
   };
 };
 

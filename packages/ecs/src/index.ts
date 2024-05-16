@@ -11,3 +11,4 @@ export * from "./chunk.js";
 export * from "./tag.js";
 export * from "./child.js";
 export * from "./id.js";
+export * from "./ecs.js";
